@@ -4,7 +4,7 @@ Gem::Specification.new do |spec|
   spec.authors       = ["Andrew Kreps"]
   spec.email         = ["andrew.kreps@gmail.com"]
   spec.description   = %q{A text interface to Forecast.io's weather data.}
-  spec.summary       = %q{TODO: Add a summary}
+  spec.summary       = %q{Summarize THIS!}
   spec.homepage      = "https://github.com/onewheelskyward/lita-forecast-io"
   spec.license       = "MIT"
   spec.metadata      = { "lita_plugin_type" => "handler" }
