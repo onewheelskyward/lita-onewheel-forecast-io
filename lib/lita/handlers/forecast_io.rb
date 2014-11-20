@@ -1,3 +1,5 @@
+require 'geocoder'
+
 module Lita
   module Handlers
     class ForecastIo < Handler
@@ -5,19 +7,25 @@ module Lita
       config :api_url
 
       route(/^!rain/, :is_it_raining)
+      route(/^!geo\s+(.*)/, :geo_lookup)
 
       def is_it_raining(response)
         forecast = get_forecast_io_results
         response.reply 'no'
       end
 
+      def geo_lookup(query)
+        result = ::Geocoder.search(query.matches[0][0])
+        [result['geometry']['location']['lat'], result['geometry']['location']['lat'], result['formatted_address']]
+      end
+
       def get_forecast_io_results(query = '45.5252,-122.6751')
         # gps_coords, long_name = get_gps_coords query
-        url = config.api_url + config.api_key + '/' + query
-        puts url
-        forecast = HTTParty.get url
-        forecast['long_name'] = long_name   # Hacking the location into the hash.
-        forecast
+        # url = config.api_url + config.api_key + '/' + query
+        # puts url
+        # forecast = HTTParty.get url
+        # forecast['long_name'] = long_name   # Hacking the location into the hash.
+        # forecast
       end
 
     end
