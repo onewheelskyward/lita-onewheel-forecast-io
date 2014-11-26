@@ -40,6 +40,9 @@ module Lita
       end
 
       def get_forecast_io_results(query = '45.5252,-122.6751')
+        if ! config.api_url or ! config.api_key
+          print "Configuration missing!  '#{config.api_url}' '#{config.api_key}'"
+        end
         # gps_coords, long_name = get_gps_coords query
         url = config.api_url + config.api_key + '/' + query
         # puts url
