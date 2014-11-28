@@ -5,8 +5,12 @@ require_relative 'location'
 module Lita
   module Handlers
     class ForecastIo < Handler
-      config :api_key
-      config :api_url
+      namespace 'forecast_io'
+
+      def self.default_config(config)
+        config.api_key = nil
+        config.api_uri = nil
+      end
 
       route(/^!rain/, :is_it_raining)
       route(/^!geo\s+(.*)/, :geo_lookup)
