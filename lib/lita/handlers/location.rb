@@ -6,4 +6,8 @@ class Location
     self.latitude = latitude
     self.longitude = longitude
   end
+
+  def to_s
+    print "Location: #{self.location_name} #{self.latitude},#{self.longitude}"
+  end
 end

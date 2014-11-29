@@ -6,52 +6,115 @@ module Lita
   module Handlers
     class ForecastIo < Handler
       namespace 'forecast_io'
+      REDIS_KEY = 'forecast_io'
+      config :api_key
+      config :api_uri
 
-      def self.default_config(config)
-        config.api_key = nil
-        config.api_uri = nil
-      end
-
-      route(/^!rain/, :is_it_raining)
+      route(/^!rain\s*(.*)/, :is_it_raining)
       route(/^!geo\s+(.*)/, :geo_lookup)
 
       def is_it_raining(response)
-        forecast = get_forecast_io_results
-        response.reply 'no'
+        eight_ball = {yes: ['It is certain',
+                            'It is decidedly so',
+                            'Without a doubt',
+                            'Yes definitely',
+                            'You may rely on it',
+                            'As I see it, yes',
+                            'Most likely',
+                            'Outlook good',
+                            'Yes',
+                            'Signs point to yes'],
+                      maybe: ['Reply hazy try again',
+                              'Ask again later',
+                              'Better not tell you now',
+                              'Cannot predict now',
+                              'Concentrate and ask again'],
+                      no: ['Don\'t count on it',
+                           'My reply is no',
+                           'My sources say no',
+                           'Outlook not so good',
+                           'Very doubtful']
+        }
+
+        Lita.logger.debug response.matches[0][0] # this shit's weird
+        geocoded = geo_lookup response.user, response.matches[0][0]
+        forecast = get_forecast_io_results response.user, geocoded
+        reply = nil
+
+        case forecast['currently']['precipProbability']
+          when 0..0.2
+            reply = eight_ball[:no].sample
+          when 0.201..0.7
+            reply = eight_ball[:maybe].sample
+          when 0.701..1
+            reply = eight_ball[:yes].sample
+        end
+
+        response.reply reply
       end
 
+      # Geographical stuffs
+      # Now with moar caching!
       def optimistic_geo_wrapper(query)
+        Lita.logger.debug 'Optimisically geo wrapping!'
         geocoded = nil
         result = ::Geocoder.search(query)
+        Lita.logger.debug "Geocoder result: '#{result.inspect}'"
         if result[0]
           geocoded = result[0].data
         end
         geocoded
       end
 
-      def geo_lookup(query)
-        geocoded = optimistic_geo_wrapper query
-        Location.new(
+      def geo_lookup(user, query)
+        Lita.logger.debug "Performing geolookup for '#{user.name}' for '#{query}'"
+        if query.empty?
+          Lita.logger.debug "No query specified, pulling from redis #{REDIS_KEY}, #{user.name}"
+          geocoded = JSON.parse(redis.hget(REDIS_KEY, user.name))
+          Lita.logger.debug "Cached location: #{geocoded.inspect}"
+        end
+
+        Lita.logger.debug "q & g #{query.inspect} #{geocoded.inspect}"
+        if query.empty? and geocoded.nil?
+          query = 'Portland, OR'
+        end
+
+        unless geocoded
+          Lita.logger.debug "Redis hget failed, performing lookup for #{query}"
+          geocoded = optimistic_geo_wrapper query
+          Lita.logger.debug "Geolocation found.  '#{geocoded.inspect}' failed, performing lookup"
+          redis.hset(REDIS_KEY, user.name, geocoded.to_json)
+        end
+
+        Lita.logger.debug "geocoded: '#{geocoded}'"
+
+        loc = Location.new(
             geocoded['formatted_address'],
             geocoded['geometry']['location']['lat'],
-            geocoded['geometry']['location']['long']
+            geocoded['geometry']['location']['lng']
         )
+
+        Lita.logger.debug "loc: '#{loc}'"
+
+        loc
       end
 
-      # Wrapped for testing.
+      # Wrapped for testing.  You know, when I get around to it.
       def gimme_some_weather(url)
         HTTParty.get url
       end
 
-      def get_forecast_io_results(query = '45.5252,-122.6751')
+      def get_forecast_io_results(user, location)
         if ! config.api_uri or ! config.api_key
-          print "Configuration missing!  '#{config.api_uri}' '#{config.api_key}'"
+          Lita.logger.error "Configuration missing!  '#{config.api_uri}' '#{config.api_key}'"
         end
         # gps_coords, long_name = get_gps_coords query
-        url = config.api_uri + config.api_key + '/' + query
+        uri = config.api_uri + config.api_key + '/' + "#{location.latitude},#{location.longitude}"
+        Lita.logger.debug uri
         # puts url
-        forecast = gimme_some_weather url
+        forecast = gimme_some_weather uri
         # forecast['long_name'] = long_name   # Hacking the location into the hash.
+        Lita.logger.debug forecast.inspect
         forecast
       end
 
