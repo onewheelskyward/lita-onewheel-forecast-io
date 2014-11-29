@@ -7,7 +7,7 @@ Gem::Specification.new do |spec|
   spec.summary       = %q{Summarize THIS!}
   spec.homepage      = 'https://github.com/onewheelskyward/lita-forecast-io'
   spec.license       = 'MIT'
-  spec.metadata      = { "lita_plugin_type" => "handler" }
+  spec.metadata      = { 'lita_plugin_type' => 'handler'}
 
   spec.files         = `git ls-files`.split($/)
   spec.executables   = spec.files.grep(%r{^bin/}) { |f| File.basename(f) }
@@ -24,4 +24,6 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'coveralls'
   spec.add_development_dependency 'httparty'
   spec.add_development_dependency 'geocoder'
+  # spec.add_runtime_dependency 'magic-eightball'
+  spec.add_development_dependency 'magic-eightball'
 end

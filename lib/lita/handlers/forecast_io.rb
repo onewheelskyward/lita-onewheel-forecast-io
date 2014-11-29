@@ -1,5 +1,6 @@
 require 'geocoder'
 require 'httparty'
+require 'magic_eightball'
 require_relative 'location'
 
 module Lita
@@ -14,28 +15,6 @@ module Lita
       route(/^!geo\s+(.*)/, :geo_lookup)
 
       def is_it_raining(response)
-        eight_ball = {yes: ['It is certain',
-                            'It is decidedly so',
-                            'Without a doubt',
-                            'Yes definitely',
-                            'You may rely on it',
-                            'As I see it, yes',
-                            'Most likely',
-                            'Outlook good',
-                            'Yes',
-                            'Signs point to yes'],
-                      maybe: ['Reply hazy try again',
-                              'Ask again later',
-                              'Better not tell you now',
-                              'Cannot predict now',
-                              'Concentrate and ask again'],
-                      no: ['Don\'t count on it',
-                           'My reply is no',
-                           'My sources say no',
-                           'Outlook not so good',
-                           'Very doubtful']
-        }
-
         Lita.logger.debug response.matches[0][0] # this shit's weird
         geocoded = geo_lookup response.user, response.matches[0][0]
         forecast = get_forecast_io_results response.user, geocoded
@@ -43,11 +22,11 @@ module Lita
 
         case forecast['currently']['precipProbability']
           when 0..0.2
-            reply = eight_ball[:no].sample
+            reply = MagicEightball.reply :no
           when 0.201..0.7
-            reply = eight_ball[:maybe].sample
+            reply = MagicEightball.reply :maybe
           when 0.701..1
-            reply = eight_ball[:yes].sample
+            reply = MagicEightball.reply :yes
         end
 
         response.reply reply
