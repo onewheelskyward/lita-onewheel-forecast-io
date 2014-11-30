@@ -16,6 +16,7 @@ module Lita
       route(/^!geo\s+(.*)/, :geo_lookup)
       route(/^!ansirain\s*(.*)/, :handle_irc_ansirain)
       route(/^!ansitemp\s*(.*)/, :handle_irc_ansitemp)
+      route(/^!ansiwind\s*(.*)/, :handle_irc_ansiwind)
 
       # Constants
       def scale
@@ -230,6 +231,12 @@ module Lita
         response.reply location.location_name + ' ' + ansi_temp_forecast(forecast)
       end
 
+      def handle_irc_ansiwind(response)
+        location = geo_lookup(response.user, response.matches[0][0])
+        forecast = get_forecast_io_results(response.user, location)
+        response.reply location.location_name + ' ' + ansi_wind_direction_forecast(forecast)
+      end
+
       # ▁▃▅▇█▇▅▃▁ agj
       def ascii_rain_forecast(forecast)
         str = do_the_rain_chance_thing(forecast, ascii_chars, 'precipProbability') #, 'probability', get_rain_range_colors)
@@ -290,7 +297,32 @@ module Lita
         # return dot_str, temps
       end
 
+      def ansi_wind_direction_forecast(forecast)
+        str, data = do_the_wind_direction_thing(forecast)
+        "24h wind direction |#{str}| Range: #{get_speed(data.min)} - #{get_speed(data.max)}"
+      end
+
+      def do_the_wind_direction_thing(forecast, hours = 24)
+        key = 'windBearing'
+        data = forecast['hourly']['data'].slice(0,hours - 1)
+        str = ''
+        data_points = []
+        # This is a little weird, because the arrows are 180° rotated.  That's because the wind bearing is "out of the N" not "towards the N".
+        wind_arrows = {'N' => '↓', 'NE' => '↙', 'E' => '←', 'SE' => '↖', 'S' => '↑', 'SW' => '↗', 'W' => '→', 'NW' => '↘'}
+
+        data.each_with_index do |datum, index|
+          str += wind_arrows[get_cardinal_direction_from_bearing datum[key]]
+          data_points.push datum['windSpeed']
+          break if index == hours - 1 # We only want (hours) 24hrs of data.
+        end
+
+        colored_str = get_colored_string(data, 'windSpeed', str, get_wind_range_colors)
+
+        return colored_str, data_points
+      end
+
       # Utility functions
+
       def get_colored_string(data_limited, key, dot_str, range_hash)
         color = nil
         prev_color = nil
