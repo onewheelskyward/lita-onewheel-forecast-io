@@ -50,6 +50,11 @@ describe Lita::Handlers::ForecastIo, lita_handler: true do
     expect(replies.last).to include("|\u000306←\u000310←←\u000311←←←\u000308←←\u000311←←←←←←←\u000310←←←←←←←\u000306←\u0003|")
   end
 
+  it '!conditions' do
+    send_message '!conditions'
+    expect(replies.last).to include("Portland, OR 28.3°F |\u000306_▁▃\u000310▅▇█\u000303█\u0003| 38.72°F / 4.3 mph |\u000306←\u000310←←\u000311←←←\u000308←\u0003| 12.71 mph / 98% chance of sun / 60m rain |\u0003▁▃▅▅▅▇▇███_____________|")
+  end
+
   # it 'colors strings' do
     # cstr = Lita::Handlers::ForecastIo.get_colored_string([{:key => 1}], :key, 'x', {1 => :blue})
     # expect(cstr).to equal('x')

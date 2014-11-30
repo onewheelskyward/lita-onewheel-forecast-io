@@ -17,6 +17,7 @@ module Lita
       route(/^!ansirain\s*(.*)/, :handle_irc_ansirain)
       route(/^!ansitemp\s*(.*)/, :handle_irc_ansitemp)
       route(/^!ansiwind\s*(.*)/, :handle_irc_ansiwind)
+      route(/^!conditions\s*(.*)/, :handle_irc_conditions)
 
       # Constants
       def scale
@@ -152,7 +153,7 @@ module Lita
       # Geographical stuffs
       # Now with moar caching!
       def optimistic_geo_wrapper(query)
-        Lita.logger.debug 'Optimisically geo wrapping!'
+        Lita.logger.debug 'Optimistically geo wrapping!'
         geocoded = nil
         result = ::Geocoder.search(query)
         Lita.logger.debug "Geocoder result: '#{result.inspect}'"
@@ -229,6 +230,12 @@ module Lita
         location = geo_lookup(response.user, response.matches[0][0])
         forecast = get_forecast_io_results(response.user, location)
         response.reply location.location_name + ' ' + ansi_temp_forecast(forecast)
+      end
+
+      def handle_irc_conditions(response)
+        location = geo_lookup(response.user, response.matches[0][0])
+        forecast = get_forecast_io_results(response.user, location)
+        response.reply location.location_name + ' ' + conditions(forecast)
       end
 
       def handle_irc_ansiwind(response)
@@ -321,6 +328,17 @@ module Lita
         return colored_str, data_points
       end
 
+      def conditions(forecast)
+        temp_str, temps = do_the_temp_thing(forecast, ansi_chars, 8)
+        wind_str, winds = do_the_wind_direction_thing(forecast, 8)
+        rain_str, rains = do_the_rain_chance_thing(forecast, ansi_chars, 'precipProbability') # , 'probability', get_rain_range_colors
+
+        rs = compress_string(rain_str, 4)
+
+        sun_chance = ((1 - forecast['daily']['data'][0]['cloudCover']) * 100).round
+        "#{get_temperature temps.first.round(2)} |#{temp_str}| #{get_temperature temps.last.round(2)} " + "/ #{get_speed(winds.first)} |#{wind_str}| #{get_speed(winds.last)} / #{sun_chance}% chance of sun / 60m rain |#{rs}|"
+      end
+
       # Utility functions
 
       def get_colored_string(data_limited, key, dot_str, range_hash)
@@ -353,6 +371,18 @@ module Lita
         # And get the last one.
         colored_str += "\x03" + colors[color] + collect_str + "\x03"
         colored_str
+      end
+
+      def compress_string(str, compression_factor)
+        i = 0
+        rs = ''
+        str.to_s.each_char do |char|
+          if i % compression_factor == 0
+            rs += char
+          end
+          i += 1
+        end
+        rs
       end
 
       def get_dot_str(chars, data, min, differential, key)
