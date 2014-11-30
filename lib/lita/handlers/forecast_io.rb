@@ -260,11 +260,7 @@ module Lita
 
         str = get_dot_str(chars, data, data_points.min, 1, key)
 
-        # if range_colors
-        #   str = get_colored_string(data, key, str, range_colors)
-        # end
-
-        return str
+        colored_str = get_colored_string(data, key, str, get_rain_range_colors)
       end
 
       def ansi_temp_forecast(forecast, hours = 24)
