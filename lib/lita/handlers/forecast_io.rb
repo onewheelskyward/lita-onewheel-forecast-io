@@ -97,6 +97,37 @@ module Lita
         }
       end
 
+      def colors
+        { :white  => '00',
+          :black  => '01',
+          :blue   => '02',
+          :green  => '03',
+          :red    => '04',
+          :brown  => '05',
+          :purple => '06',
+          :orange => '07',
+          :yellow => '08',
+          :lime   => '09',
+          :teal   => '10',
+          :aqua   => '11',
+          :royal  => '12',
+          :pink   => '13',
+          :grey   => '14',
+          :silver => '15'
+        }
+      end
+
+      def attributes
+        { :bold       => 2.chr,
+          :underlined => 31.chr,
+          :underline  => 31.chr,
+          :reversed   => 22.chr,
+          :reverse    => 22.chr,
+          :italic     => 22.chr,
+          :reset      => 15.chr,
+        }
+      end
+
       # End constants
 
       def is_it_raining(response)
@@ -190,13 +221,13 @@ module Lita
       def handle_irc_ansirain(response)
         location = geo_lookup(response.user, response.matches[0][0])
         forecast = get_forecast_io_results(response.user, location)
-        response.reply ansi_rain_forecast(forecast)
+        response.reply location.location_name + ' ' + ansi_rain_forecast(forecast)
       end
 
       def handle_irc_ansitemp(response)
         location = geo_lookup(response.user, response.matches[0][0])
         forecast = get_forecast_io_results(response.user, location)
-        response.reply ansi_temp_forecast(forecast)
+        response.reply location.location_name + ' ' + ansi_temp_forecast(forecast)
       end
 
       # ▁▃▅▇█▇▅▃▁ agj
@@ -257,10 +288,10 @@ module Lita
         dot_str = get_dot_str(chars, data, temps.min, differential, key)
 
         temp_range_colors = get_temp_range_colors
-        # colored_str = get_colored_string(data, key, dot_str, temp_range_colors)
-        #
-        # return colored_str, temps
-        return dot_str, temps
+        colored_str = get_colored_string(data, key, dot_str, temp_range_colors)
+
+        return colored_str, temps
+        # return dot_str, temps
       end
 
       # Utility functions
@@ -270,6 +301,7 @@ module Lita
         collect_str = ''
         colored_str = ''
 
+        # data_limited is an array of data points that will be stringed.
         data_limited.each_with_index do |data, index|
           range_hash.keys.each do |range_hash_key|
             if range_hash_key.cover? data[key]
@@ -280,8 +312,9 @@ module Lita
             end
           end
 
+          # If the color changed, let's update the collect_str
           unless color == prev_color
-            colored_str += Format(prev_color, collect_str)
+            colored_str += "\x03" + colors[prev_color] + collect_str
             collect_str = ''
           end
 
@@ -289,7 +322,8 @@ module Lita
           prev_color = color
         end
 
-        colored_str += Format(color, collect_str)
+        # And get the last one.
+        colored_str += "\x03" + colors[color] + collect_str
         colored_str
       end
 

@@ -41,4 +41,9 @@ describe Lita::Handlers::ForecastIo, lita_handler: true do
     send_message '!ansitemp portland'
     expect(replies.last).to include('temps: now')
   end
+
+  # it 'colors strings' do
+    # cstr = Lita::Handlers::ForecastIo.get_colored_string([{:key => 1}], :key, 'x', {1 => :blue})
+    # expect(cstr).to equal('x')
+  # end
 end
