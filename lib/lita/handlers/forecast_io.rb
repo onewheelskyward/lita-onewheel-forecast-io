@@ -1,6 +1,6 @@
-# encoding: utf-8
 require 'geocoder'
-require 'httparty'
+# require 'httparty'
+require 'rest_client'
 require 'magic_eightball'
 require_relative 'location'
 
@@ -135,7 +135,7 @@ module Lita
           Lita.logger.debug "No query specified, pulling from redis #{REDIS_KEY}, #{user.name}"
           serialized_geocoded = redis.hget(REDIS_KEY, user.name)
           unless serialized_geocoded.nil?
-            geocoded = JSON.parse()
+            geocoded = JSON.parse(serialized_geocoded)
           end
           Lita.logger.debug "Cached location: #{geocoded.inspect}"
         end
@@ -167,7 +167,9 @@ module Lita
 
       # Wrapped for testing.  You know, when I get around to it.
       def gimme_some_weather(url)
-        HTTParty.get url
+        # HTTParty.get url
+        response = RestClient.get(url)
+        JSON.parse(response.to_str)
       end
 
       def get_forecast_io_results(user, location)
