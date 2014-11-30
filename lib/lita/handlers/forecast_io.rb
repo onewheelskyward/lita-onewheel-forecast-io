@@ -323,7 +323,7 @@ module Lita
         end
 
         # And get the last one.
-        colored_str += "\x03" + colors[color] + collect_str + "\x03" + colors[:white]
+        colored_str += "\x03" + colors[color] + collect_str + "\x0F"
         colored_str
       end
 
