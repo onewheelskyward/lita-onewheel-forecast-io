@@ -38,7 +38,7 @@ describe Lita::Handlers::ForecastIo, lita_handler: true do
     # allow(Lita::Handlers::ForecastIo).to receive(:get_forecast_io_results) { "x" }
     # res = Lita::Handlers::ForecastIo::get_forecast_io_results('Paris')
     send_message '!ansirain portland'
-    expect(replies.last).to include 'rain probability'
+    expect(replies.last).to include('rain probability')
   end
 
   it '!ansitemp portland' do
@@ -58,7 +58,7 @@ describe Lita::Handlers::ForecastIo, lita_handler: true do
 
   it '!alerts' do
     send_message '!alerts'
-    expect(replies.last).to include('OR125178E80B44.WindAdvisory')
+    expect(replies.last).to eq("http://alerts.weather.gov/cap/wwacapget.php?x=OR125178E80B44.WindAdvisory.12517D235B00OR.PQRNPWPQR.95d9377231cf71049aacb48282406c60\nhttp://alerts.weather.gov/cap/wwacapget.php?x=OR125178E7B298.SpecialWeatherStatement.12517D218640OR.PQRSPSPQR.53656f1fdba795381a7895d7e3d153f7\n")
   end
 
   # it 'colors strings' do
