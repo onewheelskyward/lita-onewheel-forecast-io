@@ -314,7 +314,7 @@ module Lita
 
           # If the color changed, let's update the collect_str
           unless color == prev_color
-            colored_str += "\x03" + colors[prev_color] + collect_str
+            colored_str += "\x03" + colors[prev_color] + collect_str + attributes[:reset]
             collect_str = ''
           end
 
