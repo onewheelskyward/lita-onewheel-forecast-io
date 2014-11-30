@@ -180,7 +180,7 @@ module Lita
         # puts url
         forecast = gimme_some_weather uri
         # forecast['long_name'] = long_name   # Hacking the location into the hash.
-        Lita.logger.debug forecast.inspect
+        # Lita.logger.debug forecast.inspect
         forecast
       end
 
