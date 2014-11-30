@@ -18,6 +18,7 @@ module Lita
       route(/^!ansitemp\s*(.*)/, :handle_irc_ansitemp)
       route(/^!ansiwind\s*(.*)/, :handle_irc_ansiwind)
       route(/^!conditions\s*(.*)/, :handle_irc_conditions)
+      route(/^!alerts\s*(.*)/, :handle_irc_alerts)
 
       # Constants
       def scale
@@ -244,6 +245,13 @@ module Lita
         response.reply location.location_name + ' ' + ansi_wind_direction_forecast(forecast)
       end
 
+      def handle_irc_alerts(response)
+        location = geo_lookup(response.user, response.matches[0][0])
+        forecast = get_forecast_io_results(response.user, location)
+        alerts = get_alerts(forecast)
+        response.reply alerts
+      end
+
       # ▁▃▅▇█▇▅▃▁ agj
       def ascii_rain_forecast(forecast)
         str = do_the_rain_chance_thing(forecast, ascii_chars, 'precipProbability') #, 'probability', get_rain_range_colors)
@@ -339,8 +347,16 @@ module Lita
         "#{get_temperature temps.first.round(2)} |#{temp_str}| #{get_temperature temps.last.round(2)} " + "/ #{get_speed(winds.first)} |#{wind_str}| #{get_speed(winds.last)} / #{sun_chance}% chance of sun / 60m rain |#{rs}|"
       end
 
-      # Utility functions
+      def get_alerts(forecast)
+        str = ''
+        forecast['alerts'].each do |alert|
+          alert['description'].match /\.\.\.(\w+)\.\.\./
+          str += "#{alert['uri']}\n"
+        end
+        str
+      end
 
+      # Utility functions
       def get_colored_string(data_limited, key, dot_str, range_hash)
         color = nil
         prev_color = nil

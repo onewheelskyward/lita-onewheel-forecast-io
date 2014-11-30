@@ -25,6 +25,7 @@ describe Lita::Handlers::ForecastIo, lita_handler: true do
   it { is_expected.to route('!ansirain') }
   it { is_expected.to route('!ansitemp') }
   it { is_expected.to route('!ansiwind') }
+  it { is_expected.to route('!alerts') }
 
   it '!ansirain no minute by minute' do
     # allow(Lita::Handlers::ForecastIo).to receive(:get_forecast_io_results) { "x" }
@@ -53,6 +54,11 @@ describe Lita::Handlers::ForecastIo, lita_handler: true do
   it '!conditions' do
     send_message '!conditions'
     expect(replies.last).to include("Portland, OR 28.3°F |\u000306_▁▃\u000310▅▇█\u000303█\u0003| 38.72°F / 4.3 mph |\u000306←\u000310←←\u000311←←←\u000308←\u0003| 12.71 mph / 98% chance of sun / 60m rain |\u0003▁▃▅▅▅▇▇███_____________|")
+  end
+
+  it '!alerts' do
+    send_message '!alerts'
+    expect(replies.last).to include('OR125178E80B44.WindAdvisory')
   end
 
   # it 'colors strings' do
