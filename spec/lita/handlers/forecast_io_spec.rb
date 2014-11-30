@@ -21,6 +21,7 @@ describe Lita::Handlers::ForecastIo, lita_handler: true do
 
   it { is_expected.to route('!rain') }
   it { is_expected.to route('!ansirain') }
+  it { is_expected.to route('!ansitemp') }
 
   it '!ansirain no minute by minute' do
     # allow(Lita::Handlers::ForecastIo).to receive(:get_forecast_io_results) { "x" }
@@ -34,5 +35,10 @@ describe Lita::Handlers::ForecastIo, lita_handler: true do
     # res = Lita::Handlers::ForecastIo::get_forecast_io_results('Paris')
     send_message '!ansirain portland'
     expect(replies.last).to include 'rain probability'
+  end
+
+  it '!ansitemp portland' do
+    send_message '!ansitemp portland'
+    expect(replies.last).to include('temps: now')
   end
 end

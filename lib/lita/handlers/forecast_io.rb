@@ -15,6 +15,7 @@ module Lita
       route(/^!rain\s*(.*)/, :is_it_raining)
       route(/^!geo\s+(.*)/, :geo_lookup)
       route(/^!ansirain\s*(.*)/, :handle_irc_ansirain)
+      route(/^!ansitemp\s*(.*)/, :handle_irc_ansitemp)
 
       # Constants
       def scale
@@ -192,6 +193,12 @@ module Lita
         response.reply ansi_rain_forecast(forecast)
       end
 
+      def handle_irc_ansitemp(response)
+        location = geo_lookup(response.user, response.matches[0][0])
+        forecast = get_forecast_io_results(response.user, location)
+        response.reply ansi_temp_forecast(forecast)
+      end
+
       # ▁▃▅▇█▇▅▃▁ agj
       def ascii_rain_forecast(forecast)
         str = do_the_rain_chance_thing(forecast, ascii_chars, 'precipProbability') #, 'probability', get_rain_range_colors)
@@ -229,7 +236,63 @@ module Lita
         return str
       end
 
+      def ansi_temp_forecast(forecast, hours = 24)
+        str, temperature_data = do_the_temp_thing(forecast, ansi_chars, hours)
+        "temps: now #{get_temperature temperature_data.first.round(1)} |#{str}| #{get_temperature temperature_data.last.round(1)} this hour tomorrow.  Range: #{get_temperature temperature_data.min.round(1)} - #{get_temperature temperature_data.max.round(1)}"
+      end
+
+      def do_the_temp_thing(forecast, chars, hours)
+        temps = []
+        data = forecast['hourly']['data'].slice(0,hours - 1)
+        key = 'temperature'
+
+        data.each_with_index do |datum, index|
+          temps.push datum[key]
+          break if index == hours - 1 # We only want (hours) 24hrs of data.
+        end
+
+        differential = temps.max - temps.min
+
+        # Hmm.  There's a better way.
+        dot_str = get_dot_str(chars, data, temps.min, differential, key)
+
+        temp_range_colors = get_temp_range_colors
+        # colored_str = get_colored_string(data, key, dot_str, temp_range_colors)
+        #
+        # return colored_str, temps
+        return dot_str, temps
+      end
+
       # Utility functions
+      def get_colored_string(data_limited, key, dot_str, range_hash)
+        color = nil
+        prev_color = nil
+        collect_str = ''
+        colored_str = ''
+
+        data_limited.each_with_index do |data, index|
+          range_hash.keys.each do |range_hash_key|
+            if range_hash_key.cover? data[key]
+              color = range_hash[range_hash_key]
+              if index == 0
+                prev_color = color
+              end
+            end
+          end
+
+          unless color == prev_color
+            colored_str += Format(prev_color, collect_str)
+            collect_str = ''
+          end
+
+          collect_str += dot_str[index]
+          prev_color = color
+        end
+
+        colored_str += Format(color, collect_str)
+        colored_str
+      end
+
       def get_dot_str(chars, data, min, differential, key)
         str = ''
         data.each do |datum|
