@@ -314,7 +314,7 @@ module Lita
 
           # If the color changed, let's update the collect_str
           unless color == prev_color
-            colored_str += "\x03" + colors[prev_color] + collect_str + attributes[:reset]
+            colored_str += "\x03" + colors[prev_color] + collect_str
             collect_str = ''
           end
 
@@ -323,7 +323,7 @@ module Lita
         end
 
         # And get the last one.
-        colored_str += "\x03" + colors[color] + collect_str
+        colored_str += "\x03" + colors[color] + collect_str + "\x03" + colors[:white]
         colored_str
       end
 
