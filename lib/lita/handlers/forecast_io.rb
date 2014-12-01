@@ -18,6 +18,7 @@ module Lita
       route(/^!ansitemp\s*(.*)/, :handle_irc_ansitemp)
       route(/^!ansiwind\s*(.*)/, :handle_irc_ansiwind)
       route(/^!ansisun\s*(.*)/, :handle_irc_ansisun)
+      route(/^!ansicloud\s*(.*)/, :handle_irc_ansicloud)
       route(/^!conditions\s*(.*)/, :handle_irc_conditions)
       route(/^!alerts\s*(.*)/, :handle_irc_alerts)
 
@@ -259,6 +260,12 @@ module Lita
         response.reply location.location_name + ' ' + do_the_sun_thing(forecast)
       end
 
+      def handle_irc_ansicloud(response)
+        location = geo_lookup(response.user, response.matches[0][0])
+        forecast = get_forecast_io_results(response.user, location)
+        response.reply location.location_name + ' ' + do_the_cloud_thing(forecast)
+      end
+
       # ▁▃▅▇█▇▅▃▁ agj
       def ascii_rain_forecast(forecast)
         str = do_the_rain_chance_thing(forecast, ascii_chars, 'precipProbability') #, 'probability', get_rain_range_colors)
@@ -359,6 +366,15 @@ module Lita
         colored_str = get_colored_string(data, key, str, get_sun_range_colors)
 
         "8 day sun forecast |#{colored_str}|"
+      end
+
+      def do_the_cloud_thing(forecast)
+        # O ◎ ]
+        data = forecast['hourly']['data'].slice(0,23)
+
+        str = get_dot_str(ansi_chars, data, 0, 1, 'cloudCover')
+
+        "24h cloud cover |#{str}|"
       end
 
       def conditions(forecast)
