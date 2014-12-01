@@ -17,6 +17,7 @@ module Lita
       route(/^!ansirain\s*(.*)/, :handle_irc_ansirain)
       route(/^!ansitemp\s*(.*)/, :handle_irc_ansitemp)
       route(/^!ansiwind\s*(.*)/, :handle_irc_ansiwind)
+      route(/^!ansisun\s*(.*)/, :handle_irc_ansisun)
       route(/^!conditions\s*(.*)/, :handle_irc_conditions)
       route(/^!alerts\s*(.*)/, :handle_irc_alerts)
 
@@ -252,6 +253,12 @@ module Lita
         response.reply alerts
       end
 
+      def handle_irc_ansisun(response)
+        location = geo_lookup(response.user, response.matches[0][0])
+        forecast = get_forecast_io_results(response.user, location)
+        response.reply location.location_name + ' ' + do_the_sun_thing(forecast)
+      end
+
       # ▁▃▅▇█▇▅▃▁ agj
       def ascii_rain_forecast(forecast)
         str = do_the_rain_chance_thing(forecast, ascii_chars, 'precipProbability') #, 'probability', get_rain_range_colors)
@@ -334,6 +341,24 @@ module Lita
         colored_str = get_colored_string(data, 'windSpeed', str, get_wind_range_colors)
 
         return colored_str, data_points
+      end
+
+      def do_the_sun_thing(forecast)
+        key = 'cloudCover'
+        data_points = []
+        data = forecast['daily']['data']
+
+        data.each do |datum|
+          data_points.push (1 - datum[key]).to_f  # It's a cloud cover percentage, so let's inverse it to give us sun cover.
+          datum[key] = (1 - datum[key]).to_f      # Mod the source data for the get_dot_str call below.
+        end
+
+        differential = data_points.max - data_points.min
+
+        str = get_dot_str(ansi_chars, data, data_points.min, differential, key)
+        colored_str = get_colored_string(data, key, str, get_sun_range_colors)
+
+        "8 day sun forecast |#{colored_str}|"
       end
 
       def conditions(forecast)

@@ -26,6 +26,7 @@ describe Lita::Handlers::ForecastIo, lita_handler: true do
   it { is_expected.to route('!ansirain') }
   it { is_expected.to route('!ansitemp') }
   it { is_expected.to route('!ansiwind') }
+  it { is_expected.to route('!ansisun') }
   it { is_expected.to route('!alerts') }
 
   it '!rain' do
@@ -57,6 +58,11 @@ describe Lita::Handlers::ForecastIo, lita_handler: true do
   it '!alerts' do
     send_message '!alerts'
     expect(replies.last).to eq("http://alerts.weather.gov/cap/wwacapget.php?x=OR125178E80B44.WindAdvisory.12517D235B00OR.PQRNPWPQR.95d9377231cf71049aacb48282406c60\nhttp://alerts.weather.gov/cap/wwacapget.php?x=OR125178E7B298.SpecialWeatherStatement.12517D218640OR.PQRSPSPQR.53656f1fdba795381a7895d7e3d153f7\n")
+  end
+
+  it '!ansisun' do
+    send_message '!ansisun'
+    expect(replies.last).to eq("Portland, OR 8 day sun forecast |\u000308█\u000309▃\u000308▇\u000309▁_\u000307▅\u000309▃\u000307▅\u0003|")
   end
 
   # it 'colors strings' do
