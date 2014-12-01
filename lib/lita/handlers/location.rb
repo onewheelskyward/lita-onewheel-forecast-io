@@ -8,6 +8,6 @@ class Location
   end
 
   def to_s
-    print "Location: #{self.location_name} #{self.latitude},#{self.longitude}"
+    "Location: #{self.location_name} #{self.latitude},#{self.longitude}"
   end
 end

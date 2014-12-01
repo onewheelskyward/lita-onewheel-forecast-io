@@ -213,13 +213,9 @@ module Lita
         if ! config.api_uri or ! config.api_key
           Lita.logger.error "Configuration missing!  '#{config.api_uri}' '#{config.api_key}'"
         end
-        # gps_coords, long_name = get_gps_coords query
         uri = config.api_uri + config.api_key + '/' + "#{location.latitude},#{location.longitude}"
         Lita.logger.debug uri
-        # puts url
         forecast = gimme_some_weather uri
-        # forecast['long_name'] = long_name   # Hacking the location into the hash.
-        # Lita.logger.debug forecast.inspect
         forecast
       end
 
