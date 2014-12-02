@@ -21,6 +21,7 @@ module Lita
       route(/^!ansicloud\s*(.*)/, :handle_irc_ansicloud)
       route(/^!conditions\s*(.*)/, :handle_irc_conditions)
       route(/^!7day\s*(.*)/, :handle_irc_seven_day)
+      route(/^!dailyrain\s*(.*)/, :handle_irc_daily_rain)
       route(/^!alerts\s*(.*)/, :handle_irc_alerts)
 
       # Constants
@@ -268,6 +269,12 @@ module Lita
         response.reply location.location_name + ' ' + do_the_seven_day_thing(forecast)
       end
 
+      def handle_irc_daily_rain(response)
+        location = geo_lookup(response.user, response.matches[0][0])
+        forecast = get_forecast_io_results(response.user, location)
+        response.reply location.location_name + ' ' + do_the_daily_rain_thing(forecast)
+      end
+
       # ▁▃▅▇█▇▅▃▁ agj
       def ascii_rain_forecast(forecast)
         str = do_the_rain_chance_thing(forecast, ascii_chars, 'precipProbability') #, 'probability', get_rain_range_colors)
@@ -410,6 +417,26 @@ module Lita
         colored_min_str = get_colored_string(data, 'temperatureMin', min_str, get_temp_range_colors)
 
         "7day high/low temps #{get_temperature maxtemps.first.to_f.round(1)} |#{colored_max_str}| #{get_temperature maxtemps.last.to_f.round(1)} / #{get_temperature mintemps.first.to_f.round(1)} |#{colored_min_str}| #{get_temperature mintemps.last.to_f.round(1)} Range: #{get_temperature mintemps.min} - #{get_temperature maxtemps.max}"
+      end
+
+      def do_the_daily_rain_thing(forecast)
+        precip_type = 'rain'
+        rains = []
+
+        data = forecast['daily']['data']
+        data.each do |day|
+          if day['precipType'] == 'snow'
+            precip_type = 'snow'
+          end
+          rains.push day['precipProbability']
+        end
+
+        # differential = maxtemps.max - maxtemps.min
+        str = get_dot_str(ansi_chars, data, 0, 1, 'precipProbability')
+
+        colored_str = get_colored_string(data, 'precipProbability', str, get_rain_range_colors)
+
+        "7day #{precip_type}s |#{colored_str}|"
       end
 
       def get_alerts(forecast)
