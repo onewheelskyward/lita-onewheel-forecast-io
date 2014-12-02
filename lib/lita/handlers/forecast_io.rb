@@ -127,16 +127,17 @@ module Lita
         }
       end
 
-      def attributes
-        { :bold       => 2.chr,
-          :underlined => 31.chr,
-          :underline  => 31.chr,
-          :reversed   => 22.chr,
-          :reverse    => 22.chr,
-          :italic     => 22.chr,
-          :reset      => 15.chr,
-        }
-      end
+      # I have no use for these yet, and yet they're handy to know.
+      # def attributes
+      #   { :bold       => 2.chr,
+      #     :underlined => 31.chr,
+      #     :underline  => 31.chr,
+      #     :reversed   => 22.chr,
+      #     :reverse    => 22.chr,
+      #     :italic     => 22.chr,
+      #     :reset      => 15.chr,
+      #   }
+      # end
 
       # End constants
 
