@@ -35,6 +35,7 @@ describe Lita::Handlers::ForecastIo, lita_handler: true do
   it { is_expected.to route('!7day') }
   it { is_expected.to route('!dailyrain') }
   it { is_expected.to route('!alerts') }
+  it { is_expected.to route('!ansiozone') }
 
   it '!forecast' do
     send_message '!forecast'
@@ -95,6 +96,11 @@ describe Lita::Handlers::ForecastIo, lita_handler: true do
   it '!dailyrain' do
     send_message '!dailyrain'
     expect(replies.last).to eq("Portland, OR 7day snows |\u000302_▁▁\u000306▃\u000313█\u000303▅▅\u000310▃\u0003|")
+  end
+
+  it '!ansiozone' do
+    send_message '!ansiozone'
+    expect(replies.last).to eq("Portland, OR ozones 357.98 |??????????◉◉◉??????????◉◉◉◉◉◉◉◉◉◉◉◉◉◉◉◉◉◎◎◎◎◎◎◎◎◎| 330.44 [24h forecast]")
   end
 
   # it 'colors strings' do

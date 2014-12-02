@@ -21,6 +21,7 @@ module Lita
       route(/^!ansiwind\s*(.*)/, :handle_irc_ansiwind)
       route(/^!ansisun\s*(.*)/, :handle_irc_ansisun)
       route(/^!ansicloud\s*(.*)/, :handle_irc_ansicloud)
+      route(/^!ansiozone\s*(.*)/, :handle_irc_ansiozone)
       route(/^!conditions\s*(.*)/, :handle_irc_conditions)
       route(/^!7day\s*(.*)/, :handle_irc_seven_day)
       route(/^!dailyrain\s*(.*)/, :handle_irc_daily_rain)
@@ -289,6 +290,12 @@ module Lita
         response.reply location.location_name + ' ' + do_the_daily_rain_thing(forecast)
       end
 
+      def handle_irc_ansiozone(response)
+        location = geo_lookup(response.user, response.matches[0][0])
+        forecast = get_forecast_io_results(response.user, location)
+        response.reply location.location_name + ' ' + do_the_ozone_thing(forecast)
+      end
+
       def forecast_text(forecast)
         minute_forecast = forecast['minutely']['summary'].to_s.downcase.chop if forecast['minutely']
         "weather is currently #{get_temperature forecast['currently']['temperature']} " +
@@ -482,6 +489,15 @@ module Lita
         colored_str = get_colored_string(data, 'precipProbability', str, get_rain_range_colors)
 
         "7day #{precip_type}s |#{colored_str}|"
+      end
+
+      def do_the_ozone_thing(forecast)
+        # O ◎ ]
+        data = forecast['hourly']['data']
+
+        str = get_dot_str(ozone_chars, data, 280, 350-280, 'ozone')
+
+        "ozones #{data.first['ozone']} |#{str}| #{data.last['ozone']} [24h forecast]"
       end
 
       def get_alerts(forecast)
