@@ -16,7 +16,7 @@ module Lita
       route(/^!rain\s*(.*)/, :is_it_raining)
       route(/^!geo\s+(.*)/, :geo_lookup)
       route(/^!ansiintensity\s*(.*)/, :handle_irc_ansirain_intensity)
-      route(/^!ansirain\s*(.*)/, :handle_irc_ansirain)
+      route(/^!(ansirain|ansisnow)\s*(.*)/, :handle_irc_ansirain)
       route(/^!ansitemp\s*(.*)/, :handle_irc_ansitemp)
       route(/^!ansiwind\s*(.*)/, :handle_irc_ansiwind)
       route(/^!ansisun\s*(.*)/, :handle_irc_ansisun)

@@ -27,6 +27,7 @@ describe Lita::Handlers::ForecastIo, lita_handler: true do
   it { is_expected.to route('!weather') }
   it { is_expected.to route('!rain') }
   it { is_expected.to route('!ansirain') }
+  it { is_expected.to route('!ansisnow') }
   it { is_expected.to route('!ansiintensity') }
   it { is_expected.to route('!ansitemp') }
   it { is_expected.to route('!ansiwind') }
