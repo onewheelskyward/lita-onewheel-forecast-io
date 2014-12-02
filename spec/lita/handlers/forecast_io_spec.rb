@@ -122,6 +122,30 @@ describe Lita::Handlers::ForecastIo, lita_handler: true do
     expect(replies.last).to eq("Scale set to c")
   end
 
+  it '!ansitemp in F' do
+    send_message '!set scale f'
+    send_message '!ansitemp'
+    expect(replies.last).to include("now 28.3°F")
+  end
+
+  it '!ansitemp in C' do
+    send_message '!set scale c'
+    send_message '!ansitemp'
+    expect(replies.last).to include("now -2.06°C")
+  end
+
+  it '!ansiwind in MPH' do
+    send_message '!set scale f'
+    send_message '!ansiwind'
+    expect(replies.last).to include("4.3 mph - 12.71 mph")
+  end
+
+  it '!ansiwind in KPH' do
+    send_message '!set scale c'
+    send_message '!ansiwind'
+    expect(replies.last).to include("6.88 kph - 20.34 kph")
+  end
+
   # it 'colors strings' do
     # cstr = Lita::Handlers::ForecastIo.get_colored_string([{:key => 1}], :key, 'x', {1 => :blue})
     # expect(cstr).to equal('x')

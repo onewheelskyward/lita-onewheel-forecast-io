@@ -215,12 +215,20 @@ module Lita
         JSON.parse(response.to_str)
       end
 
+      def set_scale(user)
+        key = user.name + '-scale'
+        if scale = redis.hget(REDIS_KEY, key)
+          @scale = scale
+        end
+      end
+
       def get_forecast_io_results(user, location)
         if ! config.api_uri or ! config.api_key
           Lita.logger.error "Configuration missing!  '#{config.api_uri}' '#{config.api_key}'"
         end
         uri = config.api_uri + config.api_key + '/' + "#{location.latitude},#{location.longitude}"
         Lita.logger.debug uri
+        set_scale(user)
         forecast = gimme_some_weather uri
       end
 
@@ -299,7 +307,7 @@ module Lita
 
       def handle_irc_set_scale(response)
         scale_to_set = response.matches[0][0]
-        key = response.user.name + 'scale'
+        key = response.user.name + '-scale'
         scale = redis.hget(REDIS_KEY, key)
         if scale == scale_to_set
           reply = "Scale is already set to #{scale_to_set}!"
