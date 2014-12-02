@@ -20,6 +20,7 @@ module Lita
       route(/^!ansisun\s*(.*)/, :handle_irc_ansisun)
       route(/^!ansicloud\s*(.*)/, :handle_irc_ansicloud)
       route(/^!conditions\s*(.*)/, :handle_irc_conditions)
+      route(/^!7day\s*(.*)/, :handle_irc_seven_day)
       route(/^!alerts\s*(.*)/, :handle_irc_alerts)
 
       # Constants
@@ -216,7 +217,6 @@ module Lita
         uri = config.api_uri + config.api_key + '/' + "#{location.latitude},#{location.longitude}"
         Lita.logger.debug uri
         forecast = gimme_some_weather uri
-        forecast
       end
 
       def handle_irc_ansirain(response)
@@ -260,6 +260,12 @@ module Lita
         location = geo_lookup(response.user, response.matches[0][0])
         forecast = get_forecast_io_results(response.user, location)
         response.reply location.location_name + ' ' + do_the_cloud_thing(forecast)
+      end
+
+      def handle_irc_seven_day(response)
+        location = geo_lookup(response.user, response.matches[0][0])
+        forecast = get_forecast_io_results(response.user, location)
+        response.reply location.location_name + ' ' + do_the_seven_day_thing(forecast)
       end
 
       # ▁▃▅▇█▇▅▃▁ agj
@@ -382,6 +388,28 @@ module Lita
 
         sun_chance = ((1 - forecast['daily']['data'][0]['cloudCover']) * 100).round
         "#{get_temperature temps.first.round(2)} |#{temp_str}| #{get_temperature temps.last.round(2)} " + "/ #{get_speed(winds.first)} |#{wind_str}| #{get_speed(winds.last)} / #{sun_chance}% chance of sun / 60m rain |#{rs}|"
+      end
+
+      def do_the_seven_day_thing(forecast)
+        mintemps = []
+        maxtemps = []
+
+        data = forecast['daily']['data']
+        data.each do |day|
+          mintemps.push day['temperatureMin']
+          maxtemps.push day['temperatureMax']
+        end
+
+        differential = maxtemps.max - maxtemps.min
+        max_str = get_dot_str(ansi_chars, data, maxtemps.min, differential, 'temperatureMax')
+
+        differential = mintemps.max - mintemps.min
+        min_str = get_dot_str(ansi_chars, data, mintemps.min, differential, 'temperatureMin')
+
+        colored_max_str = get_colored_string(data, 'temperatureMax', max_str, get_temp_range_colors)
+        colored_min_str = get_colored_string(data, 'temperatureMin', min_str, get_temp_range_colors)
+
+        "7day high/low temps #{get_temperature maxtemps.first.to_f.round(1)} |#{colored_max_str}| #{get_temperature maxtemps.last.to_f.round(1)} / #{get_temperature mintemps.first.to_f.round(1)} |#{colored_min_str}| #{get_temperature mintemps.last.to_f.round(1)} Range: #{get_temperature mintemps.min} - #{get_temperature maxtemps.max}"
       end
 
       def get_alerts(forecast)

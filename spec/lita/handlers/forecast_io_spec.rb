@@ -28,6 +28,7 @@ describe Lita::Handlers::ForecastIo, lita_handler: true do
   it { is_expected.to route('!ansiwind') }
   it { is_expected.to route('!ansisun') }
   it { is_expected.to route('!ansicloud') }
+  it { is_expected.to route('!7day') }
   it { is_expected.to route('!alerts') }
 
   it '!rain' do
@@ -69,6 +70,11 @@ describe Lita::Handlers::ForecastIo, lita_handler: true do
   it '!ansicloud' do
     send_message '!ansicloud'
     expect(replies.last).to eq('Portland, OR 24h cloud cover |___________▁▁▁▁▁▁▁▁▃▅▅▅|')
+  end
+
+  it '!7day' do
+    send_message '!7day'
+    expect(replies.last).to eq("Portland, OR 7day high/low temps 39.0°F |\u000303_▃\u000309▅\u000303▅\u000309▅███\u0003| 52.4°F / 28.2°F |\u000306_▁▃\u000310▅\u000303█\u000310▇\u000303██\u0003| 39.7°F Range: 28.17°F - 52.38°F")
   end
 
   # it 'colors strings' do
