@@ -12,6 +12,7 @@ module Lita
       config :api_key
       config :api_uri
 
+      route(/^!(forecast|weather)\s*(.*)/, :handle_irc_forecast)
       route(/^!rain\s*(.*)/, :is_it_raining)
       route(/^!geo\s+(.*)/, :geo_lookup)
       route(/^!ansiintensity\s*(.*)/, :handle_irc_ansirain_intensity)
@@ -221,6 +222,12 @@ module Lita
         forecast = gimme_some_weather uri
       end
 
+      def handle_irc_forecast(response)
+        location = geo_lookup(response.user, response.matches[0][0])
+        forecast = get_forecast_io_results(response.user, location)
+        response.reply location.location_name + ' ' + forecast_text(forecast)
+      end
+
       def handle_irc_ansirain(response)
         location = geo_lookup(response.user, response.matches[0][0])
         forecast = get_forecast_io_results(response.user, location)
@@ -280,6 +287,14 @@ module Lita
         location = geo_lookup(response.user, response.matches[0][0])
         forecast = get_forecast_io_results(response.user, location)
         response.reply location.location_name + ' ' + do_the_daily_rain_thing(forecast)
+      end
+
+      def forecast_text(forecast)
+        minute_forecast = forecast['minutely']['summary'].to_s.downcase.chop if forecast['minutely']
+        "weather is currently #{get_temperature forecast['currently']['temperature']} " +
+            "and #{forecast['currently']['summary'].downcase}.  Winds out of the #{get_cardinal_direction_from_bearing forecast['currently']['windBearing']} at #{get_speed(forecast['currently']['windSpeed'])}. " +
+            "It will be #{minute_forecast}, and #{forecast['hourly']['summary'].to_s.downcase.chop}.  There are also #{forecast['currently']['ozone'].to_s} ozones."
+        # daily.summary
       end
 
       # ▁▃▅▇█▇▅▃▁ agj

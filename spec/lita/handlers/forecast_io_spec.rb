@@ -23,6 +23,8 @@ describe Lita::Handlers::ForecastIo, lita_handler: true do
 
   # Todo: mock weather data for predictable output.
 
+  it { is_expected.to route('!forecast') }
+  it { is_expected.to route('!weather') }
   it { is_expected.to route('!rain') }
   it { is_expected.to route('!ansirain') }
   it { is_expected.to route('!ansiintensity') }
@@ -33,6 +35,11 @@ describe Lita::Handlers::ForecastIo, lita_handler: true do
   it { is_expected.to route('!7day') }
   it { is_expected.to route('!dailyrain') }
   it { is_expected.to route('!alerts') }
+
+  it '!forecast' do
+    send_message '!forecast'
+    expect(replies.last).to eq("Portland, OR weather is currently 28.39°F and clear.  Winds out of the E at 5.74 mph. It will be clear for the hour, and flurries tomorrow morning.  There are also 357.71 ozones.")
+  end
 
   it '!rain' do
     allow(MagicEightball).to receive(:reply) { 'Nope' }
@@ -52,7 +59,7 @@ describe Lita::Handlers::ForecastIo, lita_handler: true do
 
   it '!ansitemp portland' do
     send_message '!ansitemp portland'
-    expect(replies.last).to include('temps: now')
+    expect(replies.last).to eq("Portland, OR temps: now 28.3°F |\u000306_▁▃\u000310▅▇█\u000303██\u000310██▇▅\u000306▅▃▃▃▃▃▃▁▁▁▁\u0003| 28.4°F this hour tomorrow.  Range: 28.3°F - 39.0°F")
   end
 
   it '!ansiwind portland' do
