@@ -1,5 +1,4 @@
 require 'geocoder'
-# require 'httparty'
 require 'rest_client'
 require 'magic_eightball'
 require_relative 'location'
@@ -16,7 +15,7 @@ module Lita
       route(/^!rain\s*(.*)/, :is_it_raining)
       route(/^!geo\s+(.*)/, :geo_lookup)
       route(/^!ansiintensity\s*(.*)/, :handle_irc_ansirain_intensity)
-      route(/^!(ansirain|ansisnow)\s*(.*)/, :handle_irc_ansirain)
+      route(/^!ansi(rain|snow)\s*(.*)/, :handle_irc_ansirain)
       route(/^!ansitemp\s*(.*)/, :handle_irc_ansitemp)
       route(/^!ansiwind\s*(.*)/, :handle_irc_ansiwind)
       route(/^!ansisun\s*(.*)/, :handle_irc_ansisun)
@@ -208,7 +207,7 @@ module Lita
         loc
       end
 
-      # Wrapped for testing.  You know, when I get around to it.
+      # Wrapped for testing.
       def gimme_some_weather(url)
         # HTTParty.get url
         response = RestClient.get(url)
