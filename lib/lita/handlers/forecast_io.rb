@@ -11,20 +11,21 @@ module Lita
       config :api_key
       config :api_uri
 
-      route(/^!(forecast|weather)\s*(.*)/, :handle_irc_forecast)
-      route(/^!rain\s*(.*)/, :is_it_raining)
-      route(/^!geo\s+(.*)/, :geo_lookup)
-      route(/^!ansiintensity\s*(.*)/, :handle_irc_ansirain_intensity)
-      route(/^!ansi(rain|snow)\s*(.*)/, :handle_irc_ansirain)
-      route(/^!ansitemp\s*(.*)/, :handle_irc_ansitemp)
-      route(/^!ansiwind\s*(.*)/, :handle_irc_ansiwind)
-      route(/^!ansisun\s*(.*)/, :handle_irc_ansisun)
-      route(/^!ansicloud\s*(.*)/, :handle_irc_ansicloud)
-      route(/^!ansiozone\s*(.*)/, :handle_irc_ansiozone)
-      route(/^!conditions\s*(.*)/, :handle_irc_conditions)
-      route(/^!7day\s*(.*)/, :handle_irc_seven_day)
-      route(/^!dailyrain\s*(.*)/, :handle_irc_daily_rain)
-      route(/^!alerts\s*(.*)/, :handle_irc_alerts)
+      route(/^!(forecast|weather)\s*(.*)/i, :handle_irc_forecast)
+      route(/^!rain\s*(.*)/i, :is_it_raining)
+      route(/^!geo\s+(.*)/i, :geo_lookup)
+      route(/^!ansiintensity\s*(.*)/i, :handle_irc_ansirain_intensity)
+      route(/^!ansi(rain|snow)\s*(.*)/i, :handle_irc_ansirain)
+      route(/^!ansitemp\s*(.*)/i, :handle_irc_ansitemp)
+      route(/^!ansiwind\s*(.*)/i, :handle_irc_ansiwind)
+      route(/^!ansisun\s*(.*)/i, :handle_irc_ansisun)
+      route(/^!ansicloud\s*(.*)/i, :handle_irc_ansicloud)
+      route(/^!ansiozone\s*(.*)/i, :handle_irc_ansiozone)
+      route(/^!conditions\s*(.*)/i, :handle_irc_conditions)
+      route(/^!7day\s*(.*)/i, :handle_irc_seven_day)
+      route(/^!dailyrain\s*(.*)/i, :handle_irc_daily_rain)
+      route(/^!alerts\s*(.*)/i, :handle_irc_alerts)
+      route(/^!set scale (c|f)/i, :handle_irc_set_scale)
 
       # Constants
       def scale
@@ -294,6 +295,19 @@ module Lita
         location = geo_lookup(response.user, response.matches[0][0])
         forecast = get_forecast_io_results(response.user, location)
         response.reply location.location_name + ' ' + do_the_ozone_thing(forecast)
+      end
+
+      def handle_irc_set_scale(response)
+        scale_to_set = response.matches[0][0]
+        key = response.user.name + 'scale'
+        scale = redis.hget(REDIS_KEY, key)
+        if scale == scale_to_set
+          reply = "Scale is already set to #{scale_to_set}!"
+        else
+          redis.hset(REDIS_KEY, key, scale_to_set)
+          reply = "Scale set to #{scale_to_set}"
+        end
+        response.reply reply
       end
 
       def forecast_text(forecast)

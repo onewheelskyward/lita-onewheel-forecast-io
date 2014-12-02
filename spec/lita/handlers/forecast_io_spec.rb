@@ -37,6 +37,8 @@ describe Lita::Handlers::ForecastIo, lita_handler: true do
   it { is_expected.to route('!dailyrain') }
   it { is_expected.to route('!alerts') }
   it { is_expected.to route('!ansiozone') }
+  it { is_expected.to route('!set scale f') }
+  it { is_expected.to route('!set scale c') }
 
   it '!forecast' do
     send_message '!forecast'
@@ -102,6 +104,22 @@ describe Lita::Handlers::ForecastIo, lita_handler: true do
   it '!ansiozone' do
     send_message '!ansiozone'
     expect(replies.last).to eq("Portland, OR ozones 357.98 |??????????◉◉◉??????????◉◉◉◉◉◉◉◉◉◉◉◉◉◉◉◉◉◎◎◎◎◎◎◎◎◎| 330.44 [24h forecast]")
+  end
+
+  it '!set scale f' do
+    send_message '!set scale f'
+    expect(replies.last).to eq("Scale set to f")
+  end
+
+  it '!set scale already set' do
+    send_message '!set scale f'
+    send_message '!set scale f'
+    expect(replies.last).to eq("Scale is already set to f!")
+  end
+
+  it '!set scale c' do
+    send_message '!set scale c'
+    expect(replies.last).to eq("Scale set to c")
   end
 
   # it 'colors strings' do
