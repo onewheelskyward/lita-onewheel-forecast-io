@@ -25,6 +25,7 @@ describe Lita::Handlers::ForecastIo, lita_handler: true do
 
   it { is_expected.to route('!rain') }
   it { is_expected.to route('!ansirain') }
+  it { is_expected.to route('!ansiintensity') }
   it { is_expected.to route('!ansitemp') }
   it { is_expected.to route('!ansiwind') }
   it { is_expected.to route('!ansisun') }
@@ -36,12 +37,17 @@ describe Lita::Handlers::ForecastIo, lita_handler: true do
   it '!rain' do
     allow(MagicEightball).to receive(:reply) { 'Nope' }
     send_message '!rain Portland'
-    expect(replies.last).to include('Nope')
+    expect(replies.last).to eq('Nope')
   end
 
   it '!ansirain Paris' do
     send_message '!ansirain Paris'
     expect(replies.last).to include("|\u000302_▁\u000306▃\u000310▅\u000303▅\u000309▅\u000311▇\u000308▇\u000307█\u000304█\u000313█\u000302__________________________________________________\u0003|")
+  end
+
+  it '!ansiintensity' do
+    send_message '!ansiintensity'
+    expect(replies.last).to include("|\u000302_\u000313▁\u000310▁\u000303▁\u000309▁\u000311▁\u000308▁\u000307▁\u000304▁\u000313▁\u000302___________________________________________________\u0003|")
   end
 
   it '!ansitemp portland' do

@@ -14,6 +14,7 @@ module Lita
 
       route(/^!rain\s*(.*)/, :is_it_raining)
       route(/^!geo\s+(.*)/, :geo_lookup)
+      route(/^!ansiintensity\s*(.*)/, :handle_irc_ansirain_intensity)
       route(/^!ansirain\s*(.*)/, :handle_irc_ansirain)
       route(/^!ansitemp\s*(.*)/, :handle_irc_ansitemp)
       route(/^!ansiwind\s*(.*)/, :handle_irc_ansiwind)
@@ -226,6 +227,12 @@ module Lita
         response.reply location.location_name + ' ' + ansi_rain_forecast(forecast)
       end
 
+      def handle_irc_ansirain_intensity(response)
+        location = geo_lookup(response.user, response.matches[0][0])
+        forecast = get_forecast_io_results(response.user, location)
+        response.reply location.location_name + ' ' + ansi_rain_intensity_forecast(forecast)
+      end
+
       def handle_irc_ansitemp(response)
         location = geo_lookup(response.user, response.matches[0][0])
         forecast = get_forecast_io_results(response.user, location)
@@ -287,6 +294,12 @@ module Lita
         "rain probability #{(Time.now).strftime('%H:%M').to_s}|#{str}|#{(Time.now + 3600).strftime('%H:%M').to_s}"  #range |_.-•*'*•-._|
       end
 
+      def ansi_rain_intensity_forecast(forecast)
+        str = do_the_rain_intensity_thing(forecast, ansi_chars, 'precipIntensity') #, 'probability', get_rain_range_colors)
+        #msg.reply "|#{str}|  min-by-min rain prediction.  range |▁▃▅▇█▇▅▃▁| art by 'a-g-j' =~ s/-//g"
+        "rain intensity #{(Time.now).strftime('%H:%M').to_s}|#{str}|#{(Time.now + 3600).strftime('%H:%M').to_s}"  #range |_.-•*'*•-._|
+      end
+
       def do_the_rain_chance_thing(forecast, chars, key) #, type, range_colors = nil)
         if forecast['minutely'].nil?
           return 'No minute-by-minute data available.'
@@ -306,6 +319,23 @@ module Lita
         str = get_dot_str(chars, data, data_points.min, 1, key)
 
         colored_str = get_colored_string(data, key, str, get_rain_range_colors)
+      end
+
+      def do_the_rain_intensity_thing(forecast, chars, key) #, type, range_colors = nil)
+        if forecast['minutely'].nil?
+          return 'No minute-by-minute data available.'
+        end
+
+        data_points = []
+        data = forecast['minutely']['data']
+
+        data.each do |datum|
+          data_points.push datum[key]
+        end
+
+        str = get_dot_str(chars, data, data_points.min, 1, key)
+
+        colored_str = get_colored_string(data, key, str, get_rain_intensity_range_colors)
       end
 
       def ansi_temp_forecast(forecast, hours = 24)
