@@ -10,6 +10,7 @@ module Lita
       REDIS_KEY = 'forecast_io'
       config :api_key
       config :api_uri
+      config :colors
 
       route(/^!forecast\s*(.*)/i, :handle_irc_forecast)
       route(/^!weather\s*(.*)/i, :handle_irc_forecast)
@@ -364,7 +365,9 @@ module Lita
 
         str = get_dot_str(chars, data, 0, 1, key)
 
-        colored_str = get_colored_string(data, key, str, get_rain_range_colors)
+        if config.colors
+          get_colored_string(data, key, str, get_rain_range_colors)
+        end
       end
 
       def do_the_rain_intensity_thing(forecast, chars, key) #, type, range_colors = nil)
@@ -381,7 +384,9 @@ module Lita
 
         str = get_dot_str(chars, data, data_points.min, data_points.max, key)
 
-        colored_str = get_colored_string(data, key, str, get_rain_intensity_range_colors)
+        if config.colors
+          get_colored_string(data, key, str, get_rain_intensity_range_colors)
+        end
       end
 
       def ansi_temp_forecast(forecast, hours = 24)
@@ -404,10 +409,11 @@ module Lita
         # Hmm.  There's a better way.
         dot_str = get_dot_str(chars, data, temps.min, differential, key)
 
-        temp_range_colors = get_temp_range_colors
-        colored_str = get_colored_string(data, key, dot_str, temp_range_colors)
+        if config.colors
+          dot_str = get_colored_string(data, key, dot_str, get_temp_range_colors)
+        end
 
-        return colored_str, temps
+        return dot_str, temps
         # return dot_str, temps
       end
 
@@ -430,9 +436,11 @@ module Lita
           break if index == hours - 1 # We only want (hours) 24hrs of data.
         end
 
-        colored_str = get_colored_string(data, 'windSpeed', str, get_wind_range_colors)
+        if config.colors
+          str = get_colored_string(data, 'windSpeed', str, get_wind_range_colors)
+        end
 
-        return colored_str, data_points
+        return str, data_points
       end
 
       def do_the_sun_thing(forecast)
@@ -448,9 +456,12 @@ module Lita
         differential = data_points.max - data_points.min
 
         str = get_dot_str(ansi_chars, data, data_points.min, differential, key)
-        colored_str = get_colored_string(data, key, str, get_sun_range_colors)
 
-        "8 day sun forecast |#{colored_str}|"
+        if config.colors
+          str = get_colored_string(data, key, str, get_sun_range_colors)
+        end
+
+        "8 day sun forecast |#{str}|"
       end
 
       def do_the_cloud_thing(forecast)
@@ -489,10 +500,12 @@ module Lita
         differential = mintemps.max - mintemps.min
         min_str = get_dot_str(ansi_chars, data, mintemps.min, differential, 'temperatureMin')
 
-        colored_max_str = get_colored_string(data, 'temperatureMax', max_str, get_temp_range_colors)
-        colored_min_str = get_colored_string(data, 'temperatureMin', min_str, get_temp_range_colors)
+        if config.colors
+          max_str = get_colored_string(data, 'temperatureMax', max_str, get_temp_range_colors)
+          min_str = get_colored_string(data, 'temperatureMin', min_str, get_temp_range_colors)
+        end
 
-        "7day high/low temps #{get_temperature maxtemps.first.to_f.round(1)} |#{colored_max_str}| #{get_temperature maxtemps.last.to_f.round(1)} / #{get_temperature mintemps.first.to_f.round(1)} |#{colored_min_str}| #{get_temperature mintemps.last.to_f.round(1)} Range: #{get_temperature mintemps.min} - #{get_temperature maxtemps.max}"
+        "7day high/low temps #{get_temperature maxtemps.first.to_f.round(1)} |#{max_str}| #{get_temperature maxtemps.last.to_f.round(1)} / #{get_temperature mintemps.first.to_f.round(1)} |#{min_str}| #{get_temperature mintemps.last.to_f.round(1)} Range: #{get_temperature mintemps.min} - #{get_temperature maxtemps.max}"
       end
 
       def do_the_daily_rain_thing(forecast)
@@ -510,9 +523,11 @@ module Lita
         # differential = maxtemps.max - maxtemps.min
         str = get_dot_str(ansi_chars, data, 0, 1, 'precipProbability')
 
-        colored_str = get_colored_string(data, 'precipProbability', str, get_rain_range_colors)
-
-        "7day #{precip_type}s |#{colored_str}|"
+        if config.colors
+          str = get_colored_string(data, 'precipProbability', str, get_rain_range_colors)
+        end
+        
+        "7day #{precip_type}s |#{str}|"
       end
 
       def do_the_ozone_thing(forecast)

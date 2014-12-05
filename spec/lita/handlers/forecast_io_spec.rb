@@ -18,6 +18,7 @@ describe Lita::Handlers::ForecastIo, lita_handler: true do
     registry.configure do |config|
       config.handlers.forecast_io.api_uri = 'https://api.forecast.io/forecast/'
       config.handlers.forecast_io.api_key = '5537a6b7a8e2936dc7ced091b999d60a'
+      config.handlers.forecast_io.colors = true
     end
   end
 
