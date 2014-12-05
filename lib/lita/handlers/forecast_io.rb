@@ -11,17 +11,19 @@ module Lita
       config :api_key
       config :api_uri
 
-      route(/^!(forecast|weather)\s*(.*)/i, :handle_irc_forecast)
+      route(/^!forecast\s*(.*)/i, :handle_irc_forecast)
+      route(/^!weather\s*(.*)/i, :handle_irc_forecast)
       route(/^!rain\s*(.*)/i, :is_it_raining)
       route(/^!geo\s+(.*)/i, :geo_lookup)
       route(/^!ansiintensity\s*(.*)/i, :handle_irc_ansirain_intensity)
-      route(/^!ansi(rain|snow)\s*(.*)/i, :handle_irc_ansirain)
+      route(/^!ansirain\s*(.*)/i, :handle_irc_ansirain)
+      route(/^!ansisnow\s*(.*)/i, :handle_irc_ansirain)
       route(/^!ansitemp\s*(.*)/i, :handle_irc_ansitemp)
       route(/^!ansiwind\s*(.*)/i, :handle_irc_ansiwind)
       route(/^!ansisun\s*(.*)/i, :handle_irc_ansisun)
       route(/^!ansicloud\s*(.*)/i, :handle_irc_ansicloud)
       route(/^!ansiozone\s*(.*)/i, :handle_irc_ansiozone)
-      route(/^!conditions\s*(.*)/i, :handle_irc_conditions)
+      route(/^!condi*t*i*o*n*s*\s*(.*)/i, :handle_irc_conditions)
       route(/^!7day\s*(.*)/i, :handle_irc_seven_day)
       route(/^!dailyrain\s*(.*)/i, :handle_irc_daily_rain)
       route(/^!alerts\s*(.*)/i, :handle_irc_alerts)

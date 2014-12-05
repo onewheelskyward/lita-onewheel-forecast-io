@@ -37,6 +37,13 @@ describe Lita::Handlers::ForecastIo, lita_handler: true do
   it { is_expected.to route('!dailyrain') }
   it { is_expected.to route('!alerts') }
   it { is_expected.to route('!ansiozone') }
+  it { is_expected.to route('!cond') }
+  it { is_expected.to route('!condi') }
+  it { is_expected.to route('!condit') }
+  it { is_expected.to route('!conditi') }
+  it { is_expected.to route('!conditio') }
+  it { is_expected.to route('!condition') }
+  it { is_expected.to route('!conditions') }
   it { is_expected.to route('!set scale f') }
   it { is_expected.to route('!set scale c') }
 
@@ -53,6 +60,11 @@ describe Lita::Handlers::ForecastIo, lita_handler: true do
 
   it '!ansirain Paris' do
     send_message '!ansirain Paris'
+    expect(replies.last).to include("|\u000302_▁\u000306▃\u000310▅\u000303▅\u000309▅\u000311▇\u000308▇\u000307█\u000304█\u000313█\u000302__________________________________________________\u0003|")
+  end
+
+  it '!ansisnow Paris' do
+    send_message '!ansisnow Paris'
     expect(replies.last).to include("|\u000302_▁\u000306▃\u000310▅\u000303▅\u000309▅\u000311▇\u000308▇\u000307█\u000304█\u000313█\u000302__________________________________________________\u0003|")
   end
 
