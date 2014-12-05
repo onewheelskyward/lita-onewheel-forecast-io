@@ -362,7 +362,7 @@ module Lita
         #   chars = %w[_ ☃ ☃ ☃ ☃ ☃] # Hat tip to hallettj@#pdxtech
         # end
 
-        str = get_dot_str(chars, data, data_points.min, 1, key)
+        str = get_dot_str(chars, data, 0, 1, key)
 
         colored_str = get_colored_string(data, key, str, get_rain_range_colors)
       end
@@ -379,7 +379,7 @@ module Lita
           data_points.push datum[key]
         end
 
-        str = get_dot_str(chars, data, data_points.min, 1, key)
+        str = get_dot_str(chars, data, data_points.min, data_points.max, key)
 
         colored_str = get_colored_string(data, key, str, get_rain_intensity_range_colors)
       end

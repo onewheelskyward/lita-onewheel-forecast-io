@@ -70,7 +70,7 @@ describe Lita::Handlers::ForecastIo, lita_handler: true do
 
   it '!ansiintensity' do
     send_message '!ansiintensity'
-    expect(replies.last).to include("|\u000302_\u000313▁\u000310▁\u000303▁\u000309▁\u000311▁\u000308▁\u000307▁\u000304▁\u000313▁\u000302___________________________________________________\u0003|")
+    expect(replies.last).to include("|\u000302_\u000313█\u000310▃\u000303▅\u000309▅\u000311▅\u000308▇\u000307▇\u000304▇\u000313█\u000302___________________________________________________\u0003|")
   end
 
   it '!ansitemp portland' do
