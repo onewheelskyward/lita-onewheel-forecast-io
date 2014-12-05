@@ -22,9 +22,9 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'rspec', '>= 3.0.0'
   spec.add_development_dependency 'simplecov'
   # spec.add_development_dependency 'coveralls'
-  spec.add_development_dependency 'rest_client'
-  spec.add_development_dependency 'geocoder'
-  spec.add_development_dependency 'multi_json', '1.7.8'
+  spec.add_runtime_dependency 'rest_client'
+  spec.add_runtime_dependency 'geocoder'
+  spec.add_runtime_dependency 'multi_json', '1.7.8'
   # spec.add_runtime_dependency 'magic-eightball'
-  spec.add_development_dependency 'magic-eightball'
+  spec.add_runtime_dependency 'magic-eightball'
 end
