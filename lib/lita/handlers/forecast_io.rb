@@ -366,8 +366,9 @@ module Lita
         str = get_dot_str(chars, data, 0, 1, key)
 
         if config.colors
-          get_colored_string(data, key, str, get_rain_range_colors)
+          str = get_colored_string(data, key, str, get_rain_range_colors)
         end
+        str
       end
 
       def do_the_rain_intensity_thing(forecast, chars, key) #, type, range_colors = nil)
@@ -385,8 +386,9 @@ module Lita
         str = get_dot_str(chars, data, data_points.min, data_points.max, key)
 
         if config.colors
-          get_colored_string(data, key, str, get_rain_intensity_range_colors)
+          str = get_colored_string(data, key, str, get_rain_intensity_range_colors)
         end
+        str
       end
 
       def ansi_temp_forecast(forecast, hours = 24)
