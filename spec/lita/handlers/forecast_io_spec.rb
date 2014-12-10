@@ -47,6 +47,8 @@ describe Lita::Handlers::ForecastIo, lita_handler: true do
   it { is_expected.to route('!conditions') }
   it { is_expected.to route('!set scale f') }
   it { is_expected.to route('!set scale c') }
+  it { is_expected.to route('!sunrise') }
+  it { is_expected.to route('!sunset') }
 
   it '!forecast' do
     send_message '!forecast'
@@ -157,6 +159,16 @@ describe Lita::Handlers::ForecastIo, lita_handler: true do
     send_message '!set scale c'
     send_message '!ansiwind'
     expect(replies.last).to include("6.88 kph - 20.34 kph")
+  end
+
+  it '!sunrise' do
+    send_message '!sunrise'
+    expect(replies.last).to eq("Portland, OR sunrise: 07:30:58")
+  end
+
+  it '!sunset' do
+    send_message '!sunset'
+    expect(replies.last).to eq("Portland, OR sunset: 16:30:55")
   end
 
   # it 'colors strings' do

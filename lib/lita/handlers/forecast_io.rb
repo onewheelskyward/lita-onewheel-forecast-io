@@ -18,6 +18,8 @@ module Lita
       route(/^!geo\s+(.*)/i, :geo_lookup)
       route(/^!ansiintensity\s*(.*)/i, :handle_irc_ansirain_intensity)
       route(/^!ansirain\s*(.*)/i, :handle_irc_ansirain)
+      route(/^!sunrise\s*(.*)/i, :handle_irc_sunrise)
+      route(/^!sunset\s*(.*)/i, :handle_irc_sunset)
       route(/^!ansisnow\s*(.*)/i, :handle_irc_ansirain)
       route(/^!ansitemp\s*(.*)/i, :handle_irc_ansitemp)
       route(/^!ansiwind\s*(.*)/i, :handle_irc_ansiwind)
@@ -321,6 +323,18 @@ module Lita
         response.reply reply
       end
 
+      def handle_irc_sunrise(response)
+        location = geo_lookup(response.user, response.matches[0][0])
+        forecast = get_forecast_io_results(response.user, location)
+        response.reply location.location_name + ' sunrise: ' + do_the_sunrise_thing(forecast)
+      end
+
+      def handle_irc_sunset(response)
+        location = geo_lookup(response.user, response.matches[0][0])
+        forecast = get_forecast_io_results(response.user, location)
+        response.reply location.location_name + ' sunset: ' + do_the_sunset_thing(forecast)
+      end
+
       def forecast_text(forecast)
         minute_forecast = forecast['minutely']['summary'].to_s.downcase.chop if forecast['minutely']
         "weather is currently #{get_temperature forecast['currently']['temperature']} " +
@@ -473,6 +487,16 @@ module Lita
         str = get_dot_str(ansi_chars, data, 0, 1, 'cloudCover')
 
         "24h cloud cover |#{str}|"
+      end
+
+      def do_the_sunrise_thing(forecast)
+        t = Time.at(forecast['daily']['data'][0]['sunriseTime'])
+        t.strftime("%H:%M:%S")
+      end
+
+      def do_the_sunset_thing(forecast)
+        t = Time.at(forecast['daily']['data'][0]['sunsetTime'])
+        t.strftime("%H:%M:%S")
       end
 
       def conditions(forecast)
