@@ -29,6 +29,7 @@ module Lita
       route(/^!condi*t*i*o*n*s*\s*(.*)/i, :handle_irc_conditions)
       route(/^!7day\s*(.*)/i, :handle_irc_seven_day)
       route(/^!dailyrain\s*(.*)/i, :handle_irc_daily_rain)
+      route(/^!dailywind\s*(.*)/i, :handle_irc_daily_wind)
       route(/^!alerts\s*(.*)/i, :handle_irc_alerts)
       route(/^!set scale (c|f)/i, :handle_irc_set_scale)
 
@@ -304,6 +305,12 @@ module Lita
         response.reply location.location_name + ' ' + do_the_daily_rain_thing(forecast)
       end
 
+      def handle_irc_daily_wind(response)
+        location = geo_lookup(response.user, response.matches[0][0])
+        forecast = get_forecast_io_results(response.user, location)
+        response.reply location.location_name + ' ' + do_the_daily_wind_thing(forecast)
+      end
+
       def handle_irc_ansiozone(response)
         location = geo_lookup(response.user, response.matches[0][0])
         forecast = get_forecast_io_results(response.user, location)
@@ -554,6 +561,24 @@ module Lita
         end
         
         "7day #{precip_type}s |#{str}|"
+      end
+
+      def do_the_daily_wind_thing(forecast)
+        winds = []
+
+        data = forecast['daily']['data']
+        data.each do |day|
+          winds.push day['windSpeed']
+        end
+
+        # differential = maxtemps.max - maxtemps.min
+        str = get_dot_str(ansi_chars, data, 0, winds.max, 'windSpeed')
+
+        if config.colors
+          str = get_colored_string(data, 'windSpeed', str, get_wind_range_colors)
+        end
+
+        "7day winds #{get_speed winds.first}|#{str}|#{get_speed winds.last} range #{get_speed winds.min}-#{get_speed winds.max}"
       end
 
       def do_the_ozone_thing(forecast)

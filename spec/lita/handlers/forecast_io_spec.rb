@@ -36,6 +36,7 @@ describe Lita::Handlers::ForecastIo, lita_handler: true do
   it { is_expected.to route('!ansicloud') }
   it { is_expected.to route('!7day') }
   it { is_expected.to route('!dailyrain') }
+  it { is_expected.to route('!dailywind') }
   it { is_expected.to route('!alerts') }
   it { is_expected.to route('!ansiozone') }
   it { is_expected.to route('!cond') }
@@ -169,6 +170,11 @@ describe Lita::Handlers::ForecastIo, lita_handler: true do
   it '!sunset' do
     send_message '!sunset'
     expect(replies.last).to eq("Portland, OR sunset: 16:30:55")
+  end
+
+  it '!dailywind' do
+    send_message '!dailywind'
+    expect(replies.last).to eq("Portland, OR 7day winds 7.67 mph|\u000310█\u000306▅\u000310██\u000302▅▅▅\u000306▅\u0003|3.02 mph range 2.67 mph-7.67 mph")
   end
 
   # it 'colors strings' do
