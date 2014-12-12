@@ -84,7 +84,7 @@ describe Lita::Handlers::ForecastIo, lita_handler: true do
 
   it '!ansiwind portland' do
     send_message '!ansiwind portland'
-    expect(replies.last).to eq("Portland, OR 24h wind direction |\u000306↓\u000310↙←\u000311↖↑↗\u000308→↘\u000311↓←←←←←←\u000310←←←←←←←\u000306←\u0003| Range: 4.3 mph - 12.71 mph")
+    expect(replies.last).to eq("Portland, OR 24h wind direction 4.3 mph|\u000306↓\u000310↙←\u000311↖↑↗\u000308→↘\u000311↓←←←←←←\u000310←←←←←←←\u000306←\u0003|5.6 mph Range: 4.3 mph - 12.71 mph")
   end
 
   it '!conditions' do
