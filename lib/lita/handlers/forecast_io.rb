@@ -29,6 +29,7 @@ module Lita
       route(/^!condi*t*i*o*n*s*\s*(.*)/i, :handle_irc_conditions)
       route(/^!7day\s*(.*)/i, :handle_irc_seven_day)
       route(/^!dailyrain\s*(.*)/i, :handle_irc_daily_rain)
+      route(/^!7dayrain\s*(.*)/i, :handle_irc_seven_day_rain)
       route(/^!dailywind\s*(.*)/i, :handle_irc_daily_wind)
       route(/^!alerts\s*(.*)/i, :handle_irc_alerts)
       route(/^!set scale (c|f)/i, :handle_irc_set_scale)
@@ -305,6 +306,12 @@ module Lita
         response.reply location.location_name + ' ' + do_the_daily_rain_thing(forecast)
       end
 
+      def handle_irc_seven_day_rain(response)
+        location = geo_lookup(response.user, response.matches[0][0])
+        forecast = get_forecast_io_results(response.user, location)
+        response.reply location.location_name + ' ' + do_the_seven_day_rain_thing(forecast)
+      end
+
       def handle_irc_daily_wind(response)
         location = geo_lookup(response.user, response.matches[0][0])
         forecast = get_forecast_io_results(response.user, location)
@@ -541,7 +548,7 @@ module Lita
         "7day high/low temps #{get_temperature maxtemps.first.to_f.round(1)} |#{max_str}| #{get_temperature maxtemps.last.to_f.round(1)} / #{get_temperature mintemps.first.to_f.round(1)} |#{min_str}| #{get_temperature mintemps.last.to_f.round(1)} Range: #{get_temperature mintemps.min} - #{get_temperature maxtemps.max}"
       end
 
-      def do_the_daily_rain_thing(forecast)
+      def do_the_seven_day_rain_thing(forecast)
         precip_type = 'rain'
         rains = []
 
@@ -561,6 +568,28 @@ module Lita
         end
         
         "7day #{precip_type}s |#{str}|"
+      end
+
+      def do_the_daily_rain_thing(forecast)
+        precip_type = 'rain'
+        rains = []
+
+        data = forecast['hourly']['data']
+        data.each do |day|
+          if day['precipType'] == 'snow'
+            precip_type = 'snow'
+          end
+          rains.push day['precipProbability']
+        end
+
+        # differential = maxtemps.max - maxtemps.min
+        str = get_dot_str(ansi_chars, data, 0, 1, 'precipProbability')
+
+        if config.colors
+          str = get_colored_string(data, 'precipProbability', str, get_rain_range_colors)
+        end
+
+        "24 hr #{precip_type}s |#{str}|"
       end
 
       def do_the_daily_wind_thing(forecast)
