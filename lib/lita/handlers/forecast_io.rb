@@ -513,13 +513,23 @@ module Lita
       end
 
       def do_the_sunrise_thing(forecast)
-        t = Time.at(forecast['daily']['data'][0]['sunriseTime'])
+        t = Time.at(fix_time(forecast['daily']['data'][0]['sunriseTime'], forecast['offset']))
         t.strftime("%H:%M:%S")
       end
 
       def do_the_sunset_thing(forecast)
-        t = Time.at(forecast['daily']['data'][0]['sunsetTime'])
+        t = Time.at(fix_time(forecast['daily']['data'][0]['sunsetTime'], forecast['offset']))
         t.strftime("%H:%M:%S")
+      end
+
+      def fix_time(unixtime, data_offset)
+        unixtime - determine_time_offset(data_offset)
+      end
+
+      def determine_time_offset(data_offset)
+        system_offset_seconds = Time.now.utc_offset
+        data_offset_seconds = data_offset * 60 * 60
+        system_offset_seconds - data_offset_seconds
       end
 
       def conditions(forecast)
