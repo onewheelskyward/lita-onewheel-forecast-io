@@ -35,8 +35,10 @@ describe Lita::Handlers::ForecastIo, lita_handler: true do
   it { is_expected.to route('!ansisun') }
   it { is_expected.to route('!ansicloud') }
   it { is_expected.to route('!7day') }
+  it { is_expected.to route('!weekly') }
   it { is_expected.to route('!dailyrain') }
   it { is_expected.to route('!7dayrain') }
+  it { is_expected.to route('!weeklyrain') }
   it { is_expected.to route('!dailywind') }
   it { is_expected.to route('!alerts') }
   it { is_expected.to route('!ansiozone') }
