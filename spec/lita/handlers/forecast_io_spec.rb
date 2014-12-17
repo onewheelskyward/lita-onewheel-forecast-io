@@ -191,18 +191,6 @@ describe Lita::Handlers::ForecastIo, lita_handler: true do
     expect(replies.last).to eq("Portland, OR 7day winds 7.67 mph|\u000310█\u000306▅\u000310██\u000302▅▅▅\u000306▅\u0003|3.02 mph range 2.67 mph-7.67 mph")
   end
 
-  it 'determines the correct time offset' do
-    # Lita.handlers.forecast_io.determine_time_offset(-8)
-    data_offset = -8
-    system_offset_seconds = Time.now.utc_offset
-    data_offset_seconds = data_offset * 60 * 60
-    expect(system_offset_seconds - data_offset_seconds).to eq (0)
-    data_offset = 0
-    system_offset_seconds = Time.now.utc_offset
-    data_offset_seconds = data_offset * 60 * 60
-    expect(system_offset_seconds - data_offset_seconds).to eq (-28800)
-  end
-
   # it 'colors strings' do
     # cstr = Lita::Handlers::ForecastIo.get_colored_string([{:key => 1}], :key, 'x', {1 => :blue})
     # expect(cstr).to equal('x')
