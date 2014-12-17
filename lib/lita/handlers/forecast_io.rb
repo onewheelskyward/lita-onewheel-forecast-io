@@ -22,6 +22,7 @@ module Lita
       route(/^!sunset\s*(.*)/i, :handle_irc_sunset)
       route(/^!ansisnow\s*(.*)/i, :handle_irc_ansirain)
       route(/^!ansitemp\s*(.*)/i, :handle_irc_ansitemp)
+      route(/^!dailytemp\s*(.*)/i, :handle_irc_daily_temp)
       route(/^!ansiwind\s*(.*)/i, :handle_irc_ansiwind)
       route(/^!ansisun\s*(.*)/i, :handle_irc_ansisun)
       route(/^!ansicloud\s*(.*)/i, :handle_irc_ansicloud)
@@ -265,6 +266,12 @@ module Lita
         response.reply location.location_name + ' ' + ansi_temp_forecast(forecast)
       end
 
+      def handle_irc_daily_temp(response)
+        location = geo_lookup(response.user, response.matches[0][0])
+        forecast = get_forecast_io_results(response.user, location)
+        response.reply location.location_name + ' ' + ansi_temp_forecast(forecast, 48)
+      end
+
       def handle_irc_conditions(response)
         location = geo_lookup(response.user, response.matches[0][0])
         forecast = get_forecast_io_results(response.user, location)
@@ -423,7 +430,7 @@ module Lita
 
       def ansi_temp_forecast(forecast, hours = 24)
         str, temperature_data = do_the_temp_thing(forecast, ansi_chars, hours)
-        "temps: now #{get_temperature temperature_data.first.round(1)} |#{str}| #{get_temperature temperature_data.last.round(1)} this hour tomorrow.  Range: #{get_temperature temperature_data.min.round(1)} - #{get_temperature temperature_data.max.round(1)}"
+        "#{hours} hr temps: #{get_temperature temperature_data.first.round(1)} |#{str}| #{get_temperature temperature_data.last.round(1)}  Range: #{get_temperature temperature_data.min.round(1)} - #{get_temperature temperature_data.max.round(1)}"
       end
 
       def do_the_temp_thing(forecast, chars, hours)

@@ -37,6 +37,7 @@ describe Lita::Handlers::ForecastIo, lita_handler: true do
   it { is_expected.to route('!7day') }
   it { is_expected.to route('!weekly') }
   it { is_expected.to route('!dailyrain') }
+  it { is_expected.to route('!dailytemp') }
   it { is_expected.to route('!7dayrain') }
   it { is_expected.to route('!weeklyrain') }
   it { is_expected.to route('!dailywind') }
@@ -82,7 +83,12 @@ describe Lita::Handlers::ForecastIo, lita_handler: true do
 
   it '!ansitemp portland' do
     send_message '!ansitemp portland'
-    expect(replies.last).to eq("Portland, OR temps: now 28.3°F |\u000306_▁▃\u000310▅▇█\u000303██\u000310██▇▅\u000306▅▃▃▃▃▃▃▁▁▁▁\u0003| 28.4°F this hour tomorrow.  Range: 28.3°F - 39.0°F")
+    expect(replies.last).to eq("Portland, OR 24 hr temps: 28.3°F |\u000306_▁▃\u000310▅▇█\u000303██\u000310██▇▅\u000306▅▃▃▃▃▃▃▁▁▁▁\u0003| 28.4°F  Range: 28.3°F - 39.0°F")
+  end
+
+  it '!dailytemp portland' do
+    send_message '!dailytemp portland'
+    expect(replies.last).to eq("Portland, OR 48 hr temps: 28.3°F |\u000306_▁▃\u000310▅▅▇\u000303██\u000310▇▇▅▅\u000306▅▃▃▃▃▃▁▁▁▁▁▁▁▃\u000310▅▅▇\u000303█████▇\u000310▇▇▇▅▅▅▅\u000306▅▃▃▃▃\u0003| 30.5°F  Range: 28.3°F - 41.3°F")
   end
 
   it '!ansiwind portland' do
@@ -149,13 +155,13 @@ describe Lita::Handlers::ForecastIo, lita_handler: true do
   it '!ansitemp in F' do
     send_message '!set scale f'
     send_message '!ansitemp'
-    expect(replies.last).to include("now 28.3°F")
+    expect(replies.last).to eq("Portland, OR 24 hr temps: 28.3°F |\u000306_▁▃\u000310▅▇█\u000303██\u000310██▇▅\u000306▅▃▃▃▃▃▃▁▁▁▁\u0003| 28.4°F  Range: 28.3°F - 39.0°F")
   end
 
   it '!ansitemp in C' do
     send_message '!set scale c'
     send_message '!ansitemp'
-    expect(replies.last).to include("now -2.06°C")
+    expect(replies.last).to eq("Portland, OR 24 hr temps: -2.06°C |\u000306_▁▃\u000310▅▇█\u000303██\u000310██▇▅\u000306▅▃▃▃▃▃▃▁▁▁▁\u0003| -2.0°C  Range: -2.06°C - 3.89°C")
   end
 
   it '!ansiwind in MPH' do
