@@ -117,7 +117,7 @@ describe Lita::Handlers::ForecastIo, lita_handler: true do
 
   it '!dailyrain' do
     send_message '!dailyrain'
-    expect(replies.last).to eq("Portland, OR 24 hr snows |\u000302_______________________▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁_\u0003|")
+    expect(replies.last).to eq("Portland, OR 48 hr snows |\u000302_______________________▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁_\u0003|")
   end
 
   it '!7dayrain' do

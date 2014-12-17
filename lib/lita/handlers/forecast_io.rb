@@ -591,7 +591,7 @@ module Lita
           str = get_colored_string(data, 'precipProbability', str, get_rain_range_colors)
         end
 
-        "24 hr #{precip_type}s |#{str}|"
+        "48 hr #{precip_type}s |#{str}|"
       end
 
       def do_the_daily_wind_thing(forecast)
