@@ -14,7 +14,7 @@ module Lita
 
       route(/^!forecast\s*(.*)/i, :handle_irc_forecast)
       route(/^!weather\s*(.*)/i, :handle_irc_forecast)
-      route(/^!forecastallthethings\s*(.*)/i, :handle_irc_all_the_things)
+      route(/^!allthethings\s*(.*)/i, :handle_irc_all_the_things)
       route(/^!rain\s*(.*)/i, :is_it_raining)
       route(/^!geo\s+(.*)/i, :geo_lookup)
       route(/^!ansiintensity\s*(.*)/i, :handle_irc_ansirain_intensity)
