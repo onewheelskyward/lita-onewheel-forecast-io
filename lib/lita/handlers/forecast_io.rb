@@ -6,7 +6,6 @@ require_relative 'location'
 module Lita
   module Handlers
     class ForecastIo < Handler
-      namespace 'forecast_io'
       REDIS_KEY = 'forecast_io'
       config :api_key
       config :api_uri
@@ -757,16 +756,6 @@ module Lita
         #  return Format(:red, char_array[5])
         #end
 
-      end
-
-      def determine_intensity(query)
-        if query =~ /^intensity/
-          query = query.gsub /^intensity\s*/, ''
-          key = 'precipIntensity'
-        else
-          key = 'precipProbability'
-        end
-        return query, key
       end
 
       def get_temperature(temp_f)

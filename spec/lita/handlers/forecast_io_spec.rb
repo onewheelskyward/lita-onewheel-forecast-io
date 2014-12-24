@@ -54,6 +54,7 @@ describe Lita::Handlers::ForecastIo, lita_handler: true do
   it { is_expected.to route('!set scale c') }
   it { is_expected.to route('!sunrise') }
   it { is_expected.to route('!sunset') }
+  it { is_expected.to route('!allthethings') }
 
   it '!forecast' do
     send_message '!forecast'
