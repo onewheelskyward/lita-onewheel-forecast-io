@@ -14,6 +14,7 @@ module Lita
 
       route(/^!forecast\s*(.*)/i, :handle_irc_forecast)
       route(/^!weather\s*(.*)/i, :handle_irc_forecast)
+      route(/^!forecastallthethings\s*(.*)/i, :handle_irc_all_the_things)
       route(/^!rain\s*(.*)/i, :is_it_raining)
       route(/^!geo\s+(.*)/i, :geo_lookup)
       route(/^!ansiintensity\s*(.*)/i, :handle_irc_ansirain_intensity)
@@ -252,6 +253,19 @@ module Lita
         location = geo_lookup(response.user, response.matches[0][0])
         forecast = get_forecast_io_results(response.user, location)
         response.reply location.location_name + ' ' + ansi_rain_forecast(forecast)
+      end
+
+      def handle_irc_all_the_things(response)
+        location = geo_lookup(response.user, response.matches[0][0])
+        forecast = get_forecast_io_results(response.user, location)
+        response.reply location.location_name + ' ' + conditions(forecast)
+        response.reply location.location_name + ' ' + ansi_rain_forecast(forecast)
+        response.reply location.location_name + ' ' + ansi_rain_intensity_forecast(forecast)
+        response.reply location.location_name + ' ' + ansi_temp_forecast(forecast)
+        response.reply location.location_name + ' ' + ansi_wind_direction_forecast(forecast)
+        response.reply location.location_name + ' ' + do_the_sun_thing(forecast)
+        response.reply location.location_name + ' ' + do_the_cloud_thing(forecast)
+        response.reply location.location_name + ' ' + do_the_daily_rain_thing(forecast)
       end
 
       def handle_irc_ansirain_intensity(response)
