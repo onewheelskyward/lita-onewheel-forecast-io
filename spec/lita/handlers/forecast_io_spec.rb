@@ -93,7 +93,7 @@ describe Lita::Handlers::ForecastIo, lita_handler: true do
 
   it '!ansiwind portland' do
     send_message '!ansiwind portland'
-    expect(replies.last).to eq("Portland, OR 24h wind direction 4.3 mph|\u000306↓\u000310↙←\u000311↖↑↗\u000308→↘\u000311↓←←←←←←\u000310←←←←←←←\u000306←\u0003|5.6 mph Range: 4.3 mph - 12.71 mph")
+    expect(replies.last).to eq("Portland, OR 48h wind direction 4.3 mph|\u000306↓\u000310↙←\u000311↖↑↗\u000308→↘\u000311↓←←←←←←\u000310←←←←←←←\u000306←←←←←\u000302←←←↙↙↙↙↓↓↓\u000306↓↓↓↓↓↓↓↓↙↙\u0003|4.18 mph Range: 1.39 mph - 12.71 mph")
   end
 
   it '!conditions' do
@@ -167,13 +167,13 @@ describe Lita::Handlers::ForecastIo, lita_handler: true do
   it '!ansiwind in MPH' do
     send_message '!set scale f'
     send_message '!ansiwind'
-    expect(replies.last).to include("4.3 mph - 12.71 mph")
+    expect(replies.last).to include("1.39 mph - 12.71 mph")
   end
 
   it '!ansiwind in KPH' do
     send_message '!set scale c'
     send_message '!ansiwind'
-    expect(replies.last).to include("6.88 kph - 20.34 kph")
+    expect(replies.last).to include("2.22 kph - 20.34 kph")
   end
 
   it '!sunrise' do
