@@ -472,10 +472,10 @@ module Lita
 
       def ansi_wind_direction_forecast(forecast)
         str, data = do_the_wind_direction_thing(forecast)
-        "24h wind direction #{get_speed data.first}|#{str}|#{get_speed data.last} Range: #{get_speed(data.min)} - #{get_speed(data.max)}"
+        "48h wind direction #{get_speed data.first}|#{str}|#{get_speed data.last} Range: #{get_speed(data.min)} - #{get_speed(data.max)}"
       end
 
-      def do_the_wind_direction_thing(forecast, hours = 24)
+      def do_the_wind_direction_thing(forecast, hours = 48)
         key = 'windBearing'
         data = forecast['hourly']['data'].slice(0,hours - 1)
         str = ''
