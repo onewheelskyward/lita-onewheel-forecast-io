@@ -258,7 +258,7 @@ module Lita
       def handle_irc_all_the_things(response)
         location = geo_lookup(response.user, response.matches[0][0])
         forecast = get_forecast_io_results(response.user, location)
-        response.reply location.location_name + ' ' + conditions(forecast)
+        response.reply location.location_name + ' ' + forecast_text(forecast)
         response.reply location.location_name + ' ' + ansi_rain_forecast(forecast)
         response.reply location.location_name + ' ' + ansi_rain_intensity_forecast(forecast)
         response.reply location.location_name + ' ' + ansi_temp_forecast(forecast)
