@@ -29,6 +29,7 @@ describe Lita::Handlers::ForecastIo, lita_handler: true do
   it { is_expected.to route('!rain') }
   it { is_expected.to route('!ansirain') }
   it { is_expected.to route('!ansisnow') }
+  it { is_expected.to route('!ansihumidity') }
   it { is_expected.to route('!ansiintensity') }
   it { is_expected.to route('!ansitemp') }
   it { is_expected.to route('!ansiwind') }
@@ -38,6 +39,7 @@ describe Lita::Handlers::ForecastIo, lita_handler: true do
   it { is_expected.to route('!weekly') }
   it { is_expected.to route('!dailyrain') }
   it { is_expected.to route('!dailytemp') }
+  it { is_expected.to route('!dailyhumidity') }
   it { is_expected.to route('!7dayrain') }
   it { is_expected.to route('!weeklyrain') }
   it { is_expected.to route('!dailywind') }
@@ -190,6 +192,16 @@ describe Lita::Handlers::ForecastIo, lita_handler: true do
   it '!dailywind' do
     send_message '!dailywind'
     expect(replies.last).to eq("Portland, OR 7day winds 7.67 mph|\u000310█\u000306▅\u000310██\u000302▅▅▅\u000306▅\u0003|3.02 mph range 2.67 mph-7.67 mph")
+  end
+
+  it '!ansihumidity' do
+    send_message '!ansihumidity'
+    expect(replies.last).to eq("Portland, OR 48hr humidity 67%|\u000307▇\u000308▇▇▇\u000311▅▅▅▅▅▅▅▅▅▅\u000308▇▇▇▇▇▇▇\u000307▇▇▇▇▇▇▇▇▇▇▇▇\u000304████████████████\u0003|80% range: 41%-85%")
+  end
+
+  it '!dailyhumidity' do
+    send_message '!dailyhumidity'
+    expect(replies.last).to eq("Portland, OR 7day humidity 58%|\u000302▇▇▇▇████\u0003|87% range 58%-93%")
   end
 
   # it 'colors strings' do

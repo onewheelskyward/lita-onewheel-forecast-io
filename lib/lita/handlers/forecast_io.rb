@@ -17,6 +17,7 @@ module Lita
       route(/^!rain\s*(.*)/i, :is_it_raining)
       route(/^!geo\s+(.*)/i, :geo_lookup)
       route(/^!ansiintensity\s*(.*)/i, :handle_irc_ansirain_intensity)
+      route(/^!ansihumidity\s*(.*)/i, :handle_irc_ansi_humidity)
       route(/^!ansirain\s*(.*)/i, :handle_irc_ansirain)
       route(/^!sunrise\s*(.*)/i, :handle_irc_sunrise)
       route(/^!sunset\s*(.*)/i, :handle_irc_sunset)
@@ -34,6 +35,7 @@ module Lita
       route(/^!7dayrain\s*(.*)/i, :handle_irc_seven_day_rain)
       route(/^!weeklyrain\s*(.*)/i, :handle_irc_seven_day_rain)
       route(/^!dailywind\s*(.*)/i, :handle_irc_daily_wind)
+      route(/^!dailyhumidity\s*(.*)/i, :handle_irc_daily_humidity)
       route(/^!alerts\s*(.*)/i, :handle_irc_alerts)
       route(/^!set scale (c|f)/i, :handle_irc_set_scale)
 
@@ -113,7 +115,19 @@ module Lita
         { 0..0.20    => :green,
           0.21..0.50 => :lime,
           0.51..0.70 => :orange,
-          0.71..1 => :yellow
+          0.71..1    => :yellow
+        }
+      end
+
+      def get_humidity_range_colors
+        {   0..0.12    => :blue,
+            0.13..0.25 => :purple,
+            0.26..0.38 => :teal,
+            0.39..0.5  => :aqua,
+            0.51..0.63 => :yellow,
+            0.64..0.75 => :orange,
+            0.76..0.88 => :red,
+            0.89..1    => :pink,
         }
       end
 
@@ -340,6 +354,18 @@ module Lita
         response.reply location.location_name + ' ' + do_the_daily_wind_thing(forecast)
       end
 
+      def handle_irc_daily_humidity(response)
+        location = geo_lookup(response.user, response.matches[0][0])
+        forecast = get_forecast_io_results(response.user, location)
+        response.reply location.location_name + ' ' + do_the_daily_humidity_thing(forecast)
+      end
+
+      def handle_irc_ansi_humidity(response)
+        location = geo_lookup(response.user, response.matches[0][0])
+        forecast = get_forecast_io_results(response.user, location)
+        response.reply location.location_name + ' 48hr humidity ' + ansi_humidity_forecast(forecast)
+      end
+
       def handle_irc_ansiozone(response)
         location = geo_lookup(response.user, response.matches[0][0])
         forecast = get_forecast_io_results(response.user, location)
@@ -397,6 +423,10 @@ module Lita
         "rain intensity #{(Time.now).strftime('%H:%M').to_s}|#{str}|#{(Time.now + 3600).strftime('%H:%M').to_s}"  #range |_.-•*'*•-._|
       end
 
+      def ansi_humidity_forecast(forecast)
+        do_the_humidity_thing(forecast, ansi_chars, 'humidity') #, 'probability', get_rain_range_colors)
+      end
+
       def do_the_rain_chance_thing(forecast, chars, key) #, type, range_colors = nil)
         if forecast['minutely'].nil?
           return 'No minute-by-minute data available.'
@@ -439,6 +469,22 @@ module Lita
           str = get_colored_string(data, key, str, get_rain_intensity_range_colors)
         end
         str
+      end
+
+      def do_the_humidity_thing(forecast, chars, key) #, type, range_colors = nil)
+        data_points = []
+        data = forecast['hourly']['data']
+
+        data.each do |datum|
+          data_points.push datum[key]
+        end
+
+        str = get_dot_str(chars, data, 0, 1, key)
+
+        if config.colors
+          str = get_colored_string(data, key, str, get_humidity_range_colors)
+        end
+        "#{get_humidity data_points.first}|#{str}|#{get_humidity data_points.last} range: #{get_humidity data_points.min}-#{get_humidity data_points.max}"
       end
 
       def ansi_temp_forecast(forecast, hours = 24)
@@ -642,6 +688,24 @@ module Lita
         "7day winds #{get_speed winds.first}|#{str}|#{get_speed winds.last} range #{get_speed winds.min}-#{get_speed winds.max}"
       end
 
+      def do_the_daily_humidity_thing(forecast)
+        humidities = []
+
+        data = forecast['daily']['data']
+        data.each do |day|
+          humidities.push day['humidity']
+        end
+
+        # differential = maxtemps.max - maxtemps.min
+        str = get_dot_str(ansi_chars, data, 0, 1, 'humidity')
+
+        if config.colors
+          str = get_colored_string(data, 'humidity', str, get_wind_range_colors)
+        end
+
+        "7day humidity #{get_humidity humidities.first}|#{str}|#{get_humidity humidities.last} range #{get_humidity humidities.min}-#{get_humidity humidities.max}"
+      end
+
       def do_the_ozone_thing(forecast)
         # O ◎ ]
         data = forecast['hourly']['data']
@@ -772,6 +836,10 @@ module Lita
         else
           speed_imperial.to_s + ' mph'
         end
+      end
+
+      def get_humidity(humidity_decimal)
+        (humidity_decimal * 100).round(0).to_s + '%'
       end
 
       def celcius(degrees_f)
