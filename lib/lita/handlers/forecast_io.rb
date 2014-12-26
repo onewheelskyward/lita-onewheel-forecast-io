@@ -60,6 +60,12 @@ module Lita
       # oooOOOoooo
       route(/^!ansiozone\s*(.*)/i, :handle_irc_ansiozone)
 
+      # Pressure
+      route(/^!ansipressure\s*(.*)/i, :handle_irc_ansi_pressure)
+      route(/^!ansibarometer\s*(.*)/i, :handle_irc_ansi_pressure)
+      route(/^!dailypressure\s*(.*)/i, :handle_irc_daily_pressure)
+      route(/^!dailybarometer\s*(.*)/i, :handle_irc_daily_pressure)
+
       # Constants
       def scale
         'f'
@@ -277,6 +283,7 @@ module Lita
         forecast = gimme_some_weather uri
       end
 
+      #-# Handlers
       def handle_irc_forecast(response)
         location = geo_lookup(response.user, response.matches[0][0])
         forecast = get_forecast_io_results(response.user, location)
@@ -393,6 +400,19 @@ module Lita
         response.reply location.location_name + ' ' + do_the_ozone_thing(forecast)
       end
 
+      def handle_irc_ansi_pressure(response)
+        location = geo_lookup(response.user, response.matches[0][0])
+        forecast = get_forecast_io_results(response.user, location)
+        response.reply location.location_name + ' ' + do_the_pressure_thing(forecast)
+      end
+
+      def handle_irc_daily_pressure(response)
+        location = geo_lookup(response.user, response.matches[0][0])
+        forecast = get_forecast_io_results(response.user, location)
+        response.reply location.location_name + ' ' + do_the_daily_pressure_thing(forecast)
+      end
+
+      # Todo: Too much logic.
       def handle_irc_set_scale(response)
         key = response.user.name + '-scale'
         persisted_scale = redis.hget(REDIS_KEY, key)
@@ -741,6 +761,36 @@ module Lita
         str = get_dot_str(ozone_chars, data, 280, 350-280, 'ozone')
 
         "ozones #{data.first['ozone']} |#{str}| #{data.last['ozone']} [24h forecast]"
+      end
+
+      def do_the_pressure_thing(forecast)
+        # O ◎ ]
+        data = forecast['hourly']['data']
+        key = 'pressure'
+        boiled_data = []
+
+        data.each do |d|
+          boiled_data.push d[key]
+        end
+
+        str = get_dot_str(ansi_chars, data, boiled_data.min, boiled_data.max, key)
+
+        "pressure #{data.first[key]} Pa |#{str}| #{data.last[key]} Pa range: #{boiled_data.min}-#{boiled_data.max} Pa [24h forecast]"
+      end
+
+      def do_the_daily_pressure_thing(forecast)
+        # O ◎ ]
+        data = forecast['daily']['data']
+        key = 'pressure'
+        boiled_data = []
+
+        data.each do |d|
+          boiled_data.push d[key]
+        end
+
+        str = get_dot_str(ansi_chars, data, boiled_data.min, boiled_data.max, key)
+
+        "pressure #{data.first[key]} Pa |#{str}| #{data.last[key]} Pa range: #{boiled_data.min}-#{boiled_data.max} Pa [8 day forecast]"
       end
 
       def get_alerts(forecast)

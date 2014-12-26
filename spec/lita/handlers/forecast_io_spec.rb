@@ -58,6 +58,10 @@ describe Lita::Handlers::ForecastIo, lita_handler: true do
   it { is_expected.to route('!sunrise') }
   it { is_expected.to route('!sunset') }
   it { is_expected.to route('!forecastallthethings') }
+  it { is_expected.to route('!ansipressure') }
+  it { is_expected.to route('!ansibarometer') }
+  it { is_expected.to route('!dailypressure') }
+  it { is_expected.to route('!dailybarometer') }
 
   it '!forecast' do
     send_message '!forecast'
@@ -224,6 +228,26 @@ describe Lita::Handlers::ForecastIo, lita_handler: true do
     expect(replies[5]).to eq("Portland, OR 8 day sun forecast |\u000308█\u000309▃\u000308▇\u000309▁_\u000307▅\u000309▃\u000307▅\u0003|")
     expect(replies[6]).to eq("Portland, OR 24h cloud cover |___________▁▁▁▁▁▁▁▁▃▅▅▅|")
     expect(replies[7]).to eq("Portland, OR 48 hr snows |\u000302_______________________▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁_\u0003|")
+  end
+
+  it '!ansipressure' do
+    send_message '!ansipressure'
+    expect(replies.last).to eq("Portland, OR pressure 1021.2 Pa |▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁__▁▁▁▁▁▁▁▁▁▁▁▁▁▁| 1018.31 Pa range: 1017.96-1021.2 Pa [24h forecast]")
+  end
+
+  it '!ansibarometer' do
+    send_message '!ansibarometer'
+    expect(replies.last).to eq("Portland, OR pressure 1021.2 Pa |▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁__▁▁▁▁▁▁▁▁▁▁▁▁▁▁| 1018.31 Pa range: 1017.96-1021.2 Pa [24h forecast]")
+  end
+
+  it '!dailypressure' do
+    send_message '!dailypressure'
+    expect(replies.last).to eq("Portland, OR pressure 1019.92 Pa |▁▁▁_▁▁▁▁| 1027.26 Pa range: 1013.45-1027.26 Pa [8 day forecast]")
+  end
+
+  it '!dailybarometer' do
+    send_message '!dailybarometer'
+    expect(replies.last).to eq("Portland, OR pressure 1019.92 Pa |▁▁▁_▁▁▁▁| 1027.26 Pa range: 1013.45-1027.26 Pa [8 day forecast]")
   end
 
   # it 'colors strings' do
