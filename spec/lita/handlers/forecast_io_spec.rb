@@ -232,22 +232,22 @@ describe Lita::Handlers::ForecastIo, lita_handler: true do
 
   it '!ansipressure' do
     send_message '!ansipressure'
-    expect(replies.last).to eq("Portland, OR pressure 1021.2 Pa |████▇▅▅▃▃▃▃▅▇▇▇▇▇▅▅▅▅▅▃▃▃▃▅▅▅▃▁▁▁__▁▁▃▃▅▅▅▅▅▃▁▁▁▃| 1018.31 Pa range: 1017.96-1021.2 Pa [48h forecast]")
+    expect(replies.last).to eq("Portland, OR pressure 1021.2 hPa |████▇▅▅▃▃▃▃▅▇▇▇▇▇▅▅▅▅▅▃▃▃▃▅▅▅▃▁▁▁__▁▁▃▃▅▅▅▅▅▃▁▁▁▃| 1018.31 hPa range: 1017.96-1021.2 hPa [48h forecast]")
   end
 
   it '!ansibarometer' do
     send_message '!ansibarometer'
-    expect(replies.last).to eq("Portland, OR pressure 1021.2 Pa |████▇▅▅▃▃▃▃▅▇▇▇▇▇▅▅▅▅▅▃▃▃▃▅▅▅▃▁▁▁__▁▁▃▃▅▅▅▅▅▃▁▁▁▃| 1018.31 Pa range: 1017.96-1021.2 Pa [48h forecast]")
+    expect(replies.last).to eq("Portland, OR pressure 1021.2 hPa |████▇▅▅▃▃▃▃▅▇▇▇▇▇▅▅▅▅▅▃▃▃▃▅▅▅▃▁▁▁__▁▁▃▃▅▅▅▅▅▃▁▁▁▃| 1018.31 hPa range: 1017.96-1021.2 hPa [48h forecast]")
   end
 
   it '!dailypressure' do
     send_message '!dailypressure'
-    expect(replies.last).to eq("Portland, OR pressure 1019.92 Pa |▅▅▃_▁▇██| 1027.26 Pa range: 1013.45-1027.26 Pa [8 day forecast]")
+    expect(replies.last).to eq("Portland, OR pressure 1019.92 hPa |▅▅▃_▁▇██| 1027.26 hPa range: 1013.45-1027.26 hPa [8 day forecast]")
   end
 
   it '!dailybarometer' do
     send_message '!dailybarometer'
-    expect(replies.last).to eq("Portland, OR pressure 1019.92 Pa |▅▅▃_▁▇██| 1027.26 Pa range: 1013.45-1027.26 Pa [8 day forecast]")
+    expect(replies.last).to eq("Portland, OR pressure 1019.92 hPa |▅▅▃_▁▇██| 1027.26 hPa range: 1013.45-1027.26 hPa [8 day forecast]")
   end
 
   # it 'colors strings' do

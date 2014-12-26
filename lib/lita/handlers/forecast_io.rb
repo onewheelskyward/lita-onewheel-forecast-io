@@ -775,7 +775,7 @@ module Lita
 
         str = get_dot_str(ansi_chars, data, boiled_data.min, boiled_data.max - boiled_data.min, key)
 
-        "pressure #{data.first[key]} Pa |#{str}| #{data.last[key]} Pa range: #{boiled_data.min}-#{boiled_data.max} Pa [48h forecast]"
+        "pressure #{data.first[key]} hPa |#{str}| #{data.last[key]} hPa range: #{boiled_data.min}-#{boiled_data.max} hPa [48h forecast]"
       end
 
       def do_the_daily_pressure_thing(forecast)
@@ -790,7 +790,7 @@ module Lita
 
         str = get_dot_str(ansi_chars, data, boiled_data.min, boiled_data.max - boiled_data.min, key)
 
-        "pressure #{data.first[key]} Pa |#{str}| #{data.last[key]} Pa range: #{boiled_data.min}-#{boiled_data.max} Pa [8 day forecast]"
+        "pressure #{data.first[key]} hPa |#{str}| #{data.last[key]} hPa range: #{boiled_data.min}-#{boiled_data.max} hPa [8 day forecast]"
       end
 
       def get_alerts(forecast)
