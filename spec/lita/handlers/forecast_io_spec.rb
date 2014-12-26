@@ -232,12 +232,12 @@ describe Lita::Handlers::ForecastIo, lita_handler: true do
 
   it '!ansipressure' do
     send_message '!ansipressure'
-    expect(replies.last).to eq("Portland, OR pressure 1021.2 Pa |████▇▅▅▃▃▃▃▅▇▇▇▇▇▅▅▅▅▅▃▃▃▃▅▅▅▃▁▁▁__▁▁▃▃▅▅▅▅▅▃▁▁▁▃| 1018.31 Pa range: 1017.96-1021.2 Pa [24h forecast]")
+    expect(replies.last).to eq("Portland, OR pressure 1021.2 Pa |████▇▅▅▃▃▃▃▅▇▇▇▇▇▅▅▅▅▅▃▃▃▃▅▅▅▃▁▁▁__▁▁▃▃▅▅▅▅▅▃▁▁▁▃| 1018.31 Pa range: 1017.96-1021.2 Pa [48h forecast]")
   end
 
   it '!ansibarometer' do
     send_message '!ansibarometer'
-    expect(replies.last).to eq("Portland, OR pressure 1021.2 Pa |████▇▅▅▃▃▃▃▅▇▇▇▇▇▅▅▅▅▅▃▃▃▃▅▅▅▃▁▁▁__▁▁▃▃▅▅▅▅▅▃▁▁▁▃| 1018.31 Pa range: 1017.96-1021.2 Pa [24h forecast]")
+    expect(replies.last).to eq("Portland, OR pressure 1021.2 Pa |████▇▅▅▃▃▃▃▅▇▇▇▇▇▅▅▅▅▅▃▃▃▃▅▅▅▃▁▁▁__▁▁▃▃▅▅▅▅▅▃▁▁▁▃| 1018.31 Pa range: 1017.96-1021.2 Pa [48h forecast]")
   end
 
   it '!dailypressure' do
