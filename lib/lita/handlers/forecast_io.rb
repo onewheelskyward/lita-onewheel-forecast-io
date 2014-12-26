@@ -394,10 +394,17 @@ module Lita
       end
 
       def handle_irc_set_scale(response)
-        scale_to_set = response.matches[0][0]
         key = response.user.name + '-scale'
-        scale = redis.hget(REDIS_KEY, key)
-        if scale == scale_to_set
+        persisted_scale = redis.hget(REDIS_KEY, key)
+
+        if ['c','f'].include? response.matches[0][0].downcase
+          scale_to_set = response.matches[0][0]
+        else
+          # Toggle mode
+          scale_to_set = get_other_scale(persisted_scale)
+        end
+
+        if persisted_scale == scale_to_set
           reply = "Scale is already set to #{scale_to_set}!"
         else
           redis.hset(REDIS_KEY, key, scale_to_set)
@@ -891,6 +898,15 @@ module Lita
             'NW'
           when 336..360
             'N'
+        end
+      end
+
+      # A bit optimistic, but I really like the Cs.
+      def get_other_scale(scale)
+        if scale.downcase == 'c'
+          'f'
+        else
+          'c'
         end
       end
 

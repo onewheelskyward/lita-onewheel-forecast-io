@@ -54,9 +54,10 @@ describe Lita::Handlers::ForecastIo, lita_handler: true do
   it { is_expected.to route('!conditions') }
   it { is_expected.to route('!set scale f') }
   it { is_expected.to route('!set scale c') }
+  it { is_expected.to route('!set scale') }
   it { is_expected.to route('!sunrise') }
   it { is_expected.to route('!sunset') }
-  it { is_expected.to route('!allthethings') }
+  it { is_expected.to route('!forecastallthethings') }
 
   it '!forecast' do
     send_message '!forecast'
@@ -155,6 +156,15 @@ describe Lita::Handlers::ForecastIo, lita_handler: true do
     expect(replies.last).to eq("Scale set to c")
   end
 
+  it '!set scale toggle' do
+    send_message '!set scale f'
+    expect(replies.last).to eq("Scale set to f")
+    send_message '!set scale'
+    expect(replies.last).to eq("Scale set to c")
+    send_message '!set scale'
+    expect(replies.last).to eq("Scale set to f")
+  end
+
   it '!ansitemp in F' do
     send_message '!set scale f'
     send_message '!ansitemp'
@@ -202,6 +212,18 @@ describe Lita::Handlers::ForecastIo, lita_handler: true do
   it '!dailyhumidity' do
     send_message '!dailyhumidity'
     expect(replies.last).to eq("Portland, OR 7day humidity 58%|\u000302▇▇▇▇████\u0003|87% range 58%-93%")
+  end
+
+  it '!forecastallthethings' do
+    send_message '!forecastallthethings'
+    expect(replies[0]).to eq("Portland, OR weather is currently 28.39°F and clear.  Winds out of the E at 5.74 mph. It will be clear for the hour, and flurries tomorrow morning.  There are also 357.71 ozones.")
+    expect(replies[1]).to include("|\u000302_▁\u000306▃\u000310▅\u000303▅\u000309▅\u000311▇\u000308▇\u000307█\u000304█\u000313█\u000302__________________________________________________\u0003|")
+    expect(replies[2]).to include("|\u000302_\u000313█\u000310▃\u000303▅\u000309▅\u000311▅\u000308▇\u000307▇\u000304▇\u000313█\u000302___________________________________________________\u0003|")
+    expect(replies[3]).to eq("Portland, OR 24 hr temps: 28.3°F |\u000306_▁▃\u000310▅▇█\u000303██\u000310██▇▅\u000306▅▃▃▃▃▃▃▁▁▁▁\u0003| 28.4°F  Range: 28.3°F - 39.0°F")
+    expect(replies[4]).to eq("Portland, OR 48h wind direction 4.3 mph|\u000306↓\u000310↙←\u000311↖↑↗\u000308→↘\u000311↓←←←←←←\u000310←←←←←←←\u000306←←←←←\u000302←←←↙↙↙↙↓↓↓\u000306↓↓↓↓↓↓↓↓↙↙\u0003|4.18 mph Range: 1.39 mph - 12.71 mph")
+    expect(replies[5]).to eq("Portland, OR 8 day sun forecast |\u000308█\u000309▃\u000308▇\u000309▁_\u000307▅\u000309▃\u000307▅\u0003|")
+    expect(replies[6]).to eq("Portland, OR 24h cloud cover |___________▁▁▁▁▁▁▁▁▃▅▅▅|")
+    expect(replies[7]).to eq("Portland, OR 48 hr snows |\u000302_______________________▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁_\u0003|")
   end
 
   # it 'colors strings' do
