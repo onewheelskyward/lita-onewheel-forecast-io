@@ -773,7 +773,7 @@ module Lita
           boiled_data.push d[key]
         end
 
-        str = get_dot_str(ansi_chars, data, boiled_data.min, boiled_data.max, key)
+        str = get_dot_str(ansi_chars, data, boiled_data.min, boiled_data.max - boiled_data.min, key)
 
         "pressure #{data.first[key]} Pa |#{str}| #{data.last[key]} Pa range: #{boiled_data.min}-#{boiled_data.max} Pa [24h forecast]"
       end
@@ -788,7 +788,7 @@ module Lita
           boiled_data.push d[key]
         end
 
-        str = get_dot_str(ansi_chars, data, boiled_data.min, boiled_data.max, key)
+        str = get_dot_str(ansi_chars, data, boiled_data.min, boiled_data.max - boiled_data.min, key)
 
         "pressure #{data.first[key]} Pa |#{str}| #{data.last[key]} Pa range: #{boiled_data.min}-#{boiled_data.max} Pa [8 day forecast]"
       end
