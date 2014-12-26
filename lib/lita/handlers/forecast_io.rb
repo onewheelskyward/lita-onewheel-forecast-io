@@ -11,33 +11,54 @@ module Lita
       config :api_uri
       config :colors
 
-      route(/^!forecast\s*(.*)/i, :handle_irc_forecast)
-      route(/^!weather\s*(.*)/i, :handle_irc_forecast)
-      route(/^!allthethings\s*(.*)/i, :handle_irc_all_the_things)
-      route(/^!rain\s*(.*)/i, :is_it_raining)
-      route(/^!geo\s+(.*)/i, :geo_lookup)
-      route(/^!ansiintensity\s*(.*)/i, :handle_irc_ansirain_intensity)
-      route(/^!ansihumidity\s*(.*)/i, :handle_irc_ansi_humidity)
-      route(/^!ansirain\s*(.*)/i, :handle_irc_ansirain)
-      route(/^!sunrise\s*(.*)/i, :handle_irc_sunrise)
-      route(/^!sunset\s*(.*)/i, :handle_irc_sunset)
-      route(/^!ansisnow\s*(.*)/i, :handle_irc_ansirain)
+      # Temperature routes
       route(/^!ansitemp\s*(.*)/i, :handle_irc_ansitemp)
       route(/^!dailytemp\s*(.*)/i, :handle_irc_daily_temp)
-      route(/^!ansiwind\s*(.*)/i, :handle_irc_ansiwind)
-      route(/^!ansisun\s*(.*)/i, :handle_irc_ansisun)
-      route(/^!ansicloud\s*(.*)/i, :handle_irc_ansicloud)
-      route(/^!ansiozone\s*(.*)/i, :handle_irc_ansiozone)
-      route(/^!condi*t*i*o*n*s*\s*(.*)/i, :handle_irc_conditions)
       route(/^!7day\s*(.*)/i, :handle_irc_seven_day)
       route(/^!weekly\s*(.*)/i, :handle_irc_seven_day)
-      route(/^!dailyrain\s*(.*)/i, :handle_irc_daily_rain)
-      route(/^!7dayrain\s*(.*)/i, :handle_irc_seven_day_rain)
-      route(/^!weeklyrain\s*(.*)/i, :handle_irc_seven_day_rain)
-      route(/^!dailywind\s*(.*)/i, :handle_irc_daily_wind)
-      route(/^!dailyhumidity\s*(.*)/i, :handle_irc_daily_humidity)
+
+      # General forecast routes
+      route(/^!forecastallthethings\s*(.*)/i, :handle_irc_all_the_things)
+      route(/^!forecast\s*(.*)/i, :handle_irc_forecast)
+      route(/^!weather\s*(.*)/i, :handle_irc_forecast)
+      route(/^!condi*t*i*o*n*s*\s*(.*)/i, :handle_irc_conditions)
+
+      # One-offs
+      route(/^!rain\s*(.*)/i, :is_it_raining)
+      route(/^!geo\s+(.*)/i, :geo_lookup)
       route(/^!alerts\s*(.*)/i, :handle_irc_alerts)
+
+      # State Commands
       route(/^!set scale (c|f)/i, :handle_irc_set_scale)
+      route(/^!set scale$/i, :handle_irc_set_scale)
+
+      # Humidity
+      route(/^!ansihumidity\s*(.*)/i, :handle_irc_ansi_humidity)
+      route(/^!dailyhumidity\s*(.*)/i, :handle_irc_daily_humidity)
+
+      # Rain related.  Where we all started.
+      route(/^!ansisnow\s*(.*)/i, :handle_irc_ansirain)
+      route(/^!ansirain\s*(.*)/i, :handle_irc_ansirain)
+      route(/^!dailyrain\s*(.*)/i, :handle_irc_daily_rain)
+      route(/^!weeklyrain\s*(.*)/i, :handle_irc_seven_day_rain)
+      route(/^!7dayrain\s*(.*)/i, :handle_irc_seven_day_rain)
+      route(/^!ansiintensity\s*(.*)/i, :handle_irc_ansirain_intensity)
+
+      # don't start singing.
+      route(/^!sunrise\s*(.*)/i, :handle_irc_sunrise)
+      route(/^!sunset\s*(.*)/i, :handle_irc_sunset)
+      route(/^!ansisun\s*(.*)/i, :handle_irc_ansisun)
+      # Mun!
+
+      # Wind
+      route(/^!ansiwind\s*(.*)/i, :handle_irc_ansiwind)
+      route(/^!dailywind\s*(.*)/i, :handle_irc_daily_wind)
+
+      # Cloud cover
+      route(/^!ansicloud\s*(.*)/i, :handle_irc_ansicloud)
+
+      # oooOOOoooo
+      route(/^!ansiozone\s*(.*)/i, :handle_irc_ansiozone)
 
       # Constants
       def scale
