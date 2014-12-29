@@ -35,6 +35,7 @@ describe Lita::Handlers::ForecastIo, lita_handler: true do
   it { is_expected.to route('!ansiwind') }
   it { is_expected.to route('!ansisun') }
   it { is_expected.to route('!ansicloud') }
+  it { is_expected.to route('!asciitemp') }
   it { is_expected.to route('!7day') }
   it { is_expected.to route('!weekly') }
   it { is_expected.to route('!dailyrain') }
@@ -122,6 +123,11 @@ describe Lita::Handlers::ForecastIo, lita_handler: true do
   it '!ansicloud' do
     send_message '!ansicloud'
     expect(replies.last).to eq('Portland, OR 24h cloud cover |___________▁▁▁▁▁▁▁▁▃▅▅▅|')
+  end
+
+  it '!asciitemp' do
+    send_message '!asciitemp'
+    expect(replies.last).to eq("Portland, OR rain probability 19:32|\u000302_.\u000306-\u000310~\u000303~\u000309~\u000311*\u000308*\u000307'\u000304'\u000313'\u000302__________________________________________________\u0003|20:32")
   end
 
   it '!7day' do
