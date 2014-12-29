@@ -16,6 +16,7 @@ module Lita
       route(/^!dailytemp\s*(.*)/i, :handle_irc_daily_temp)
       route(/^!7day\s*(.*)/i, :handle_irc_seven_day)
       route(/^!weekly\s*(.*)/i, :handle_irc_seven_day)
+      route(/^!asciitemp\s*(.*)/i, :handle_irc_ascii_temp)
 
       # General forecast routes
       route(/^!forecastallthethings\s*(.*)/i, :handle_irc_all_the_things)
@@ -43,7 +44,7 @@ module Lita
       route(/^!weeklyrain\s*(.*)/i, :handle_irc_seven_day_rain)
       route(/^!7dayrain\s*(.*)/i, :handle_irc_seven_day_rain)
       route(/^!ansiintensity\s*(.*)/i, :handle_irc_ansirain_intensity)
-      route(/^!asciitemp\s*(.*)/i, :handle_irc_ascii_rain)
+      route(/^!asciirain\s*(.*)/i, :handle_irc_ascii_rain)
 
       # don't start singing.
       route(/^!sunrise\s*(.*)/i, :handle_irc_sunrise)
@@ -326,6 +327,12 @@ module Lita
         location = geo_lookup(response.user, response.matches[0][0])
         forecast = get_forecast_io_results(response.user, location)
         response.reply location.location_name + ' ' + ansi_temp_forecast(forecast)
+      end
+
+      def handle_irc_ascii_temp(response)
+        location = geo_lookup(response.user, response.matches[0][0])
+        forecast = get_forecast_io_results(response.user, location)
+        response.reply location.location_name + ' ' + ascii_temp_forecast(forecast)
       end
 
       def handle_irc_daily_temp(response)
