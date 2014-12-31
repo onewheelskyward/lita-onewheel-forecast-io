@@ -606,7 +606,8 @@ module Lita
         data_points = []
 
         data.each_with_index do |datum, index|
-          str << wind_arrows[get_cardinal_direction_from_bearing(datum[key])]
+          wind_arrow_index = get_cardinal_direction_from_bearing(datum[key])
+          str << wind_arrows[wind_arrow_index].to_s
           data_points.push datum['windSpeed']
           break if index == hours - 1 # We only want (hours) 24hrs of data.
         end
@@ -670,7 +671,7 @@ module Lita
 
       def conditions(forecast)
         temp_str, temps = do_the_temp_thing(forecast, ansi_chars, 8)
-        wind_str, winds = do_the_wind_direction_thing(forecast, 8)
+        wind_str, winds = do_the_wind_direction_thing(forecast, ansi_wind_arrows, 8)
         rain_str, rains = do_the_rain_chance_thing(forecast, ansi_chars, 'precipProbability') # , 'probability', get_rain_range_colors
 
         rs = compress_string(rain_str, 4)
