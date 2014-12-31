@@ -194,8 +194,14 @@ describe Lita::Handlers::ForecastIo, lita_handler: true do
     expect(replies.last).to eq("Portland, OR 24 hr temps: 28.3°F |\u000306_▁▃\u000310▅▇█\u000303██\u000310██▇▅\u000306▅▃▃▃▃▃▃▁▁▁▁\u0003| 28.4°F  Range: 28.3°F - 39.0°F")
   end
 
-  it '!ansitemp in K' do
+  it '!ansitemp in k' do
     send_message '!set scale k'
+    send_message '!ansitemp'
+    expect(replies.last).to eq("Portland, OR 24 hr temps: 271.09°K |\u000306_▁▃\u000310▅▇█\u000303██\u000310██▇▅\u000306▅▃▃▃▃▃▃▁▁▁▁\u0003| 271.15°K  Range: 271.09°K - 277.04°K")
+  end
+
+  it '!ansitemp in K' do
+    send_message '!set scale K'
     send_message '!ansitemp'
     expect(replies.last).to eq("Portland, OR 24 hr temps: 271.09°K |\u000306_▁▃\u000310▅▇█\u000303██\u000310██▇▅\u000306▅▃▃▃▃▃▃▁▁▁▁\u0003| 271.15°K  Range: 271.09°K - 277.04°K")
   end

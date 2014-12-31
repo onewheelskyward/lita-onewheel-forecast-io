@@ -439,7 +439,7 @@ module Lita
         persisted_scale = redis.hget(REDIS_KEY, key)
 
         if ['c','f','k'].include? response.matches[0][0].downcase
-          scale_to_set = response.matches[0][0]
+          scale_to_set = response.matches[0][0].downcase
         else
           # Toggle mode
           scale_to_set = get_other_scale(persisted_scale)
