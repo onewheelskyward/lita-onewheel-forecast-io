@@ -934,7 +934,7 @@ module Lita
         if @scale == 'c'
           celcius(temp_f).to_s + '°C'
         elsif @scale == 'k'
-          kelvin(temp_f).to_s + 'K'
+          kelvin(temp_f).to_s + 'K'
         else
           temp_f.to_s + '°F'
         end
