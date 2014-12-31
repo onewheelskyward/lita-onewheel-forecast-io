@@ -57,6 +57,7 @@ describe Lita::Handlers::ForecastIo, lita_handler: true do
   it { is_expected.to route('!conditions') }
   it { is_expected.to route('!set scale f') }
   it { is_expected.to route('!set scale c') }
+  it { is_expected.to route('!set scale k') }
   it { is_expected.to route('!set scale') }
   it { is_expected.to route('!sunrise') }
   it { is_expected.to route('!sunset') }
@@ -162,6 +163,11 @@ describe Lita::Handlers::ForecastIo, lita_handler: true do
     expect(replies.last).to eq("Scale set to f")
   end
 
+  it '!set scale k' do
+    send_message '!set scale k'
+    expect(replies.last).to eq("Scale set to k")
+  end
+
   it '!set scale already set' do
     send_message '!set scale f'
     send_message '!set scale f'
@@ -186,6 +192,12 @@ describe Lita::Handlers::ForecastIo, lita_handler: true do
     send_message '!set scale f'
     send_message '!ansitemp'
     expect(replies.last).to eq("Portland, OR 24 hr temps: 28.3°F |\u000306_▁▃\u000310▅▇█\u000303██\u000310██▇▅\u000306▅▃▃▃▃▃▃▁▁▁▁\u0003| 28.4°F  Range: 28.3°F - 39.0°F")
+  end
+
+  it '!ansitemp in K' do
+    send_message '!set scale k'
+    send_message '!ansitemp'
+    expect(replies.last).to eq("Portland, OR 24 hr temps: 271.09°K |\u000306_▁▃\u000310▅▇█\u000303██\u000310██▇▅\u000306▅▃▃▃▃▃▃▁▁▁▁\u0003| 271.15°K  Range: 271.09°K - 277.04°K")
   end
 
   it '!ansitemp in C' do

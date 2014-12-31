@@ -30,7 +30,7 @@ module Lita
       route(/^!alerts\s*(.*)/i, :handle_irc_alerts)
 
       # State Commands
-      route(/^!set scale (c|f)/i, :handle_irc_set_scale)
+      route(/^!set scale (c|f|k)/i, :handle_irc_set_scale)
       route(/^!set scale$/i, :handle_irc_set_scale)
 
       # Humidity
@@ -438,7 +438,7 @@ module Lita
         key = response.user.name + '-scale'
         persisted_scale = redis.hget(REDIS_KEY, key)
 
-        if ['c','f'].include? response.matches[0][0].downcase
+        if ['c','f','k'].include? response.matches[0][0].downcase
           scale_to_set = response.matches[0][0]
         else
           # Toggle mode
@@ -933,6 +933,8 @@ module Lita
       def get_temperature(temp_f)
         if @scale == 'c'
           celcius(temp_f).to_s + '°C'
+        elsif @scale == 'k'
+          kelvin(temp_f).to_s + '°K'
         else
           temp_f.to_s + '°F'
         end
@@ -952,6 +954,10 @@ module Lita
 
       def celcius(degrees_f)
         (0.5555555556 * (degrees_f.to_f - 32)).round(2)
+      end
+
+      def kelvin(degrees_f)
+        ((degrees_f.to_f + 459.67) * 5/9).round(2)
       end
 
       def kilometers(speed_imperial)
