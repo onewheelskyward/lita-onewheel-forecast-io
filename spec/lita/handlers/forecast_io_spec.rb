@@ -197,13 +197,13 @@ describe Lita::Handlers::ForecastIo, lita_handler: true do
   it '!ansitemp in k' do
     send_message '!set scale k'
     send_message '!ansitemp'
-    expect(replies.last).to eq("Portland, OR 24 hr temps: 271.09°K |\u000306_▁▃\u000310▅▇█\u000303██\u000310██▇▅\u000306▅▃▃▃▃▃▃▁▁▁▁\u0003| 271.15°K  Range: 271.09°K - 277.04°K")
+    expect(replies.last).to eq("Portland, OR 24 hr temps: 271.09K |\u000306_▁▃\u000310▅▇█\u000303██\u000310██▇▅\u000306▅▃▃▃▃▃▃▁▁▁▁\u0003| 271.15K  Range: 271.09K - 277.04K")
   end
 
   it '!ansitemp in K' do
     send_message '!set scale K'
     send_message '!ansitemp'
-    expect(replies.last).to eq("Portland, OR 24 hr temps: 271.09°K |\u000306_▁▃\u000310▅▇█\u000303██\u000310██▇▅\u000306▅▃▃▃▃▃▃▁▁▁▁\u0003| 271.15°K  Range: 271.09°K - 277.04°K")
+    expect(replies.last).to eq("Portland, OR 24 hr temps: 271.09K |\u000306_▁▃\u000310▅▇█\u000303██\u000310██▇▅\u000306▅▃▃▃▃▃▃▁▁▁▁\u0003| 271.15K  Range: 271.09K - 277.04K")
   end
 
   it '!ansitemp in C' do
