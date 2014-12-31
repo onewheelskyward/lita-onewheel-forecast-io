@@ -33,6 +33,7 @@ describe Lita::Handlers::ForecastIo, lita_handler: true do
   it { is_expected.to route('!ansiintensity') }
   it { is_expected.to route('!ansitemp') }
   it { is_expected.to route('!ansiwind') }
+  it { is_expected.to route('!asciiwind') }
   it { is_expected.to route('!ansisun') }
   it { is_expected.to route('!ansicloud') }
   it { is_expected.to route('!asciitemp') }
@@ -260,6 +261,11 @@ describe Lita::Handlers::ForecastIo, lita_handler: true do
   it '!dailybarometer' do
     send_message '!dailybarometer'
     expect(replies.last).to eq("Portland, OR pressure 1019.92 hPa |▅▅▃_▁▇██| 1027.26 hPa range: 1013.45-1027.26 hPa [8 day forecast]")
+  end
+
+  it '!asciiwind' do
+    send_message '!asciiwind'
+    expect(replies.last).to eq("Portland, OR 48h wind direction 4.3 mph|\u000306v\u000310,<\u000311\\^/\u000308>.\u000311v<<<<<<\u000310<<<<<<<\u000306<<<<<\u000302<<<,,,,vvv\u000306vvvvvvvv,,\u0003|4.18 mph Range: 1.39 mph - 12.71 mph")
   end
 
   # it 'colors strings' do

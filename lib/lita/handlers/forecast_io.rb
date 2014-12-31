@@ -54,6 +54,7 @@ module Lita
 
       # Wind
       route(/^!ansiwind\s*(.*)/i, :handle_irc_ansiwind)
+      route(/^!asciiwind\s*(.*)/i, :handle_irc_ascii_wind)
       route(/^!dailywind\s*(.*)/i, :handle_irc_daily_wind)
 
       # Cloud cover
@@ -353,6 +354,12 @@ module Lita
         response.reply location.location_name + ' ' + ansi_wind_direction_forecast(forecast)
       end
 
+      def handle_irc_ascii_wind(response)
+        location = geo_lookup(response.user, response.matches[0][0])
+        forecast = get_forecast_io_results(response.user, location)
+        response.reply location.location_name + ' ' + ascii_wind_direction_forecast(forecast)
+      end
+
       def handle_irc_alerts(response)
         location = geo_lookup(response.user, response.matches[0][0])
         forecast = get_forecast_io_results(response.user, location)
@@ -583,20 +590,23 @@ module Lita
       end
 
       def ansi_wind_direction_forecast(forecast)
-        str, data = do_the_wind_direction_thing(forecast)
+        str, data = do_the_wind_direction_thing(forecast, ansi_wind_arrows)
         "48h wind direction #{get_speed data.first}|#{str}|#{get_speed data.last} Range: #{get_speed(data.min)} - #{get_speed(data.max)}"
       end
 
-      def do_the_wind_direction_thing(forecast, hours = 48)
+      def ascii_wind_direction_forecast(forecast)
+        str, data = do_the_wind_direction_thing(forecast, ascii_wind_arrows)
+        "48h wind direction #{get_speed data.first}|#{str}|#{get_speed data.last} Range: #{get_speed(data.min)} - #{get_speed(data.max)}"
+      end
+
+      def do_the_wind_direction_thing(forecast, wind_arrows, hours = 48)
         key = 'windBearing'
         data = forecast['hourly']['data'].slice(0,hours - 1)
         str = ''
         data_points = []
-        # This is a little weird, because the arrows are 180° rotated.  That's because the wind bearing is "out of the N" not "towards the N".
-        wind_arrows = {'N' => '↓', 'NE' => '↙', 'E' => '←', 'SE' => '↖', 'S' => '↑', 'SW' => '↗', 'W' => '→', 'NW' => '↘'}
 
         data.each_with_index do |datum, index|
-          str += wind_arrows[get_cardinal_direction_from_bearing datum[key]]
+          str << wind_arrows[get_cardinal_direction_from_bearing(datum[key])]
           data_points.push datum['windSpeed']
           break if index == hours - 1 # We only want (hours) 24hrs of data.
         end
@@ -968,6 +978,15 @@ module Lita
           when 336..360
             'N'
         end
+      end
+
+      # This is a little weird, because the arrows are 180° rotated.  That's because the wind bearing is "out of the N" not "towards the N".
+      def ansi_wind_arrows
+        {'N' => '↓', 'NE' => '↙', 'E' => '←', 'SE' => '↖', 'S' => '↑', 'SW' => '↗', 'W' => '→', 'NW' => '↘'}
+      end
+
+      def ascii_wind_arrows
+        {'N' => 'v', 'NE' => ',', 'E' => '<', 'SE' => "\\", 'S' => '^', 'SW' => '/', 'W' => '>', 'NW' => '.'}
       end
 
       # A bit optimistic, but I really like the Cs.
