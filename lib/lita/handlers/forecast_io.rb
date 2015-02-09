@@ -989,7 +989,12 @@ module Lita
 
       # This is a little weird, because the arrows are 180° rotated.  That's because the wind bearing is "out of the N" not "towards the N".
       def ansi_wind_arrows
-        {'N' => '↓', 'NE' => '↙', 'E' => '←', 'SE' => '↖', 'S' => '↑', 'SW' => '↗', 'W' => '→', 'NW' => '↘'}
+        case robot.config.robot.adapter
+        when :slack
+          {'N' => ':arrow_down:', 'NE' => ':arrow_lower_left:', 'E' => ':arrow_left:', 'SE' => ':arrow_upper_left:', 'S' => ':arrow_up:', 'SW' => ':arrow_upper_right:', 'W' => ':arrow_right:', 'NW' => ':arrow_lower_right:'}
+        else
+         {'N' => '↓', 'NE' => '↙', 'E' => '←', 'SE' => '↖', 'S' => '↑', 'SW' => '↗', 'W' => '→', 'NW' => '↘'}
+        end
       end
 
       def ascii_wind_arrows
