@@ -590,11 +590,7 @@ module Lita
       end
 
       def ansi_wind_direction_forecast(forecast)
-        if robot.config.robot.adapter == :slack
-          str, data = do_the_wind_direction_thing(forecast, slack_wind_arrows)
-        else
-          str, data = do_the_wind_direction_thing(forecast, ansi_wind_arrows)
-        end
+        str, data = do_the_wind_direction_thing(forecast, ansi_wind_arrows)
         "48h wind direction #{get_speed data.first}|#{str}|#{get_speed data.last} Range: #{get_speed(data.min)} - #{get_speed(data.max)}"
       end
 
@@ -993,11 +989,12 @@ module Lita
 
       # This is a little weird, because the arrows are 180° rotated.  That's because the wind bearing is "out of the N" not "towards the N".
       def ansi_wind_arrows
-        {'N' => '↓', 'NE' => '↙', 'E' => '←', 'SE' => '↖', 'S' => '↑', 'SW' => '↗', 'W' => '→', 'NW' => '↘'}
-      end
-
-      def slack_wind_arrows
-        {'N' => ':arrow_down:', 'NE' => ':arrow_lower_left:', 'E' => ':arrow_left:', 'SE' => ':arrow_upper_left:', 'S' => ':arrow_up:', 'SW' => ':arrow_upper_right:', 'W' => ':arrow_right:', 'NW' => ':arrow_lower_right:'}
+        case robot.config.robot.adapter
+        when :slack
+          {'N' => ':arrow_down:', 'NE' => ':arrow_lower_left:', 'E' => ':arrow_left:', 'SE' => ':arrow_upper_left:', 'S' => ':arrow_up:', 'SW' => ':arrow_upper_right:', 'W' => ':arrow_right:', 'NW' => ':arrow_lower_right:'}
+        else
+         {'N' => '↓', 'NE' => '↙', 'E' => '←', 'SE' => '↖', 'S' => '↑', 'SW' => '↗', 'W' => '→', 'NW' => '↘'}
+        end
       end
 
       def ascii_wind_arrows
