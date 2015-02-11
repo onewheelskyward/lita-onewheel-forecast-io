@@ -285,6 +285,11 @@ describe Lita::Handlers::ForecastIo, lita_handler: true do
     send_message '!asciiwind'
     expect(replies.last).to eq("Portland, OR 48h wind direction 4.3 mph|\u000306v\u000310,<\u000311\\^/\u000308>.\u000311v<<<<<<\u000310<<<<<<<\u000306<<<<<\u000302<<<,,,,vvv\u000306vvvvvvvv,,\u0003|4.18 mph Range: 1.39 mph - 12.71 mph")
   end
+  
+  it '!geo' do
+    send_message '!geo Paris, france'
+    expect(replies.last).to eq('45.523452, -122.676207')
+  end
 
   # it 'colors strings' do
     # cstr = Lita::Handlers::ForecastIo.get_colored_string([{:key => 1}], :key, 'x', {1 => :blue})

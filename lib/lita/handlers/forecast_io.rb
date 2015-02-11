@@ -36,7 +36,7 @@ module Lita
       # One-offs
       route(/^!rain\s*(.*)/i, :is_it_raining,
             help: { '!rain [location]' => 'Magic Eightball response to whether or not it is raining in [location] right now.'})
-      route(/^!geo\s+(.*)/i, :geo_lookup,
+      route(/^!geo\s+(.*)/i, :handle_geo_lookup,
             help: { '!geo [location]' => 'A simple geo-lookup returning GPS coords.'})
       route(/^!alerts\s*(.*)/i, :handle_irc_alerts,
             help: { '!alerts [location]' => 'NOAA alerts for [location].'})
@@ -502,12 +502,21 @@ module Lita
         response.reply location.location_name + ' sunset: ' + do_the_sunset_thing(forecast)
       end
 
+      def handle_geo_lookup(response)
+        location = geo_lookup(response.user, response.matches[0][0])
+        response.reply "#{location.latitude}, #{location.longitude}"
+      end
+
       def forecast_text(forecast)
-        minute_forecast = forecast['minutely']['summary'].to_s.downcase.chop if forecast['minutely']
-        "weather is currently #{get_temperature forecast['currently']['temperature']} " +
-            "and #{forecast['currently']['summary'].downcase}.  Winds out of the #{get_cardinal_direction_from_bearing forecast['currently']['windBearing']} at #{get_speed(forecast['currently']['windSpeed'])}. " +
-            "It will be #{minute_forecast}, and #{forecast['hourly']['summary'].to_s.downcase.chop}.  There are also #{forecast['currently']['ozone'].to_s} ozones."
-        # daily.summary
+        forecast_str = "weather is currently #{get_temperature forecast['currently']['temperature']} " +
+            "and #{forecast['currently']['summary'].downcase}.  Winds out of the #{get_cardinal_direction_from_bearing forecast['currently']['windBearing']} at #{get_speed(forecast['currently']['windSpeed'])}. "
+
+        if forecast['minutely']
+          minute_forecast = forecast['minutely']['summary'].to_s.downcase.chop
+          forecast_str += "It will be #{minute_forecast}, and #{forecast['hourly']['summary'].to_s.downcase.chop}.  "
+        end
+
+        forecast_str += "There are also #{forecast['currently']['ozone'].to_s} ozones."
       end
 
       # ▁▃▅▇█▇▅▃▁ agj
