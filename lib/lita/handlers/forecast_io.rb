@@ -549,20 +549,28 @@ module Lita
         if forecast['minutely'].nil?
           return 'No minute-by-minute data available.'
         end
-
+        
+        i_can_has_snow = false
         data_points = []
         data = forecast['minutely']['data']
 
         data.each do |datum|
           data_points.push datum[key]
+          if datum['precipType'] == 'snow'
+            i_can_has_snow = true
+          end
         end
-
-        # if precip_type == 'snow' and type != 'intensity'
-        #   chars = %w[_ ☃ ☃ ☃ ☃ ☃] # Hat tip to hallettj@#pdxtech
-        # end
-
+        
         str = get_dot_str(chars, data, 0, 1, key)
 
+        if i_can_has_snow
+          data.each_with_index do |datum, index|
+            if datum['precipType'] == 'snow'
+              str[index] = '☃'
+            end
+          end
+        end
+        
         if config.colors
           str = get_colored_string(data, key, str, get_rain_range_colors)
         end

@@ -34,12 +34,16 @@
       {
         "time": 1417361760,
         "precipIntensity": 0.051,
-        "precipProbability": 0.1
+        "precipProbability": 0.1,
+        "precipIntensityError": 0.0023,
+        "precipType": "snow",
+        "precipAccumulation": 0.055
       },
       {
         "time": 1417361820,
         "precipIntensity": 0.0101,
-        "precipProbability": 0.2
+        "precipProbability": 0.2,
+        "precipType": "rain"
       },
       {
         "time": 1417361880,
