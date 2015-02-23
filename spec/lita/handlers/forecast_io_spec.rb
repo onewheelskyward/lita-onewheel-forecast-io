@@ -27,6 +27,7 @@ describe Lita::Handlers::ForecastIo, lita_handler: true do
   it { is_expected.to route('!forecast') }
   it { is_expected.to route('!weather') }
   it { is_expected.to route('!rain') }
+  it { is_expected.to route('!snow') }
   it { is_expected.to route('!ansirain') }
   it { is_expected.to route('!ansisnow') }
   it { is_expected.to route('!ansihumidity') }
@@ -77,6 +78,12 @@ describe Lita::Handlers::ForecastIo, lita_handler: true do
   it '!rain' do
     allow(MagicEightball).to receive(:reply) { 'Nope' }
     send_message '!rain Portland'
+    expect(replies.last).to eq('Nope')
+  end
+
+  it '!snow' do
+    allow(MagicEightball).to receive(:reply) { 'Nope' }
+    send_message '!snow Portland'
     expect(replies.last).to eq('Nope')
   end
 

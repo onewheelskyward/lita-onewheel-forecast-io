@@ -36,6 +36,8 @@ module Lita
       # One-offs
       route(/^!rain\s*(.*)/i, :is_it_raining,
             help: { '!rain [location]' => 'Magic Eightball response to whether or not it is raining in [location] right now.'})
+      route(/^!snow\s*(.*)/i, :is_it_snowing,
+            help: { '!snow [location]' => 'Magic Eightball response to whether or not it is snowing in [location] right now.'})
       route(/^!geo\s+(.*)/i, :handle_geo_lookup,
             help: { '!geo [location]' => 'A simple geo-lookup returning GPS coords.'})
       route(/^!alerts\s*(.*)/i, :handle_irc_alerts,
@@ -235,22 +237,50 @@ module Lita
 
       # End constants
 
+      # Return an eightball response based on the current chance of rain.  
+      # If it's snowing, it's a hard no.
       def is_it_raining(response)
-        Lita.logger.debug response.matches[0][0] # this shit's weird
         geocoded = geo_lookup response.user, response.matches[0][0]
         forecast = get_forecast_io_results response.user, geocoded
         reply = nil
 
-        case forecast['currently']['precipProbability']
-          when 0..0.2
-            reply = MagicEightball.reply :no
-          when 0.201..0.7
-            reply = MagicEightball.reply :maybe
-          when 0.701..1
-            reply = MagicEightball.reply :yes
+        rain_chance = 0
+        if forecast['currently']['precipType'] == 'rain'
+          rain_chance = forecast['currently']['precipProbability']
         end
 
+        reply = get_eightball_response(rain_chance)
+
         response.reply reply
+      end
+
+      # Return an eightball response based on the current chance of snow.
+      # If it's raining, it's a hard no.
+      def is_it_snowing(response)
+        geocoded = geo_lookup response.user, response.matches[0][0]
+        forecast = get_forecast_io_results response.user, geocoded
+        reply = nil
+
+        snow_chance = 0
+
+        if forecast['currently']['precipType'] == 'snow'
+          snow_chance = forecast['currently']['precipProbability']
+        end
+
+        reply = get_eightball_response(snow_chance)
+
+        response.reply reply
+      end
+
+      def get_eightball_response(chance)
+        case chance
+          when 0..0.2
+            MagicEightball.reply :no
+          when 0.201..0.7
+            MagicEightball.reply :maybe
+          when 0.701..1
+            MagicEightball.reply :yes
+        end
       end
 
       # Geographical stuffs
