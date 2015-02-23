@@ -545,7 +545,7 @@ module Lita
         do_the_humidity_thing(forecast, ansi_chars, 'humidity') #, 'probability', get_rain_range_colors)
       end
 
-      def do_the_rain_chance_thing(forecast, chars, key) #, type, range_colors = nil)
+      def do_the_rain_chance_thing(forecast, chars, key, use_color = config.colors)
         if forecast['minutely'].nil?
           return 'No minute-by-minute data available.'
         end
@@ -571,7 +571,7 @@ module Lita
           end
         end
         
-        if config.colors
+        if use_color
           str = get_colored_string(data, key, str, get_rain_range_colors)
         end
         str
@@ -729,7 +729,7 @@ module Lita
       def conditions(forecast)
         temp_str, temps = do_the_temp_thing(forecast, ansi_chars, 8)
         wind_str, winds = do_the_wind_direction_thing(forecast, ansi_wind_arrows, 8)
-        rain_str, rains = do_the_rain_chance_thing(forecast, ansi_chars, 'precipProbability') # , 'probability', get_rain_range_colors
+        rain_str, rains = do_the_rain_chance_thing(forecast, ansi_chars, 'precipProbability', false) # , 'probability', get_rain_range_colors
 
         rs = compress_string(rain_str, 4)
 
