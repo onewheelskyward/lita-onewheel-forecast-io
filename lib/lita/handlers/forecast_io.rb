@@ -57,13 +57,17 @@ module Lita
       route(/^!ansirain\s*(.*)/i, :handle_irc_ansirain,
             help: { '!ansirain [location]' => '60m rain chance report for [location].'})
       route(/^!ansisnow\s*(.*)/i, :handle_irc_ansirain,
-            help: { '!ansisnow [location]' => 'Alias for ansirain.'})
+            help: { '!ansisnow [location]' => 'Alias for !ansirain.'})
       route(/^!dailyrain\s*(.*)/i, :handle_irc_daily_rain,
             help: { '!dailyrain [location]' => '48h rain chance report for [location].'})
+      route(/^!dailysnow\s*(.*)/i, :handle_irc_daily_rain,
+            help: { '!dailysnow [location]' => 'Alias for !dailyrain.'})
       route(/^!7dayrain\s*(.*)/i, :handle_irc_seven_day_rain,
             help: { '!7dayrain [location]' => '7 day rain chance report for [location].'})
       route(/^!weeklyrain\s*(.*)/i, :handle_irc_seven_day_rain,
             help: { '!weeklyrain [location]' => 'Alias for !7dayrain.'})
+      route(/^!weeklysnow\s*(.*)/i, :handle_irc_seven_day_rain,
+            help: { '!weeklysnow [location]' => 'Alias for !7dayrain.'})
       route(/^!ansiintensity\s*(.*)/i, :handle_irc_ansirain_intensity,
             help: { '!ansiintensity [location]' => '60m rain intensity report for [location].'})
       route(/^!asciirain\s*(.*)/i, :handle_irc_ascii_rain,

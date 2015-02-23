@@ -41,10 +41,12 @@ describe Lita::Handlers::ForecastIo, lita_handler: true do
   it { is_expected.to route('!7day') }
   it { is_expected.to route('!weekly') }
   it { is_expected.to route('!dailyrain') }
+  it { is_expected.to route('!dailysnow') }
   it { is_expected.to route('!dailytemp') }
   it { is_expected.to route('!dailyhumidity') }
   it { is_expected.to route('!7dayrain') }
   it { is_expected.to route('!weeklyrain') }
+  it { is_expected.to route('!weeklysnow') }
   it { is_expected.to route('!dailywind') }
   it { is_expected.to route('!alerts') }
   it { is_expected.to route('!ansiozone') }
