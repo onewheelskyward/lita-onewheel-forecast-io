@@ -242,16 +242,8 @@ module Lita
       def is_it_raining(response)
         geocoded = geo_lookup response.user, response.matches[0][0]
         forecast = get_forecast_io_results response.user, geocoded
-        reply = nil
 
-        rain_chance = 0
-        if forecast['currently']['precipType'] == 'rain'
-          rain_chance = forecast['currently']['precipProbability']
-        end
-
-        reply = get_eightball_response(rain_chance)
-
-        response.reply reply
+        response.reply get_eightball_response get_chance_of('rain', forecast['currently'])
       end
 
       # Return an eightball response based on the current chance of snow.
@@ -259,17 +251,8 @@ module Lita
       def is_it_snowing(response)
         geocoded = geo_lookup response.user, response.matches[0][0]
         forecast = get_forecast_io_results response.user, geocoded
-        reply = nil
 
-        snow_chance = 0
-
-        if forecast['currently']['precipType'] == 'snow'
-          snow_chance = forecast['currently']['precipProbability']
-        end
-
-        reply = get_eightball_response(snow_chance)
-
-        response.reply reply
+        response.reply get_eightball_response get_chance_of('snow', forecast['currently'])
       end
 
       def get_eightball_response(chance)
@@ -281,6 +264,16 @@ module Lita
           when 0.701..1
             MagicEightball.reply :yes
         end
+      end
+
+      def get_chance_of(rain_or_snow, currently)
+        chance = 0
+
+        if currently['precipType'] == rain_or_snow
+          chance = currently['precipProbability']
+        end
+
+        chance
       end
 
       # Geographical stuffs
