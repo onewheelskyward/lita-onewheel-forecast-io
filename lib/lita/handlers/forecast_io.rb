@@ -267,13 +267,14 @@ module Lita
       end
 
       def get_chance_of(rain_or_snow, currently)
+        # This is a fallthrough so we'll reply no to rain if it's snowing, and vice versa.
         chance = 0
 
-        if currently['precipType'] == rain_or_snow
-          chance = currently['precipProbability']
+        if currently['precipType'] == rain_or_snow    # If we match the specified string ['rain', 'snow']
+          chance = currently['precipProbability']     # Set the probability for 8-ball reckoning.
         end
 
-        chance
+        chance    # Probably superfluous.
       end
 
       # Geographical stuffs
@@ -757,7 +758,7 @@ module Lita
         rs = compress_string(rain_str, 4)
 
         sun_chance = ((1 - forecast['daily']['data'][0]['cloudCover']) * 100).round
-        "#{get_temperature temps.first.round(2)} |#{temp_str}| #{get_temperature temps.last.round(2)} " + "/ #{get_speed(winds.first)} |#{wind_str}| #{get_speed(winds.last)} / #{sun_chance}% chance of sun / 60m rain |#{rs}|"
+        "#{get_temperature temps.first.round(2)} |#{temp_str}| #{get_temperature temps.last.round(2)} " + "/ #{get_speed(winds.first)} |#{wind_str}| #{get_speed(winds.last)} / #{sun_chance}% chance of sun / 60m precip |#{rs}|"
       end
 
       def do_the_seven_day_thing(forecast)
