@@ -153,7 +153,7 @@ module Lita
       end
 
       def ansi_chars
-        %w[_ ▁ ▃ ▅ ▇ █]
+        %w[_ ▁ ▃ ▅ ▇ █]   # Thx, agj #pdxtech
       end
 
       def ozone_chars
@@ -164,6 +164,7 @@ module Lita
         %w[_ . - ~ * ']
       end
 
+      # Based on the chance of precipitation.
       def get_rain_range_colors
         { 0..0.10    => :blue,
           0.11..0.20 => :purple,
@@ -178,6 +179,7 @@ module Lita
         }
       end
 
+      # Based on the precipIntensity field, tested mostly on Portland data.  YIMV.
       def get_rain_intensity_range_colors
         { 0..0.0050      => :blue,
           0.0051..0.0100 => :purple,
@@ -192,6 +194,7 @@ module Lita
         }
       end
 
+      # Based on the temp in F.
       def get_temp_range_colors
         # Absolute zero?  You never know.
         { -459.7..24.99 => :blue,
@@ -207,6 +210,7 @@ module Lita
         }
       end
 
+      # Based on the wind ground speed in mph.
       def get_wind_range_colors
         {   0..3    => :blue,
             3..6    => :purple,
@@ -219,6 +223,7 @@ module Lita
         }
       end
 
+      # Based on the chance of sun.
       def get_sun_range_colors
         { 0..0.20    => :green,
           0.21..0.50 => :lime,
@@ -227,6 +232,7 @@ module Lita
         }
       end
 
+      # Based on the percentage of relative humidity.
       def get_humidity_range_colors
         {   0..0.12    => :blue,
             0.13..0.25 => :purple,
@@ -239,6 +245,7 @@ module Lita
         }
       end
 
+      # IRC colors.
       def colors
         { :white  => '00',
           :black  => '01',
@@ -316,7 +323,7 @@ module Lita
       # Geographical stuffs
       # Now with moar caching!
       def optimistic_geo_wrapper(query)
-        Lita.logger.debug 'Optimistically geo wrapping!'
+        Lita.logger.debug 'Optimistically geo wrapping #{query}!'
         geocoded = nil
         result = ::Geocoder.search(query)
         Lita.logger.debug "Geocoder result: '#{result.inspect}'"
@@ -538,8 +545,9 @@ module Lita
         key = response.user.name + '-scale'
         persisted_scale = redis.hget(REDIS_KEY, key)
 
-        if ['c','f','k'].include? response.matches[0][0].downcase
-          scale_to_set = response.matches[0][0].downcase
+        user_requested_scale = response.matches[0][0].downcase
+        if %w(c f k).include? user_requested_scale
+          scale_to_set = user_requested_scale
         else
           # Toggle mode
           scale_to_set = get_other_scale(persisted_scale)
@@ -583,22 +591,19 @@ module Lita
         forecast_str += "There are also #{forecast['currently']['ozone'].to_s} ozones."
       end
 
-      # ▁▃▅▇█▇▅▃▁ agj
       def ascii_rain_forecast(forecast)
-        str = do_the_rain_chance_thing(forecast, ascii_chars, 'precipProbability') #, 'probability', get_rain_range_colors)
-        "rain probability #{(Time.now).strftime('%H:%M').to_s}|#{str}|#{(Time.now + 3600).strftime('%H:%M').to_s}"  #range |_.-•*'*•-._|
+        str = do_the_rain_chance_thing(forecast, ascii_chars, 'precipProbability')
+        "rain probability #{(Time.now).strftime('%H:%M').to_s}|#{str}|#{(Time.now + 3600).strftime('%H:%M').to_s}"
       end
 
       def ansi_rain_forecast(forecast)
         str = do_the_rain_chance_thing(forecast, ansi_chars, 'precipProbability') #, 'probability', get_rain_range_colors)
-        #msg.reply "|#{str}|  min-by-min rain prediction.  range |▁▃▅▇█▇▅▃▁| art by 'a-g-j' =~ s/-//g"
-        "rain probability #{(Time.now).strftime('%H:%M').to_s}|#{str}|#{(Time.now + 3600).strftime('%H:%M').to_s}"  #range |_.-•*'*•-._|
+        "rain probability #{(Time.now).strftime('%H:%M').to_s}|#{str}|#{(Time.now + 3600).strftime('%H:%M').to_s}"
       end
 
       def ansi_rain_intensity_forecast(forecast)
         str = do_the_rain_intensity_thing(forecast, ansi_chars, 'precipIntensity') #, 'probability', get_rain_range_colors)
-        #msg.reply "|#{str}|  min-by-min rain prediction.  range |▁▃▅▇█▇▅▃▁| art by 'a-g-j' =~ s/-//g"
-        "rain intensity #{(Time.now).strftime('%H:%M').to_s}|#{str}|#{(Time.now + 3600).strftime('%H:%M').to_s}"  #range |_.-•*'*•-._|
+        "rain intensity #{(Time.now).strftime('%H:%M').to_s}|#{str}|#{(Time.now + 3600).strftime('%H:%M').to_s}"
       end
 
       def ansi_humidity_forecast(forecast)
@@ -639,7 +644,7 @@ module Lita
 
       def do_the_rain_intensity_thing(forecast, chars, key) #, type, range_colors = nil)
         if forecast['minutely'].nil?
-          return 'No minute-by-minute data available.'
+          return 'No minute-by-minute data available.'  # The "Middle of Nowhere" case.
         end
 
         data_points = []
@@ -703,7 +708,6 @@ module Lita
         end
 
         return dot_str, temps
-        # return dot_str, temps
       end
 
       def ansi_wind_direction_forecast(forecast)
@@ -726,7 +730,7 @@ module Lita
           wind_arrow_index = get_cardinal_direction_from_bearing(datum[key])
           str << wind_arrows[wind_arrow_index].to_s
           data_points.push datum['windSpeed']
-          break if index == hours - 1 # We only want (hours) 24hrs of data.
+          break if index == hours - 1 # We only want (hours) of data.
         end
 
         if config.colors
@@ -789,12 +793,14 @@ module Lita
       def conditions(forecast)
         temp_str, temps = do_the_temp_thing(forecast, ansi_chars, 8)
         wind_str, winds = do_the_wind_direction_thing(forecast, ansi_wind_arrows, 8)
-        rain_str, rains = do_the_rain_chance_thing(forecast, ansi_chars, 'precipProbability', false) # , 'probability', get_rain_range_colors
+        rain_str, rains = do_the_rain_chance_thing(forecast, ansi_chars, 'precipProbability', false)
 
         rs = compress_string(rain_str, 4)
 
         sun_chance = ((1 - forecast['daily']['data'][0]['cloudCover']) * 100).round
-        "#{get_temperature temps.first.round(2)} |#{temp_str}| #{get_temperature temps.last.round(2)} " + "/ #{get_speed(winds.first)} |#{wind_str}| #{get_speed(winds.last)} / #{sun_chance}% chance of sun / 60m precip |#{rs}|"
+        "#{get_temperature temps.first.round(2)} |#{temp_str}| #{get_temperature temps.last.round(2)} "
+        + "/ #{get_speed(winds.first)} |#{wind_str}| #{get_speed(winds.last)} "
+        + "/ #{sun_chance}% chance of sun / 60m precip |#{rs}|"
       end
 
       def do_the_seven_day_thing(forecast)
@@ -818,7 +824,9 @@ module Lita
           min_str = get_colored_string(data, 'temperatureMin', min_str, get_temp_range_colors)
         end
 
-        "7day high/low temps #{get_temperature maxtemps.first.to_f.round(1)} |#{max_str}| #{get_temperature maxtemps.last.to_f.round(1)} / #{get_temperature mintemps.first.to_f.round(1)} |#{min_str}| #{get_temperature mintemps.last.to_f.round(1)} Range: #{get_temperature mintemps.min} - #{get_temperature maxtemps.max}"
+        "7day high/low temps #{get_temperature maxtemps.first.to_f.round(1)} |#{max_str}| #{get_temperature maxtemps.last.to_f.round(1)} "
+        + "/ #{get_temperature mintemps.first.to_f.round(1)} |#{min_str}| #{get_temperature mintemps.last.to_f.round(1)} "
+        + "Range: #{get_temperature mintemps.min} - #{get_temperature maxtemps.max}"
       end
 
       def do_the_seven_day_rain_thing(forecast)
@@ -833,7 +841,6 @@ module Lita
           rains.push day['precipProbability']
         end
 
-        # differential = maxtemps.max - maxtemps.min
         str = get_dot_str(ansi_chars, data, 0, 1, 'precipProbability')
 
         if config.colors
@@ -855,7 +862,6 @@ module Lita
           rains.push day['precipProbability']
         end
 
-        # differential = maxtemps.max - maxtemps.min
         str = get_dot_str(ansi_chars, data, 0, 1, 'precipProbability')
 
         if config.colors
@@ -873,7 +879,6 @@ module Lita
           winds.push day['windSpeed']
         end
 
-        # differential = maxtemps.max - maxtemps.min
         str = get_dot_str(ansi_chars, data, 0, winds.max, 'windSpeed')
 
         if config.colors
@@ -891,14 +896,14 @@ module Lita
           humidities.push day['humidity']
         end
 
-        # differential = maxtemps.max - maxtemps.min
         str = get_dot_str(ansi_chars, data, 0, 1, 'humidity')
 
         if config.colors
           str = get_colored_string(data, 'humidity', str, get_wind_range_colors)
         end
 
-        "7day humidity #{get_humidity humidities.first}|#{str}|#{get_humidity humidities.last} range #{get_humidity humidities.min}-#{get_humidity humidities.max}"
+        "7day humidity #{get_humidity humidities.first}|#{str}|#{get_humidity humidities.last} "
+        + "range #{get_humidity humidities.min}-#{get_humidity humidities.max}"
       end
 
       def do_the_ozone_thing(forecast)
@@ -911,7 +916,6 @@ module Lita
       end
 
       def do_the_pressure_thing(forecast)
-        # O ◎ ]
         data = forecast['hourly']['data']
         key = 'pressure'
         boiled_data = []
@@ -950,16 +954,22 @@ module Lita
       end
 
       # Utility functions
+
+      ###
+      # get_colored_string
+      # Returns the dot_str colored based on our range_hash.
+      # range_hash is one of our color hashes, e.g. get_wind_range_colors
+      # key is used to index each element in data_limited to get our value to compare with the range_hash.
+      ##
       def get_colored_string(data_limited, key, dot_str, range_hash)
         color = nil
         prev_color = nil
         collect_str = ''
         colored_str = ''
 
-        # data_limited is an array of data points that will be stringed.
         data_limited.each_with_index do |data, index|
           range_hash.keys.each do |range_hash_key|
-            if range_hash_key.cover? data[key]
+            if range_hash_key.cover? data[key]    # Super secred cover sauce
               color = range_hash[range_hash_key]
               if index == 0
                 prev_color = color
@@ -979,7 +989,6 @@ module Lita
 
         # And get the last one.
         colored_str += "\x03" + colors[color] + collect_str + "\x03"
-        colored_str
       end
 
       def compress_string(str, compression_factor)
@@ -1015,6 +1024,7 @@ module Lita
       # °℃℉
       def get_dot(probability, char_array)
         if probability < 0 or probability > 1
+          Lita.logger.error "get_dot Probably a probability problem: #{probability} should be between 0 and 1."
           return '?'
         end
 
@@ -1031,20 +1041,6 @@ module Lita
         elsif probability <= 1.00
           return char_array[5]
         end
-        #if probability == 0
-        #  return Format(:blue, char_array[0])
-        #elsif probability <= 0.10
-        #  return Format(:purple, char_array[1])
-        #elsif probability <= 0.25
-        #  return Format(:teal, char_array[2])
-        #elsif probability <= 0.50
-        #  return Format(:yellow, char_array[3])
-        #elsif probability <= 0.75
-        #  return Format(:orange, char_array[4])
-        #elsif probability <= 1.00
-        #  return Format(:red, char_array[5])
-        #end
-
       end
 
       def get_temperature(temp_f)
