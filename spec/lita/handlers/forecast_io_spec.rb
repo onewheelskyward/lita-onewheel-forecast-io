@@ -70,6 +70,49 @@ describe Lita::Handlers::ForecastIo, lita_handler: true do
   it { is_expected.to route('!dailypressure') }
   it { is_expected.to route('!dailybarometer') }
 
+  # This is where we test for regex overflow, so !weeklyrain doesn't try to get a forecast for Rain, Germany.
+  it { is_expected.not_to route('!forecastrain') }
+  it { is_not_expected.to route('!weatherrain') }
+  it { is_not_expected.to route('!rainrain') }
+  it { is_not_expected.to route('!snowrain') }
+  it { is_not_expected.to route('!ansirainrain') }
+  it { is_not_expected.to route('!ansisnowrain') }
+  it { is_not_expected.to route('!ansihumidityrain') }
+  it { is_not_expected.to route('!ansiintensityrain') }
+  it { is_not_expected.to route('!ansitemprain') }
+  it { is_not_expected.to route('!ansiwindrain') }
+  it { is_not_expected.to route('!asciiwindrain') }
+  it { is_not_expected.to route('!ansisunrain') }
+  it { is_not_expected.to route('!ansicloudrain') }
+  it { is_not_expected.to route('!asciitemprain') }
+  it { is_not_expected.to route('!asciirainrain') }
+  it { is_not_expected.to route('!7dayrain') }
+  it { is_not_expected.to route('!weeklyrain') }
+  it { is_not_expected.to route('!dailyrainrain') }
+  it { is_not_expected.to route('!dailysnowrain') }
+  it { is_not_expected.to route('!dailytemprain') }
+  it { is_not_expected.to route('!dailyhumidityrain') }
+  it { is_not_expected.to route('!7dayrainrain') }
+  it { is_not_expected.to route('!weeklyrainrain') }
+  it { is_not_expected.to route('!weeklysnowrain') }
+  it { is_not_expected.to route('!dailywindrain') }
+  it { is_not_expected.to route('!alertsrain') }
+  it { is_not_expected.to route('!ansiozonerain') }
+  it { is_not_expected.to route('!condrain') }
+  it { is_not_expected.to route('!condirain') }
+  it { is_not_expected.to route('!conditrain') }
+  it { is_not_expected.to route('!conditirain') }
+  it { is_not_expected.to route('!conditiorain') }
+  it { is_not_expected.to route('!conditionrain') }
+  it { is_not_expected.to route('!conditionsrain') }
+  it { is_not_expected.to route('!sunriserain') }
+  it { is_not_expected.to route('!sunsetrain') }
+  it { is_not_expected.to route('!forecastallthethingsrain') }
+  it { is_not_expected.to route('!ansipressurerain') }
+  it { is_not_expected.to route('!ansibarometerrain') }
+  it { is_not_expected.to route('!dailypressurerain') }
+  it { is_not_expected.to route('!dailybarometerrain') }
+
   it '!forecast' do
     send_message '!forecast'
     expect(replies.last).to eq("Portland, OR weather is currently 28.39°F and clear.  Winds out of the E at 5.74 mph. It will be clear for the hour, and flurries tomorrow morning.  There are also 357.71 ozones.")
