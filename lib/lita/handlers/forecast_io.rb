@@ -24,7 +24,7 @@ module Lita
       route(/^!weekly\s*$/i, :handle_irc_seven_day)
       route(/^!weekly\s+(.+)/i, :handle_irc_seven_day,
             help: { '!weekly [location]' => 'Alias for !7day.'})
-      route(/^!asciitemp\s+$/i, :handle_irc_ascii_temp)
+      route(/^!asciitemp\s*$/i, :handle_irc_ascii_temp)
       route(/^!asciitemp\s+(.+)/i, :handle_irc_ascii_temp,
             help: { '!asciitemp [location]' => 'Like ansitemp, but with less ansi.'})
 
@@ -36,7 +36,7 @@ module Lita
       route(/^!forecast\s+(.+)/i, :handle_irc_forecast,
             help: { '!forecast [location]' => 'Text forcast of the location selected.'})
       route(/^!weather\s*$/i, :handle_irc_forecast)
-      route(/^!weather\s*(.*)/i, :handle_irc_forecast,
+      route(/^!weather\s+(.+)/i, :handle_irc_forecast,
             help: { '!weather [location]' => 'Alias for !forecast.'})
       route(/^!condi*t*i*o*n*s*\s*$/i, :handle_irc_conditions)
       route(/^!condi*t*i*o*n*s*\s+(.+)/i, :handle_irc_conditions,
@@ -46,7 +46,7 @@ module Lita
       route(/^!rain\s*$/i, :is_it_raining)
       route(/^!rain\s+(.+)/i, :is_it_raining,
             help: { '!rain [location]' => 'Magic Eightball response to whether or not it is raining in [location] right now.'})
-      route(/^!snow\s*/i, :is_it_snowing)
+      route(/^!snow\s*$/i, :is_it_snowing)
       route(/^!snow\s+(.+)/i, :is_it_snowing,
             help: { '!snow [location]' => 'Magic Eightball response to whether or not it is snowing in [location] right now.'})
       route(/^!geo\s*$/i, :handle_geo_lookup)
@@ -798,9 +798,9 @@ module Lita
         rs = compress_string(rain_str, 4)
 
         sun_chance = ((1 - forecast['daily']['data'][0]['cloudCover']) * 100).round
-        "#{get_temperature temps.first.round(2)} |#{temp_str}| #{get_temperature temps.last.round(2)} "
-        + "/ #{get_speed(winds.first)} |#{wind_str}| #{get_speed(winds.last)} "
-        + "/ #{sun_chance}% chance of sun / 60m precip |#{rs}|"
+        "#{get_temperature temps.first.round(2)} |#{temp_str}| #{get_temperature temps.last.round(2)} "\
+        "/ #{get_speed(winds.first)} |#{wind_str}| #{get_speed(winds.last)} "\
+        "/ #{sun_chance}% chance of sun / 60m precip |#{rs}|"
       end
 
       def do_the_seven_day_thing(forecast)
@@ -824,9 +824,9 @@ module Lita
           min_str = get_colored_string(data, 'temperatureMin', min_str, get_temp_range_colors)
         end
 
-        "7day high/low temps #{get_temperature maxtemps.first.to_f.round(1)} |#{max_str}| #{get_temperature maxtemps.last.to_f.round(1)} "
-        + "/ #{get_temperature mintemps.first.to_f.round(1)} |#{min_str}| #{get_temperature mintemps.last.to_f.round(1)} "
-        + "Range: #{get_temperature mintemps.min} - #{get_temperature maxtemps.max}"
+        "7day high/low temps #{get_temperature maxtemps.first.to_f.round(1)} |#{max_str}| #{get_temperature maxtemps.last.to_f.round(1)} "\
+        "/ #{get_temperature mintemps.first.to_f.round(1)} |#{min_str}| #{get_temperature mintemps.last.to_f.round(1)} "\
+        "Range: #{get_temperature mintemps.min} - #{get_temperature maxtemps.max}"
       end
 
       def do_the_seven_day_rain_thing(forecast)
@@ -902,8 +902,8 @@ module Lita
           str = get_colored_string(data, 'humidity', str, get_wind_range_colors)
         end
 
-        "7day humidity #{get_humidity humidities.first}|#{str}|#{get_humidity humidities.last} "
-        + "range #{get_humidity humidities.min}-#{get_humidity humidities.max}"
+        "7day humidity #{get_humidity humidities.first}|#{str}|#{get_humidity humidities.last} "\
+        "range #{get_humidity humidities.min}-#{get_humidity humidities.max}"
       end
 
       def do_the_ozone_thing(forecast)
