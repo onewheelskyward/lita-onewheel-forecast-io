@@ -338,7 +338,7 @@ module Lita
         if query.nil? or query.empty?
           Lita.logger.debug "No query specified, pulling from redis #{REDIS_KEY}, #{user.name}"
           serialized_geocoded = redis.hget(REDIS_KEY, user.name)
-          unless serialized_geocoded.nil?
+          unless serialized_geocoded == 'null' or serialized_geocoded.nil?
             geocoded = JSON.parse(serialized_geocoded)
           end
           Lita.logger.debug "Cached location: #{geocoded.inspect}"

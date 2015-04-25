@@ -22,8 +22,6 @@ describe Lita::Handlers::ForecastIo, lita_handler: true do
     end
   end
 
-  # Todo: mock weather data for predictable output.
-
   it { is_expected.to route('!forecast') }
   it { is_expected.to route('!weather') }
   it { is_expected.to route('!rain') }
