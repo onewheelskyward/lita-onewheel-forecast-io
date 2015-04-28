@@ -654,7 +654,8 @@ module Lita
           data_points.push datum[key]
         end
 
-        str = get_dot_str(chars, data, data_points.min, data_points.max, key)
+        # 0.043 is where our highest intensity color starts; shows up infrequently in portland.  May need adjustments for other areas.
+        str = get_dot_str(chars, data, 0, 0.043, key)
 
         if config.colors
           str = get_colored_string(data, key, str, get_rain_intensity_range_colors)
