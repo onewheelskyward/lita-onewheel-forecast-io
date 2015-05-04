@@ -4,12 +4,11 @@ This Lita handler takes location-based queries and returns interesting data abou
 
 ## Installation
 
-Add lita-forecast-io to your Lita instance's Gemfile:
+Add lita-forecast-io to your Lita instance's Gemfile, from github since it's currently unpublished:
 
 ``` ruby
-gem "lita-forecast-io"
+gem 'lita-forecast-io', github: 'onewheelskyward/lita-forecast-io', branch: :master
 ```
-
 
 ## Configuration
 
