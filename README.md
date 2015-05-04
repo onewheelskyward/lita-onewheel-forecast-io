@@ -1,6 +1,6 @@
 # lita-forecast-io
 
-TODO: Add a description of the plugin.
+This Lita handler takes location-based queries and returns interesting data about the weather.  Temperatures, rain chance and intensity, and wind speeds are all included.  But wait, there's more!  if you download now, you also get 8-ball style replies with `!rain` and `!snow`!
 
 ## Installation
 
@@ -13,11 +13,11 @@ gem "lita-forecast-io"
 
 ## Configuration
 
-TODO: Describe any configuration attributes the plugin exposes.
+Forecast.io api key required.
 
 ## Usage
 
-TODO: Describe the plugin's features and how to use them.
+!rain, !snow and other fine things.
 
 ## License
 
