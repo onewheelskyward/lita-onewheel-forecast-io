@@ -274,12 +274,12 @@ describe Lita::Handlers::ForecastIo, lita_handler: true do
 
   it '!sunrise' do
     send_message '!sunrise'
-    expect(replies.last).to eq("Portland, OR sunrise: 07:30:58")
+    expect(replies.last).to include("Portland, OR sunrise: ")
   end
 
   it '!sunset' do
     send_message '!sunset'
-    expect(replies.last).to eq("Portland, OR sunset: 16:30:55")
+    expect(replies.last).to include("Portland, OR sunset: ")
   end
 
   it '!dailywind' do
