@@ -15,7 +15,7 @@ gem 'lita-forecast-io', github: 'onewheelskyward/lita-forecast-io', branch: :mas
 
 ## Configuration
 
-Forecast.io api key required.
+Forecast.io api key required: https://developer.forecast.io/
 
 ## Usage
 
