@@ -1,11 +1,7 @@
 require_relative '../../spec_helper'
 
 describe Lita::Handlers::ForecastIo, lita_handler: true do
-  # it { is_expected.to route("some message") }
-  # it 'lets everyone know when someone is happy' do
-  #   send_message("I'm happy!")
-  #   expect(replies.last).to eq("Hey, everyone! #{user.name} is happy! Isn't that nice?")
-  # end
+
   before(:each) do
     mock_geocoder = ::Geocoder::Result::Google.new({'formatted_address' => 'Portland, OR', 'geometry' => { 'location' => { 'lat' => 45.523452, 'lng' => -122.676207 }}})
     allow(::Geocoder).to receive(:search) { [mock_geocoder] }  # It expects an array of geocoder objects.
@@ -16,8 +12,8 @@ describe Lita::Handlers::ForecastIo, lita_handler: true do
     allow(RestClient).to receive(:get) { mock_weather_json }
 
     registry.configure do |config|
-      config.handlers.forecast_io.api_uri = 'https://api.forecast.io/forecast/'
-      config.handlers.forecast_io.api_key = '5537a6b7a8e2936dc7ced091b999d60a'
+      config.handlers.forecast_io.api_uri = ''
+      config.handlers.forecast_io.api_key = ''
       config.handlers.forecast_io.colors = true
     end
   end
