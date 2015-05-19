@@ -353,5 +353,8 @@ module ForecastIo
       str
     end
 
+    def do_the_nearest_storm_thing(forecast)
+      return forecast['currently']['nearestStormDistance'], forecast['currently']['nearestStormBearing']
+    end
   end
 end

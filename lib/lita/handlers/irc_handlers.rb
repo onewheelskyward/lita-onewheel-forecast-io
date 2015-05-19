@@ -147,10 +147,8 @@ module ForecastIo
       response.reply location.location_name + ' ' + do_the_daily_pressure_thing(forecast)
     end
 
-    # Todo: Too much logic.
     def handle_irc_set_scale(response)
       key = response.user.name + '-scale'
-
       user_requested_scale = response.match_data[1].to_s.downcase
       reply = check_and_set_scale(key, user_requested_scale)
       response.reply reply
@@ -166,6 +164,14 @@ module ForecastIo
       location = geo_lookup(response.user, response.match_data[1])
       forecast = get_forecast_io_results(response.user, location)
       response.reply location.location_name + ' sunset: ' + do_the_sunset_thing(forecast)
+    end
+
+    def handle_irc_neareststorm(response)
+      location = geo_lookup(response.user, response.match_data[1])
+      forecast = get_forecast_io_results(response.user, location)
+      nearest_storm_distance, nearest_storm_bearing = do_the_nearest_storm_thing(forecast)
+
+      response.reply "The nearest storm is #{get_distance(nearest_storm_distance, get_scale(response.user))} to the #{get_cardinal_direction_from_bearing(nearest_storm_bearing)} of you."
     end
   end
 end

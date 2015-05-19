@@ -63,6 +63,9 @@ module Lita
       route(/^!alerts\s*$/i, :handle_irc_alerts)
       route(/^!alerts\s+(.+)/i, :handle_irc_alerts,
             help: { '!alerts [location]' => 'NOAA alerts for [location].'})
+      route(/^!neareststorm\s*$/i, :handle_irc_neareststorm)
+      route(/^!neareststorm\s+(.+)$/i, :handle_irc_neareststorm,
+            help: { '!neareststorm [location]' => 'Nearest storm distance for [location].'})
 
       # State Commands
       route(/^!set scale (c|f|k)/i, :handle_irc_set_scale,

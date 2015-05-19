@@ -105,6 +105,15 @@ module ForecastIo
       end
     end
 
+    def get_scale(user)
+      key = user.name + '-scale'
+      scale = redis.hget(REDIS_KEY, key)
+      if scale.nil?
+        scale = 'f'
+      end
+      scale
+    end
+
     def check_and_set_scale(key, user_requested_scale)
       persisted_scale = redis.hget(REDIS_KEY, key)
 
@@ -269,6 +278,14 @@ module ForecastIo
         kilometers(speed_imperial).to_s + ' kph'
       else
         speed_imperial.to_s + ' mph'
+      end
+    end
+
+    def get_distance(distance_imperial, scale)
+      if scale == 'c'
+        kilometers(distance_imperial).to_s + ' km'
+      else
+        distance_imperial.to_s + ' mi'
       end
     end
 

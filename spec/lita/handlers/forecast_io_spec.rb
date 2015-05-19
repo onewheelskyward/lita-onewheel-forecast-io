@@ -63,6 +63,7 @@ describe Lita::Handlers::ForecastIo, lita_handler: true do
   it { is_expected.to route('!ansibarometer') }
   it { is_expected.to route('!dailypressure') }
   it { is_expected.to route('!dailybarometer') }
+  it { is_expected.to route('!neareststorm') }
 
   # This is where we test for regex overflow, so !weeklyrain doesn't try to get a forecast for Rain, Germany.
   it { is_expected.not_to route('!forecastrain') }
@@ -333,6 +334,17 @@ describe Lita::Handlers::ForecastIo, lita_handler: true do
   it '!geo' do
     send_message '!geo Paris, france'
     expect(replies.last).to eq('45.523452, -122.676207')
+  end
+
+  it '!neareststorm' do
+    send_message '!neareststorm'
+    expect(replies.last).to eq('The nearest storm is 158 mi to the S of you.')
+  end
+
+  it '!neareststorm with scale' do
+    send_message '!set scale c'
+    send_message '!neareststorm'
+    expect(replies.last).to eq('The nearest storm is 252.8 km to the S of you.')
   end
 
   # it 'colors strings' do
