@@ -58,8 +58,8 @@ module ForecastIo
         65..75        => :yellow,
         75..85        => :orange,
         85..95        => :red,
-        95..99.999    => :pink,
-        100..159.3    => :brown
+        95..99.999    => :brown,
+        100..159.3    => :pink
       }
     end
 
