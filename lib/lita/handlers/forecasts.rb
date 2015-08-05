@@ -7,7 +7,8 @@ module ForecastIo
 
     def ansi_rain_forecast(forecast)
       str = do_the_rain_chance_thing(forecast, ansi_chars, 'precipProbability') #, 'probability', get_rain_range_colors)
-      "rain probability #{(Time.now).strftime('%H:%M').to_s}|#{str}|#{(Time.now + 3600).strftime('%H:%M').to_s}"
+      max_str = get_max_rain_chance(forecast)
+      "rain probability #{(Time.now).strftime('%H:%M').to_s}|#{str}|#{(Time.now + 3600).strftime('%H:%M').to_s} #{max_str}"
     end
 
     def ansi_rain_intensity_forecast(forecast)
@@ -17,6 +18,16 @@ module ForecastIo
 
     def ansi_humidity_forecast(forecast)
       do_the_humidity_thing(forecast, ansi_chars, 'humidity') #, 'probability', get_rain_range_colors)
+    end
+
+    def get_max_rain_chance(forecast)
+      unless forecast['minutely'].nil?
+        data_points = []
+        forecast['minutely']['data'].each do |data_point|
+          data_points.push data_point['precipProbability']
+        end
+        "max #{data_points.max * 100}%"
+      end
     end
 
     def do_the_rain_chance_thing(forecast, chars, key, use_color = config.colors)
@@ -49,8 +60,6 @@ module ForecastIo
         str = get_colored_string(data, key, str, get_rain_range_colors)
       end
 
-      # Add max
-      str += " max #{data_points.max * 100}%"
       str
     end
 
