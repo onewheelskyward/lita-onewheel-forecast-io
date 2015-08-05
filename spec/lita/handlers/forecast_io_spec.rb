@@ -1,6 +1,6 @@
 require_relative '../../spec_helper'
 
-describe Lita::Handlers::ForecastIo, lita_handler: true do
+describe Lita::Handlers::OnewheelForecastIo, lita_handler: true do
 
   before(:each) do
     mock_geocoder = ::Geocoder::Result::Google.new({'formatted_address' => 'Portland, OR', 'geometry' => { 'location' => { 'lat' => 45.523452, 'lng' => -122.676207 }}})
@@ -12,9 +12,9 @@ describe Lita::Handlers::ForecastIo, lita_handler: true do
     allow(RestClient).to receive(:get) { mock_weather_json }
 
     registry.configure do |config|
-      config.handlers.forecast_io.api_uri = ''
-      config.handlers.forecast_io.api_key = ''
-      config.handlers.forecast_io.colors = true
+      config.handlers.onewheel_forecast_io.api_uri = ''
+      config.handlers.onewheel_forecast_io.api_key = ''
+      config.handlers.onewheel_forecast_io.colors = true
     end
   end
 

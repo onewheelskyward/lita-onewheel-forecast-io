@@ -9,7 +9,7 @@ require_relative 'utils'
 
 module Lita
   module Handlers
-    class ForecastIo < Handler
+    class OnewheelForecastIo < Handler
       config :api_key
       config :api_uri
       config :colors
@@ -160,6 +160,6 @@ module Lita
 
     end
 
-    Lita.register_handler(ForecastIo)
+    Lita.register_handler(OnewheelForecastIo)
   end
 end

@@ -7,7 +7,7 @@ SimpleCov.formatter = SimpleCov::Formatter::MultiFormatter[
 SimpleCov.start { add_filter '/spec/' }
 Coveralls.wear!
 
-require 'lita-forecast-io'
+require 'lita-onewheel-forecast-io'
 require 'lita/rspec'
 
 # A compatibility mode is provided for older plugins upgrading from Lita 3. Since this plugin
