@@ -1,11 +1,11 @@
 Gem::Specification.new do |spec|
-  spec.name          = 'lita-forecast-io'
+  spec.name          = 'lita-onewheel-forecast-io'
   spec.version       = '0.0.0'
   spec.authors       = ['Andrew Kreps']
   spec.email         = ['andrew.kreps@gmail.com']
   spec.description   = %q{A text interface to Forecast.io's weather data.}
   spec.summary       = %q{Summarize THIS!}
-  spec.homepage      = 'https://github.com/onewheelskyward/lita-forecast-io'
+  spec.homepage      = 'https://github.com/onewheelskyward/lita-onewheel-forecast-io'
   spec.license       = 'MIT'
   spec.metadata      = { 'lita_plugin_type' => 'handler'}
 
@@ -17,7 +17,7 @@ Gem::Specification.new do |spec|
   spec.add_runtime_dependency 'lita', '~> 4.3'
 
   spec.add_development_dependency 'bundler', '~> 1.3'
-  spec.add_development_dependency 'pry-byebug', '~> 3.1'
+  # spec.add_development_dependency 'pry-byebug', '~> 3.1'
   spec.add_development_dependency 'rake', '~> 10.4'
   spec.add_development_dependency 'rack-test', '~> 0.6'
   spec.add_development_dependency 'rspec', '~> 3.0'

@@ -48,6 +48,9 @@ module ForecastIo
       if use_color
         str = get_colored_string(data, key, str, get_rain_range_colors)
       end
+
+      # Add max
+      str += " max #{data_points.max * 100}%"
       str
     end
 

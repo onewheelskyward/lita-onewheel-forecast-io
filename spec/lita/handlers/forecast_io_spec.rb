@@ -128,6 +128,11 @@ describe Lita::Handlers::ForecastIo, lita_handler: true do
     expect(replies.last).to include("|\u000302_☃\u000306▃\u000310▅\u000303▅\u000309▅\u000311▇\u000308▇\u000307█\u000304█\u000313█\u000302__________________________________________________\u0003|")
   end
 
+  it '!ansirain return max chance' do
+    send_message 'ansirain Paris'
+    expect(replies.last).to include('max 100%')
+  end
+
   it '!ansirain no minutes' do
     allow(RestClient).to receive(:get) { File.open('spec/mock_weather_no_minute.json').read }
     send_message 'ansirain'
