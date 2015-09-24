@@ -20,10 +20,10 @@ module ForecastIo
       do_the_humidity_thing(forecast, ansi_chars, 'humidity') #, 'probability', get_rain_range_colors)
     end
 
-    def get_max_rain_chance(forecast)
-      unless forecast['minutely'].nil?
+    def get_max_rain_chance(forecast, key = 'minutely')
+      unless forecast[key].nil?
         data_points = []
-        forecast['minutely']['data'].each do |data_point|
+        forecast[key]['data'].each do |data_point|
           data_points.push data_point['precipProbability']
         end
         "max #{data_points.max * 100}%"
@@ -280,7 +280,9 @@ module ForecastIo
         str = get_colored_string(data, 'precipProbability', str, get_rain_range_colors)
       end
 
-      "48 hr #{precip_type}s |#{str}|"
+      max_str = get_max_rain_chance(forecast, 'hourly')
+
+      "48 hr #{precip_type}s |#{str}| #{max_str}"
     end
 
     def do_the_daily_wind_thing(forecast)

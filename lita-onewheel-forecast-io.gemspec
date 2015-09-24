@@ -24,8 +24,8 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'simplecov', '~> 0.10'
   spec.add_development_dependency 'coveralls', '~> 0.8'
 
-  spec.add_runtime_dependency 'rest-client'
-  spec.add_runtime_dependency 'geocoder'
-  spec.add_runtime_dependency 'multi_json'
-  spec.add_runtime_dependency 'magic-eightball'
+  spec.add_runtime_dependency 'rest-client', '~> 1.6'
+  spec.add_runtime_dependency 'geocoder', '~> 1.2'
+  spec.add_runtime_dependency 'multi_json', '~> 1.7'
+  spec.add_runtime_dependency 'magic-eightball', '~> 0.0'
 end

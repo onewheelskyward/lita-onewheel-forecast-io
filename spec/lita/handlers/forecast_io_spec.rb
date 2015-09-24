@@ -207,7 +207,7 @@ describe Lita::Handlers::OnewheelForecastIo, lita_handler: true do
 
   it '!dailyrain' do
     send_message 'dailyrain'
-    expect(replies.last).to eq("Portland, OR 48 hr snows |\u000302_______________________▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁_\u0003|")
+    expect(replies.last).to eq("Portland, OR 48 hr snows |\u000302_______________________▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁_\u0003| max 4.0%")
   end
 
   it '!7dayrain' do
@@ -320,7 +320,7 @@ describe Lita::Handlers::OnewheelForecastIo, lita_handler: true do
     expect(replies[4]).to eq("Portland, OR 48h wind direction 4.3 mph|\u000306↓\u000310↙←\u000311↖↑↗\u000308→↘\u000311↓←←←←←←\u000310←←←←←←←\u000306←←←←←\u000302←←←↙↙↙↙↓↓↓\u000306↓↓↓↓↓↓↓↓↙↙\u0003|4.18 mph Range: 1.39 mph - 12.71 mph")
     expect(replies[5]).to eq("Portland, OR 8 day sun forecast |\u000308█\u000309▃\u000308▇\u000309▁_\u000307▅\u000309▃\u000307▅\u0003|")
     expect(replies[6]).to eq("Portland, OR 24h cloud cover |___________▁▁▁▁▁▁▁▁▃▅▅▅|")
-    expect(replies[7]).to eq("Portland, OR 48 hr snows |\u000302_______________________▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁_\u0003|")
+    expect(replies[7]).to eq("Portland, OR 48 hr snows |\u000302_______________________▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁_\u0003| max 4.0%")
   end
 
   it '!ansipressure' do
