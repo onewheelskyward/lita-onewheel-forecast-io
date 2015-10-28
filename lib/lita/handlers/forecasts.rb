@@ -30,7 +30,7 @@ module ForecastIo
       end
     end
 
-    def do_the_rain_chance_thing(forecast, chars, key, use_color = config.colors)
+    def do_the_rain_chance_thing(forecast, chars, key, use_color = config.colors, minute_limit = nil)
       if forecast['minutely'].nil?
         return 'No minute-by-minute data available.'
       end
@@ -44,6 +44,10 @@ module ForecastIo
         if datum['precipType'] == 'snow'
           i_can_has_snow = true
         end
+      end
+
+      if minute_limit
+        data = condense_data(data, minute_limit)
       end
 
       str = get_dot_str(chars, data, 0, 1, key)
@@ -205,14 +209,12 @@ module ForecastIo
     def conditions(forecast)
       temp_str, temps = do_the_temp_thing(forecast, ansi_chars, 8)
       wind_str, winds = do_the_wind_direction_thing(forecast, ansi_wind_arrows, 8)
-      rain_str, rains = do_the_rain_chance_thing(forecast, ansi_chars, 'precipProbability', false)
-
-      rs = compress_string(rain_str, 4)
+      rain_str, rains = do_the_rain_chance_thing(forecast, ansi_chars, 'precipProbability', config.colors, 15)
 
       sun_chance = ((1 - forecast['daily']['data'][0]['cloudCover']) * 100).round
       "#{get_temperature temps.first.round(2)} |#{temp_str}| #{get_temperature temps.last.round(2)} "\
         "/ #{get_speed(winds.first)} |#{wind_str}| #{get_speed(winds.last)} "\
-        "/ #{sun_chance}% chance of sun / 60m precip |#{rs}|"
+        "/ #{sun_chance}% chance of sun / 60m precip |#{rain_str}|"
     end
 
     def do_the_seven_day_thing(forecast)

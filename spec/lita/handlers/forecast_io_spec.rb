@@ -172,7 +172,7 @@ describe Lita::Handlers::OnewheelForecastIo, lita_handler: true do
 
   it '!conditions' do
     send_message 'conditions'
-    expect(replies.last).to eq("Portland, OR 28.3°F |\u000306_▁▃\u000310▅▇█\u000303█\u0003| 38.72°F / 4.3 mph |\u000306↓\u000310↙←\u000311↖↑↗\u000308→\u0003| 12.71 mph / 98% chance of sun / 60m precip |_▅█_____________|")
+    expect(replies.last).to eq("Portland, OR 28.3°F |\u000306_▁▃\u000310▅▇█\u000303█\u0003| 38.72°F / 4.3 mph |\u000306↓\u000310↙←\u000311↖↑↗\u000308→\u0003| 12.71 mph / 98% chance of sun / 60m precip |\u000306☃\u000311▇\u000308▇\u000302_____________\u0003|")
   end
 
   it '!alerts' do
