@@ -16,7 +16,14 @@ gem 'lita-onewheel-forecast-io', github: 'onewheelskyward/lita-onewheel-forecast
 
 ## Configuration
 
-Forecast.io api key required: https://developer.forecast.io/
+``` ruby
+Lita.configure do |config|
+  config.handlers.onewheel_forecast_io.api_key = 'yourforecastiokey'
+  config.handlers.onewheel_forecast_io.api_uri = 'https://api.forecast.io/forecast/'
+  config.handlers.onewheel_forecast_io.colors = true
+end
+```
+Register at https://developer.forecast.io/ to receive an API key (1000 calls/day for free). Once you have your key go ahead and toss if into your config block. Set colors to bool option of your liking. Enjoy!
 
 ## Usage
 
