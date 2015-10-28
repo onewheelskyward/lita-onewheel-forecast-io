@@ -211,16 +211,33 @@ module ForecastIo
       colored_str += "\x03" + colors[color] + collect_str + "\x03"
     end
 
-    def compress_string(str, compression_factor)
-      i = 0
-      rs = ''
-      str.to_s.each_char do |char|
-        if i % compression_factor == 0
-          rs += char
+    # this method lets us condense rain forcasts into smaller sets
+    # it averages the values contained in a chunk of data perportionate the the limit set
+    # then returns a new array of hashes containing those averaged values
+    def condense_data(data, limit)
+      return if limit >= data.length
+      chunk_length = (data.length / limit.to_f).round
+      results = []
+      data.each_slice(chunk_length) do |chunk|
+        chunk_results = {}
+        condensed_chunk = collect_values(chunk)
+        condensed_chunk.each do |k, v|
+          if v[0].class == Fixnum || v[0].class == Float
+            new_val = v.inject{ |sum,val| sum + val} / v.size
+          elsif v[0].class == String
+            new_val = v[0]
+          end
+          chunk_results[k] = new_val
         end
-        i += 1
+        results << chunk_results
       end
-      rs
+      results
+    end
+
+    # this method is simply to transform an array of hashes into a hash of arrays
+    # kudos to Phrogz for the info here: http://stackoverflow.com/questions/5490952/merge-array-of-hashes-to-get-hash-of-arrays-of-values
+    def collect_values(hashes)
+      {}.tap{ |r| hashes.each{ |h| h.each{ |k,v| (r[k]||=[]) << v } } }
     end
 
     def get_dot_str(chars, data, min, differential, key)
