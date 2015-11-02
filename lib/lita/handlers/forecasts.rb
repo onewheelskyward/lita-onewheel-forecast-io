@@ -80,7 +80,7 @@ module ForecastIo
       end
 
       # 0.180 appears in Portland, now.
-      str = get_dot_str(chars, data, 0, 0.360, key)
+      str = get_dot_str(chars, data, 0, 1, key)
 
       if config.colors
         str = get_colored_string(data, key, str, get_rain_intensity_range_colors)
