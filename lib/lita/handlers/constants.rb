@@ -42,7 +42,7 @@ module ForecastIo
         0.0281..0.0330 => :yellow,
         0.0331..0.0380 => :orange,
         0.0381..0.0430 => :red,
-        0.0431..1      => :pink
+        0.0431..5      => :pink
       }
     end
 

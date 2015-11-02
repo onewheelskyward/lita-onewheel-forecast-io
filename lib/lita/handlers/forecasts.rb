@@ -79,8 +79,8 @@ module ForecastIo
         data_points.push datum[key]
       end
 
-      # 0.053 is where our highest intensity color starts; shows up mostly infrequently in portland.  May need adjustments for other areas.
-      str = get_dot_str(chars, data, 0, 0.053, key)
+      # 0.180 appears in Portland, now.
+      str = get_dot_str(chars, data, 0, 0.180, key)
 
       if config.colors
         str = get_colored_string(data, key, str, get_rain_intensity_range_colors)
