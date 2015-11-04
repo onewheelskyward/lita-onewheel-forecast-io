@@ -33,4 +33,6 @@ EOS
   spec.add_runtime_dependency 'geocoder', '~> 1.2'
   spec.add_runtime_dependency 'multi_json', '~> 1.7'
   spec.add_runtime_dependency 'magic-eightball', '~> 0.0'
+  spec.add_runtime_dependency 'imgurapi', '~> 3.0'
+  spec.add_runtime_dependency 'rmagick', '~> 2.1'
 end

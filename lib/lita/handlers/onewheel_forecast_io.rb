@@ -1,11 +1,15 @@
 require 'geocoder'
 require 'rest_client'
 require 'magic_eightball'
+require 'rvg/rvg'
 require_relative 'location'
 require_relative 'constants'
 require_relative 'irc_handlers'
 require_relative 'forecasts'
 require_relative 'utils'
+require_relative 'img_handlers'
+require_relative 'img_forecasts'
+require_relative 'img_utils'
 
 module Lita
   module Handlers
@@ -18,6 +22,11 @@ module Lita
       include ::ForecastIo::IrcHandlers
       include ::ForecastIo::Forecasts
       include ::ForecastIo::Utils
+
+      include ::ForecastIo::ImgHandlers
+      include ::ForecastIo::ImgForecasts
+      include ::ForecastIo::ImgUtils
+      include Magick
 
       # Temperature routes
       route(/^ansitemp\s*$/i, :handle_irc_ansitemp)
@@ -109,6 +118,8 @@ module Lita
       route(/^asciirain\s*$/i, :handle_irc_ascii_rain)
       route(/^asciirain\s+(.+)/i, :handle_irc_ascii_rain,
             help: { '!asciirain [location]' => '60m rain chance report for [location], ascii style!'})
+      route(/^imgrain\s*$/i, :handle_img_rain,
+            help: { '!imgrain [location]' => ''})
 
       # don't start singing.
       route(/^sunrise\s*$/i, :handle_irc_sunrise)
