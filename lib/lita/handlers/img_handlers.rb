@@ -6,5 +6,9 @@ module ForecastIo
       forecast = get_forecast_io_results(response.user, location)
       response.reply img_rain_forecast(forecast)
     end
+
+    def handle_img_duckyou(response)
+      response.reply img_to_url(duck_you)
+    end
   end
 end

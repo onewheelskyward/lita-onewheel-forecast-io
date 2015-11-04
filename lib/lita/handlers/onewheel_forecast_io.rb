@@ -174,6 +174,8 @@ module Lita
       route(/^dailybarometer\s+(.+)/i, :handle_irc_daily_pressure,
             help: { '!dailybarometer [location]' => 'Alias for !dailypressure.'})
 
+      route(/^duckyou\s*$/i, :handle_img_duckyou)
+
     end
 
     Lita.register_handler(OnewheelForecastIo)
