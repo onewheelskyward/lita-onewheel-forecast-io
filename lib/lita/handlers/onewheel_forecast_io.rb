@@ -26,7 +26,6 @@ module Lita
       include ::ForecastIo::ImgHandlers
       include ::ForecastIo::ImgForecasts
       include ::ForecastIo::ImgUtils
-      include Magick
 
       # Temperature routes
       route(/^ansitemp\s*$/i, :handle_irc_ansitemp)
