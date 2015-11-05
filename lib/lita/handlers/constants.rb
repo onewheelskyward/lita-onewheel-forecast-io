@@ -131,7 +131,15 @@ module ForecastIo
     #   }
     # end
 
-    # End constants
+    # End ows constants
+    # begin rmagicky imageblobby constants
 
+    # Imgur endpoints (cuz the method isn't very descriptive)
+    def imgur_endpoints
+      {
+      :image => 'image',
+      :upload => 'upload'
+      }
+    end
   end
 end

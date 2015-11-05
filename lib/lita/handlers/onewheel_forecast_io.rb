@@ -18,6 +18,9 @@ module Lita
       config :api_uri
       config :colors
 
+      config :img_api_key
+      config :img_api_uri
+
       include ::ForecastIo::Constants
       include ::ForecastIo::IrcHandlers
       include ::ForecastIo::Forecasts

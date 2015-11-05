@@ -33,7 +33,7 @@ module ForecastIo
           canvas.use(foot).translate(100, 185).rotate(-15)
 
           canvas.text(125, 30) do |title|
-              title.tspan("Duck youuu |").styles(:text_anchor=>'end', :font_size=>20,
+              title.tspan("Duck youuu | ").styles(:text_anchor=>'end', :font_size=>20,
                              :font_family=>'helvetica', :fill=>'black')
               title.tspan("#{duck_subject}").styles(:font_size=>22,
                      :font_family=>'times', :font_style=>'italic', :fill=>'red')

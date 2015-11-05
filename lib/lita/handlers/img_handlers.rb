@@ -8,7 +8,6 @@ module ForecastIo
     end
 
     def handle_img_duckyou(response)
-      binding.pry
       response.reply img_to_url(duck_you(response.matches[0][0]))
     end
   end
