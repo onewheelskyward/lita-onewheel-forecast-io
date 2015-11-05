@@ -5,11 +5,7 @@ module ForecastIo
       binding.pry
     end
 
-    def duck_you
-      draw_duck
-    end
-
-    def draw_duck
+    def duck_you(duck_subject)
 
        RVG::dpi = 72
 
@@ -37,17 +33,17 @@ module ForecastIo
           canvas.use(foot).translate(100, 185).rotate(-15)
 
           canvas.text(125, 30) do |title|
-              title.tspan("duck|").styles(:text_anchor=>'end', :font_size=>20,
+              title.tspan("Duck youuu |").styles(:text_anchor=>'end', :font_size=>20,
                              :font_family=>'helvetica', :fill=>'black')
-              title.tspan("type").styles(:font_size=>22,
+              title.tspan("#{duck_subject}").styles(:font_size=>22,
                      :font_family=>'times', :font_style=>'italic', :fill=>'red')
           end
           canvas.rect(249,249).styles(:stroke=>'blue', :fill=>'none')
       end
 
-      binding.pry
       rvg.draw.write('duck.gif')
 
     end
+
   end
 end
