@@ -1,5 +1,6 @@
 module ForecastIo
   module ImgUtils
+    include Magick
     def img_to_url(img)
       if ! config.img_api_uri or ! config.img_api_key
         Lita.logger.error "configs mizzing yyo"
@@ -16,9 +17,7 @@ module ForecastIo
       return JSON.parse(response)["data"]["link"]
     end
 
-    def percip_chance_to_points(data, area, min, differential)
-      key = 'precipProbability'
-
+    def percip_chance_to_points(data, key, min, differential, area)
       x = area[:x]
       y = area[:y]
 
@@ -35,7 +34,7 @@ module ForecastIo
 
         string << "#{sep}#{cmd}#{x_cord},#{y_cord}"
 
-        if ix == 60
+        if ix == (data.length - 1)
           string << "#{sep}#{cmd}#{x_cord},#{y}"
           string << "#{sep}#{cmd}0,#{y}"
         end
@@ -45,5 +44,32 @@ module ForecastIo
 
       string
     end
+
+    def plot_scale_lines(data, key, min, differential, area, length, line_num)
+      x = area[:x]
+      y = area[:y]
+
+      # x over 60 since we have minutely data
+      # just divide y by tenths so we give scale
+      x_step = x / line_num
+      y_step = y / line_num
+
+      results = {}
+      rx = results[:x] = []
+      ry = results[:y] = []
+
+      (0 .. line_num).each do |_x|
+        x_pos = _x * x_step
+        rx << [x_pos, y, x_pos, (y + length)]
+      end
+
+      (0 .. line_num).each do |_y|
+        y_pos = (y - (_y * y_step))
+        ry << [(0 - length), y_pos, x, y_pos]
+      end
+
+      results
+    end
+
   end
 end

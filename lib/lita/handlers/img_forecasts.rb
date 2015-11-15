@@ -1,27 +1,53 @@
 module ForecastIo
   module ImgForecasts
     include Magick
-    def img_rain_forecast(forecast)
+    def img_rain_forecast(forecast, location)
       if forecast['minutely'].nil?
         return 'No minute-by-minute data available.'
       end
 
-      area = {x: 600, y: 350}
-      graph_area = {x: 600, y: 300}
       data = forecast['minutely']['data']
+      key = 'precipProbability'
+
+      area = {x: 740, y: 500}
+      graph_area = {x: 600, y: 300}
+
+      x_offset = (area[:x] - graph_area[:x]) / 2
+      y_offset = ((area[:y] - graph_area[:y]) / 2) + ((area[:y] - graph_area[:y]) / 6)
+      title_y = (area[:y] - graph_area[:y]) / 6
+      title_text_y = title_y * 0.90
+      title_text_y_offset  = title_y * 0.10
+
+      scale_x_area = [0, x_offset]
+      scale_y_area = [(y_offset + graph_area[:y]), area[:y]]
 
       RVG::dpi = 72
 
-      points = percip_chance_to_points(data, graph_area, 0, 1)
+      rain_points = percip_chance_to_points(data, key, 0, 1, graph_area)
+      scale_lines = plot_scale_lines(data, key, 0, 1, graph_area, 20, 10)
 
       rvg = RVG.new(area[:x].px, area[:y].px).viewbox(0,0,area[:x],area[:y]) do |canvas|
         canvas.background_fill = 'white'
 
         rain = RVG::Group.new do |_rain|
-          _rain.path(points).styles(:stroke_width=>1, :fill=>'blue', :stroke=>'grey')
+          _rain.path(rain_points).styles(:stroke_width=>1, :fill=>'blue', :stroke=>'grey')
         end
 
-        canvas.use(rain).translate(0,(area[:y] - graph_area[:y]))
+        lines_x = RVG::Group.new do |_sx|
+          scale_lines[:x].each do |sx|
+            _sx.line(sx[0], sx[1], sx[2], sx[3]).styles(:stroke_width=>1, :stroke=>'black')
+          end
+        end
+
+        lines_y = RVG::Group.new do |_sy|
+          scale_lines[:y].each do |sy|
+           _sy.line(sy[0], sy[1], sy[2], sy[3]).styles(:stroke_width=>1, :stroke=>'black')
+           end
+        end
+
+        canvas.use(rain).translate(x_offset, y_offset)
+        canvas.use(lines_x).translate(x_offset, y_offset)
+        canvas.use(lines_y).translate(x_offset, y_offset)
       end
 
       rvg.draw.write('rain.gif')
