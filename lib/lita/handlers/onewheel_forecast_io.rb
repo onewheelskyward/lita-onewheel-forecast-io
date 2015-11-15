@@ -120,7 +120,8 @@ module Lita
       route(/^asciirain\s*$/i, :handle_irc_ascii_rain)
       route(/^asciirain\s+(.+)/i, :handle_irc_ascii_rain,
             help: { '!asciirain [location]' => '60m rain chance report for [location], ascii style!'})
-      route(/^imgrain\s*$/i, :handle_img_rain,
+      route(/^imgrain\s*$/i, :handle_img_rain)
+      route(/^imgrain\s+(.+)/i, :handle_img_rain,
             help: { '!imgrain [location]' => ''})
 
       # don't start singing.

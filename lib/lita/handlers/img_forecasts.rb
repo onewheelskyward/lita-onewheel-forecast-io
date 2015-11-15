@@ -2,7 +2,31 @@ module ForecastIo
   module ImgForecasts
     include Magick
     def img_rain_forecast(forecast)
-      binding.pry
+      if forecast['minutely'].nil?
+        return 'No minute-by-minute data available.'
+      end
+
+      area = {x: 600, y: 350}
+      graph_area = {x: 600, y: 300}
+      data = forecast['minutely']['data']
+
+      RVG::dpi = 72
+
+      points = percip_chance_to_points(data, graph_area, 0, 1)
+
+      rvg = RVG.new(area[:x].px, area[:y].px).viewbox(0,0,area[:x],area[:y]) do |canvas|
+        canvas.background_fill = 'white'
+
+        rain = RVG::Group.new do |_rain|
+          _rain.path(points).styles(:stroke_width=>1, :fill=>'blue', :stroke=>'grey')
+        end
+
+        binding.pry
+        canvas.use(rain).translate(0,(area[:y] - graph_area[:y]))
+      end
+
+      rvg.draw.write('rain.gif')
+
     end
 
     def duck_you(duck_subject)
