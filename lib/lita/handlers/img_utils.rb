@@ -58,14 +58,18 @@ module ForecastIo
       rx = results[:x] = []
       ry = results[:y] = []
 
-      (0 .. line_num).each do |_x|
-        x_pos = _x * x_step
-        rx << [x_pos, y, x_pos, (y + length)]
+      (0 .. x_step).each do |_x|
+        x_pos = _x * line_num
+        if _x == 0 || _x == x_step
+          rx << {data: [x_pos, y, x_pos, 0], color: 'grey'}
+        end
+        rx << {data: [x_pos, y, x_pos, (y + length)], color: 'black'}
       end
 
       (0 .. line_num).each do |_y|
         y_pos = (y - (_y * y_step))
-        ry << [(0 - length), y_pos, x, y_pos]
+        ry << {data: [0, y_pos, x, y_pos], color: 'grey'}
+        ry << {data: [0, y_pos, (0 - length), y_pos], color: 'black'}
       end
 
       results

@@ -35,19 +35,19 @@ module ForecastIo
 
         lines_x = RVG::Group.new do |_sx|
           scale_lines[:x].each do |sx|
-            _sx.line(sx[0], sx[1], sx[2], sx[3]).styles(:stroke_width=>1, :stroke=>'black')
+            _sx.line(sx[:data][0], sx[:data][1], sx[:data][2], sx[:data][3]).styles(:stroke_width=>1, :stroke=>sx[:color])
           end
         end
 
         lines_y = RVG::Group.new do |_sy|
           scale_lines[:y].each do |sy|
-           _sy.line(sy[0], sy[1], sy[2], sy[3]).styles(:stroke_width=>1, :stroke=>'black')
+           _sy.line(sy[:data][0], sy[:data][1], sy[:data][2], sy[:data][3]).styles(:stroke_width=>1, :stroke=>sy[:color])
            end
         end
 
-        canvas.use(rain).translate(x_offset, y_offset)
         canvas.use(lines_x).translate(x_offset, y_offset)
         canvas.use(lines_y).translate(x_offset, y_offset)
+        canvas.use(rain).translate(x_offset, y_offset)
       end
 
       rvg.draw.write('rain.gif')
