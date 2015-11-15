@@ -21,7 +21,6 @@ module ForecastIo
           _rain.path(points).styles(:stroke_width=>1, :fill=>'blue', :stroke=>'grey')
         end
 
-        binding.pry
         canvas.use(rain).translate(0,(area[:y] - graph_area[:y]))
       end
 
