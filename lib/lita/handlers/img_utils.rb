@@ -60,16 +60,25 @@ module ForecastIo
 
       (0 .. x_step).each do |_x|
         x_pos = _x * line_num
+        # Draw graph-heigh lines on start and stop of X range
         if _x == 0 || _x == x_step
           rx << {data: [x_pos, y, x_pos, 0], color: 'grey'}
         end
-        rx << {data: [x_pos, y, x_pos, (y + length)], color: 'black'}
+        # Mark quarters of the hour with longer red lines;
+        # the rest with shorter lines
+        if _x % 15 == 0
+          rx << {data: [x_pos, y, x_pos, (y + length)], color: 'red'}
+        else
+          rx << {data: [x_pos, y, x_pos, (y + (length/2))], color: 'grey'}
+        end
       end
 
       (0 .. line_num).each do |_y|
         y_pos = (y - (_y * y_step))
+        # Full width graph lines in grey;
+        # outer Y scale lines in blue (scale is 0% - 100%)
         ry << {data: [0, y_pos, x, y_pos], color: 'grey'}
-        ry << {data: [0, y_pos, (0 - length), y_pos], color: 'black'}
+        ry << {data: [0, y_pos, (0 - length), y_pos], color: 'blue'}
       end
 
       results

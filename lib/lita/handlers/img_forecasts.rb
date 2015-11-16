@@ -18,14 +18,25 @@ module ForecastIo
       y_offset = ((area[:y] - graph_area[:y]) / 2) + ((area[:y] - graph_area[:y]) / 6)
 
       # Title stuffs
-      title_y = (area[:y] - graph_area[:y]) / 6
-      title_text_y = title_y * 0.90
-      title_text_y_offset  = title_y * 0.10
+      title_text = "Rain Forecast for"
+      title_location = location.location_name
+      title_y = y_offset / 2
+      title_x = (area[:x] / 2) - x_offset
+      title_text_size = ((area[:y] - graph_area[:y]) / 6) * 0.90
 
       # Graph scale/annotation stuff
       line_max_length = 20
-      scale_x_area = [0, x_offset]
-      scale_y_area = [(y_offset + graph_area[:y]), area[:y]]
+      scale_text_size = 10
+      # scale_x_area = [0, x_offset]
+      # scale_y_area = [(y_offset + graph_area[:y]), area[:y]]
+      scale_y_x = x_offset / 2
+      scale_y_y = (area[:y] / 2) - y_offset
+      scale_x_x = title_x
+      scale_x_y = (area[:y] - (y_offset + graph_area[:y])) + (scale_text_size * 2)
+      scale_x_title = "Minutes"
+      scale_x_subtitle = "(0-60)"
+      scale_y_title = "Precipitation Chance"
+      scale_y_subtitle = "(0-100%)"
 
       RVG::dpi = 72
 
@@ -34,6 +45,27 @@ module ForecastIo
 
       rvg = RVG.new(area[:x].px, area[:y].px).viewbox(0,0,area[:x],area[:y]) do |canvas|
         canvas.background_fill = 'white'
+
+        canvas.text(title_x, title_y) do |title|
+            title.tspan("#{title_text} | ").styles(:text_anchor=>'end', :font_size=>title_text_size,
+                                                   :font_family=>'helvetica', :fill=>'black')
+            title.tspan("#{title_location}").styles(:font_size=>title_text_size, :font_family=>'helvetica',
+                                                    :font_style=>'italic', :fill=>'red')
+        end
+
+        canvas.text(scale_x_x, scale_x_y) do |x_title|
+          x_title.tspan("#{scale_x_title} ").styles(:text_anchor=>'end', :font_size=>scale_text_size,
+                                                  :font_family=>'helvetica', :fill=>'black')
+          x_title.tspan("#{scale_x_subtitle}").styles(:font_size=>scale_text_size, :font_family=>'helvetica',
+                                                    :font_style=>'italic', :fill=>'grey')
+        end
+
+        canvas.text(scale_y_x, scale_y_y).styles(:writing_mode=>'tb', :glyph_orientation_vertical=>90) do |y_title|
+          y_title.tspan("#{scale_y_title} ").styles(:text_anchor=>'end', :font_size=>scale_text_size,
+                                                  :font_family=>'helvetica', :fill=>'black')
+          y_title.tspan("#{scale_y_subtitle}").styles(:font_size=>scale_text_size, :font_family=>'helvetica',
+                                                    :font_style=>'italic', :fill=>'grey')
+        end
 
         # Draft precip chance chart
         rain = RVG::Group.new do |_rain|
