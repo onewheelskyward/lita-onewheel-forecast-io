@@ -12,39 +12,49 @@ module ForecastIo
       area = {x: 740, y: 500}
       graph_area = {x: 600, y: 300}
 
+      # Graph area offset 
+      # (for graph-related group placement within RVG)
       x_offset = (area[:x] - graph_area[:x]) / 2
       y_offset = ((area[:y] - graph_area[:y]) / 2) + ((area[:y] - graph_area[:y]) / 6)
+
+      # Title stuffs
       title_y = (area[:y] - graph_area[:y]) / 6
       title_text_y = title_y * 0.90
       title_text_y_offset  = title_y * 0.10
 
+      # Graph scale/annotation stuff
+      line_max_length = 20
       scale_x_area = [0, x_offset]
       scale_y_area = [(y_offset + graph_area[:y]), area[:y]]
 
       RVG::dpi = 72
 
       rain_points = percip_chance_to_points(data, key, 0, 1, graph_area)
-      scale_lines = plot_scale_lines(data, key, 0, 1, graph_area, 20, 10)
+      scale_lines = plot_scale_lines(data, key, 0, 1, graph_area, line_max_length, 10)
 
       rvg = RVG.new(area[:x].px, area[:y].px).viewbox(0,0,area[:x],area[:y]) do |canvas|
         canvas.background_fill = 'white'
 
+        # Draft precip chance chart
         rain = RVG::Group.new do |_rain|
           _rain.path(rain_points).styles(:stroke_width=>1, :fill=>'blue', :stroke=>'grey')
         end
 
+        # Draft X axis scale lines
         lines_x = RVG::Group.new do |_sx|
           scale_lines[:x].each do |sx|
             _sx.line(sx[:data][0], sx[:data][1], sx[:data][2], sx[:data][3]).styles(:stroke_width=>1, :stroke=>sx[:color])
           end
         end
 
+        # Draft Y axis scale lines
         lines_y = RVG::Group.new do |_sy|
           scale_lines[:y].each do |sy|
            _sy.line(sy[:data][0], sy[:data][1], sy[:data][2], sy[:data][3]).styles(:stroke_width=>1, :stroke=>sy[:color])
            end
         end
 
+        # Layer groups onto canvas; bottom -> top
         canvas.use(lines_x).translate(x_offset, y_offset)
         canvas.use(lines_y).translate(x_offset, y_offset)
         canvas.use(rain).translate(x_offset, y_offset)
