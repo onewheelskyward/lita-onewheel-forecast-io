@@ -191,9 +191,15 @@ module ForecastIo
       # O ◎ ]
       data = forecast['hourly']['data'].slice(0,23)
 
+      max = 0
+      data.each do |datum|
+        if datum['cloudCover'] > max
+          max = datum['cloudCover']
+        end
+      end
       str = get_dot_str(chars, data, 0, 1, 'cloudCover')
 
-      "24h cloud cover |#{str}|"
+      "24h cloud cover |#{str}| max #{max * 100}%"
     end
 
     def do_the_sunrise_thing(forecast)
