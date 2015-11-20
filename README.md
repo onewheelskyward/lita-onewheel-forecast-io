@@ -11,7 +11,7 @@ This Lita handler takes location-based queries and returns interesting data abou
 Add lita-onewheel-forecast-io to your Lita instance's Gemfile, from github since it's currently unpublished:
 
 ``` ruby
-gem 'lita-onewheel-forecast-io', github: 'onewheelskyward/lita-onewheel-forecast-io', branch: :master
+gem 'lita-onewheel-forecast-io', '~> 0.0'
 ```
 
 ## Configuration

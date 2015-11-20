@@ -187,11 +187,11 @@ module ForecastIo
       "8 day sun forecast |#{str}|"
     end
 
-    def do_the_cloud_thing(forecast)
+    def do_the_cloud_thing(forecast, chars)
       # O ◎ ]
       data = forecast['hourly']['data'].slice(0,23)
 
-      str = get_dot_str(ansi_chars, data, 0, 1, 'cloudCover')
+      str = get_dot_str(chars, data, 0, 1, 'cloudCover')
 
       "24h cloud cover |#{str}|"
     end
