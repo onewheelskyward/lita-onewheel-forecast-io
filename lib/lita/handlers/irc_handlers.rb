@@ -27,7 +27,7 @@ module ForecastIo
       response.reply location.location_name + ' ' + ansi_rain_intensity_forecast(forecast)
       response.reply location.location_name + ' ' + ansi_temp_forecast(forecast)
       response.reply location.location_name + ' ' + ansi_wind_direction_forecast(forecast)
-      response.reply location.location_name + ' ' + do_the_sun_thing(forecast)
+      response.reply location.location_name + ' ' + do_the_sun_thing(forecast, ansi_chars)
       response.reply location.location_name + ' ' + do_the_cloud_thing(forecast, ansi_chars)
       response.reply location.location_name + ' ' + do_the_daily_rain_thing(forecast)
     end
@@ -84,7 +84,13 @@ module ForecastIo
     def handle_irc_ansisun(response)
       location = geo_lookup(response.user, response.match_data[1])
       forecast = get_forecast_io_results(response.user, location)
-      response.reply location.location_name + ' ' + do_the_sun_thing(forecast)
+      response.reply location.location_name + ' ' + do_the_sun_thing(forecast, ansi_chars)
+    end
+
+    def handle_irc_asciisun(response)
+      location = geo_lookup(response.user, response.match_data[1])
+      forecast = get_forecast_io_results(response.user, location)
+      response.reply location.location_name + ' ' + do_the_sun_thing(forecast, ascii_chars)
     end
 
     def handle_irc_ansicloud(response)

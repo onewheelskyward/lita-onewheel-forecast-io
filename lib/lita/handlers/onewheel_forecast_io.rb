@@ -120,6 +120,9 @@ module Lita
       route(/^ansisun\s*$/i, :handle_irc_ansisun)
       route(/^ansisun\s+(.+)/i, :handle_irc_ansisun,
             help: { '!ansisun [location]' => '7 day chance-of-sun report for [location].'})
+      route(/^asciisun\s*$/i, :handle_irc_asciisun)
+      route(/^asciisun\s+(.+)/i, :handle_irc_asciisun,
+            help: { '!asciisun [location]' => '7 day chance-of-sun report for [location].'})
 
       # Mun!
 

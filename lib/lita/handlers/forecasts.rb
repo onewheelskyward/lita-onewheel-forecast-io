@@ -166,7 +166,7 @@ module ForecastIo
       return str, data_points
     end
 
-    def do_the_sun_thing(forecast)
+    def do_the_sun_thing(forecast, chars)
       key = 'cloudCover'
       data_points = []
       data = forecast['daily']['data']
@@ -178,7 +178,7 @@ module ForecastIo
 
       differential = data_points.max - data_points.min
 
-      str = get_dot_str(ansi_chars, data, data_points.min, differential, key)
+      str = get_dot_str(chars, data, data_points.min, differential, key)
 
       if config.colors
         str = get_colored_string(data, key, str, get_sun_range_colors)
