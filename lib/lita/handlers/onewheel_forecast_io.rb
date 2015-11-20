@@ -138,11 +138,11 @@ module Lita
             help: { '!dailywind [location]' => '7 day wind speed/direction report for [location].'})
 
       # Cloud cover
-      route(/^asciicloud\s+(.+)/i, :handle_irc_asciicloud)
-      route(/^asciicloud\s*$/i, :handle_irc_asciicloud,
+      route(/^asciiclouds*\s+(.+)/i, :handle_irc_asciicloud)
+      route(/^asciiclouds*\s*$/i, :handle_irc_asciicloud,
             help: { '!asciicloud [location]' => '24h cloud cover report for [location].'})
-      route(/^ansicloud\s*$/i, :handle_irc_ansicloud)
-      route(/^ansicloud\s+(.+)/i, :handle_irc_ansicloud,
+      route(/^ansiclouds*\s*$/i, :handle_irc_ansicloud)
+      route(/^ansiclouds*\s+(.+)/i, :handle_irc_ansicloud,
             help: { '!ansicloud [location]' => '24h cloud cover report for [location].'})
 
       # oooOOOoooo

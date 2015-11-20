@@ -31,6 +31,7 @@ describe Lita::Handlers::OnewheelForecastIo, lita_handler: true do
   it { is_expected.to route('asciiwind') }
   it { is_expected.to route('ansisun') }
   it { is_expected.to route('ansicloud') }
+  it { is_expected.to route('ansiclouds') }
   it { is_expected.to route('asciitemp') }
   it { is_expected.to route('asciirain') }
   it { is_expected.to route('7day') }
