@@ -2,18 +2,18 @@ module ForecastIo
   module Forecasts
     def ascii_rain_forecast(forecast)
       str = do_the_rain_chance_thing(forecast, ascii_chars, 'precipProbability')
-      "rain probability #{(Time.now).strftime('%H:%M').to_s}|#{str}|#{(Time.now + 3600).strftime('%H:%M').to_s}"
+      "1hr rain probability #{(Time.now).strftime('%H:%M').to_s}|#{str}|#{(Time.now + 3600).strftime('%H:%M').to_s}"
     end
 
     def ansi_rain_forecast(forecast)
       str = do_the_rain_chance_thing(forecast, ansi_chars, 'precipProbability') #, 'probability', get_rain_range_colors)
       max_str = get_max_rain_chance(forecast)
-      "rain probability #{(Time.now).strftime('%H:%M').to_s}|#{str}|#{(Time.now + 3600).strftime('%H:%M').to_s} #{max_str}"
+      "1hr rain probability #{(Time.now).strftime('%H:%M').to_s}|#{str}|#{(Time.now + 3600).strftime('%H:%M').to_s} #{max_str}"
     end
 
     def ansi_rain_intensity_forecast(forecast)
       str = do_the_rain_intensity_thing(forecast, ansi_chars, 'precipIntensity') #, 'probability', get_rain_range_colors)
-      "rain intensity #{(Time.now).strftime('%H:%M').to_s}|#{str}|#{(Time.now + 3600).strftime('%H:%M').to_s}"
+      "1hr rain intensity #{(Time.now).strftime('%H:%M').to_s}|#{str}|#{(Time.now + 3600).strftime('%H:%M').to_s}"
     end
 
     def ansi_humidity_forecast(forecast)
