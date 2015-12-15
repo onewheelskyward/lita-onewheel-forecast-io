@@ -30,6 +30,8 @@ describe Lita::Handlers::OnewheelForecastIo, lita_handler: true do
   it { is_expected.to route('ansiwind') }
   it { is_expected.to route('asciiwind') }
   it { is_expected.to route('ansisun') }
+  it { is_expected.to route('asciisun') }
+  it { is_expected.to route('asciicloud') }
   it { is_expected.to route('ansicloud') }
   it { is_expected.to route('ansiclouds') }
   it { is_expected.to route('asciitemp') }
@@ -186,9 +188,19 @@ describe Lita::Handlers::OnewheelForecastIo, lita_handler: true do
     expect(replies.last).to eq("Portland, OR 8 day sun forecast |\u000308█\u000309▃\u000308▇\u000309▁_\u000307▅\u000309▃\u000307▅\u0003|")
   end
 
+  it '!asciisun' do
+    send_message 'asciisun'
+    expect(replies.last).to eq("Portland, OR 8 day sun forecast |\u000308'\u000309-\u000308*\u000309._\u000307~\u000309-\u000307~\u0003|")
+  end
+
   it '!ansicloud' do
     send_message 'ansicloud'
     expect(replies.last).to eq('Portland, OR 24h cloud cover |___________▁▁▁▁▁▁▁▁▃▅▅▅| max 49.0%')
+  end
+
+  it '!asciicloud' do
+    send_message 'asciicloud'
+    expect(replies.last).to eq('Portland, OR 24h cloud cover |___________........-~~~| max 49.0%')
   end
 
   it '!asciitemp' do
