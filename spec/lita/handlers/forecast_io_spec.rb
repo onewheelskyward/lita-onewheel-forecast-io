@@ -131,7 +131,7 @@ describe Lita::Handlers::OnewheelForecastIo, lita_handler: true do
 
   it '!ansirain return max chance' do
     send_message 'ansirain Paris'
-    expect(replies.last).to include('max 100%')
+    expect(replies.last).to include('max 100.0%')
   end
 
   it '!ansirain no minutes' do

@@ -2,31 +2,33 @@ module ForecastIo
   module Forecasts
     def ascii_rain_forecast(forecast)
       str = do_the_rain_chance_thing(forecast, ascii_chars, 'precipProbability')
-      "1hr rain probability #{(Time.now).strftime('%H:%M').to_s}|#{str}|#{(Time.now + 3600).strftime('%H:%M').to_s}"
+      max = get_max_by_data_key(forecast, 'minutely', 'precipProbability')
+      "1hr rain probability #{(Time.now).strftime('%H:%M').to_s}|#{str}|#{(Time.now + 3600).strftime('%H:%M').to_s} max #{max * 100}%"
     end
 
     def ansi_rain_forecast(forecast)
       str = do_the_rain_chance_thing(forecast, ansi_chars, 'precipProbability') #, 'probability', get_rain_range_colors)
-      max_str = get_max_rain_chance(forecast)
-      "1hr rain probability #{(Time.now).strftime('%H:%M').to_s}|#{str}|#{(Time.now + 3600).strftime('%H:%M').to_s} #{max_str}"
+      max = get_max_by_data_key(forecast, 'minutely', 'precipProbability')
+      "1hr rain probability #{(Time.now).strftime('%H:%M').to_s}|#{str}|#{(Time.now + 3600).strftime('%H:%M').to_s} max #{max.to_f * 100}%"
     end
 
     def ansi_rain_intensity_forecast(forecast)
       str = do_the_rain_intensity_thing(forecast, ansi_chars, 'precipIntensity') #, 'probability', get_rain_range_colors)
-      "1hr rain intensity #{(Time.now).strftime('%H:%M').to_s}|#{str}|#{(Time.now + 3600).strftime('%H:%M').to_s}"
+      max_str = get_max_by_data_key(forecast, 'minutely', 'precipIntensity')
+      "1hr rain intensity #{(Time.now).strftime('%H:%M').to_s}|#{str}|#{(Time.now + 3600).strftime('%H:%M').to_s} #{max_str}"
     end
 
     def ansi_humidity_forecast(forecast)
       do_the_humidity_thing(forecast, ansi_chars, 'humidity') #, 'probability', get_rain_range_colors)
     end
 
-    def get_max_rain_chance(forecast, key = 'minutely')
+    def get_max_by_data_key(forecast, key, datum)
       unless forecast[key].nil?
         data_points = []
         forecast[key]['data'].each do |data_point|
-          data_points.push data_point['precipProbability']
+          data_points.push data_point[datum]
         end
-        "max #{data_points.max * 100}%"
+        data_points.max
       end
     end
 
@@ -288,9 +290,9 @@ module ForecastIo
         str = get_colored_string(data, 'precipProbability', str, get_rain_range_colors)
       end
 
-      max_str = get_max_rain_chance(forecast, 'hourly')
+      max = get_max_by_data_key(forecast, 'hourly', 'precipProbability')
 
-      "48 hr #{precip_type}s |#{str}| #{max_str}"
+      "48 hr #{precip_type}s |#{str}| max #{max.to_f * 100}%"
     end
 
     def do_the_daily_wind_thing(forecast)
