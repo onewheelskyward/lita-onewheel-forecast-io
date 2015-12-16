@@ -183,7 +183,12 @@ module ForecastIo
       forecast = get_forecast_io_results(response.user, location)
       nearest_storm_distance, nearest_storm_bearing = do_the_nearest_storm_thing(forecast)
 
-      response.reply "The nearest storm is #{get_distance(nearest_storm_distance, get_scale(response.user))} to the #{get_cardinal_direction_from_bearing(nearest_storm_bearing)} of you."
+      if nearest_storm_distance == 0
+        response.reply "You're in it!"
+      else
+        response.reply "The nearest storm is #{get_distance(nearest_storm_distance, get_scale(response.user))} to the #{get_cardinal_direction_from_bearing(nearest_storm_bearing)} of you."
+      end
+
     end
   end
 end
