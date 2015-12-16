@@ -198,7 +198,7 @@ module ForecastIo
 
       max = 1 - get_min_by_data_key(forecast, 'hourly', key)
 
-      "8 day sun forecast |#{str}| max #{max * 100}%"
+      "8 day sun forecast |#{str}| max #{(max * 100).to_i}%"
     end
 
     def do_the_cloud_thing(forecast, chars)
