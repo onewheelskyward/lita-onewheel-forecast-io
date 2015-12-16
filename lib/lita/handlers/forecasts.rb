@@ -269,7 +269,9 @@ module ForecastIo
         str = get_colored_string(data, 'precipProbability', str, get_rain_range_colors)
       end
 
-      "7day #{precip_type}s |#{str}|"
+      max = get_max_by_data_key(forecast, 'daily', 'precipProbability')
+
+      "7day #{precip_type}s |#{str}| max #{max * 100}%"
     end
 
     def do_the_daily_rain_thing(forecast)

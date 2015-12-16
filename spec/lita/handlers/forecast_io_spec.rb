@@ -225,7 +225,7 @@ describe Lita::Handlers::OnewheelForecastIo, lita_handler: true do
 
   it '!7dayrain' do
     send_message '7dayrain'
-    expect(replies.last).to eq("Portland, OR 7day snows |\u000302_▁▁\u000306▃\u000313█\u000303▅▅\u000310▃\u0003|")
+    expect(replies.last).to eq("Portland, OR 7day snows |\u000302_▁▁\u000306▃\u000313█\u000303▅▅\u000310▃\u0003| max 100%")
   end
 
   it '!ansiozone' do
