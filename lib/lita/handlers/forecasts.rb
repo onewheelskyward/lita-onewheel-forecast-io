@@ -32,6 +32,16 @@ module ForecastIo
       end
     end
 
+    def get_min_by_data_key(forecast, key, datum)
+      unless forecast[key].nil?
+        data_points = []
+        forecast[key]['data'].each do |data_point|
+          data_points.push data_point[datum]
+        end
+        data_points.min
+      end
+    end
+
     def do_the_rain_chance_thing(forecast, chars, key, use_color = config.colors, minute_limit = nil)
       if forecast['minutely'].nil?
         return 'No minute-by-minute data available.'
@@ -186,7 +196,9 @@ module ForecastIo
         str = get_colored_string(data, key, str, get_sun_range_colors)
       end
 
-      "8 day sun forecast |#{str}|"
+      max = 1 - get_min_by_data_key(forecast, 'hourly', key)
+
+      "8 day sun forecast |#{str}| max #{max * 100}%"
     end
 
     def do_the_cloud_thing(forecast, chars)
