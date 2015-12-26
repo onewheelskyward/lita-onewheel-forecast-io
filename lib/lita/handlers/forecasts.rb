@@ -300,6 +300,14 @@ module ForecastIo
 
       str = get_dot_str(ansi_chars, data, 0, 1, 'precipProbability')
 
+      if 'snow' == precip_type
+        data.each_with_index do |datum, index|
+          if datum['precipType'] == 'snow'
+            str[index] = get_snowman
+          end
+        end
+      end
+
       if config.colors
         str = get_colored_string(data, 'precipProbability', str, get_rain_range_colors)
       end
