@@ -67,7 +67,7 @@ module ForecastIo
       if i_can_has_snow
         data.each_with_index do |datum, index|
           if datum['precipType'] == 'snow'
-            str[index] = get_snowman
+            str[index] = get_snowman config
           end
         end
       end
@@ -303,7 +303,7 @@ module ForecastIo
       if 'snow' == precip_type
         data.each_with_index do |datum, index|
           if datum['precipType'] == 'snow'
-            str[index] = get_snowman
+            str[index] = get_snowman config
           end
         end
       end

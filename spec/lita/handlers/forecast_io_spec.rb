@@ -128,7 +128,7 @@ describe Lita::Handlers::OnewheelForecastIo, lita_handler: true do
 
   it '!ansirain Paris' do
     send_message 'ansirain Paris'
-    expect(replies.last).to include("|\u000302_☃\u000306▃\u000310▅\u000303▅\u000309▅\u000311▇\u000308▇\u000307█\u000304█\u000313█\u000302__________________________________________________\u0003|")
+    expect(replies.last).to include("|\u000302_❄\u000306▃\u000310▅\u000303▅\u000309▅\u000311▇\u000308▇\u000307█\u000304█\u000313█\u000302__________________________________________________\u0003|")
   end
 
   it '!ansirain return max chance' do
@@ -150,7 +150,7 @@ describe Lita::Handlers::OnewheelForecastIo, lita_handler: true do
 
   it '!ansisnow Paris' do
     send_message 'ansisnow Paris'
-    expect(replies.last).to include("|\u000302_☃\u000306▃\u000310▅\u000303▅\u000309▅\u000311▇\u000308▇\u000307█\u000304█\u000313█\u000302__________________________________________________\u0003|")
+    expect(replies.last).to include("|\u000302_❄\u000306▃\u000310▅\u000303▅\u000309▅\u000311▇\u000308▇\u000307█\u000304█\u000313█\u000302__________________________________________________\u0003|")
   end
 
   it '!ansiintensity' do
@@ -175,7 +175,7 @@ describe Lita::Handlers::OnewheelForecastIo, lita_handler: true do
 
   it '!conditions' do
     send_message 'conditions'
-    expect(replies.last).to eq("Portland, OR 28.3°F |\u000306_▁▃\u000310▅▇█\u000303█\u0003| 38.72°F / 4.3 mph |\u000306↓\u000310↙←\u000311↖↑↗\u000308→\u0003| 12.71 mph / 98% chance of sun / 60m precip |\u000306☃\u000311▇\u000308▇\u000302_____________\u0003|")
+    expect(replies.last).to eq("Portland, OR 28.3°F |\u000306_▁▃\u000310▅▇█\u000303█\u0003| 38.72°F / 4.3 mph |\u000306↓\u000310↙←\u000311↖↑↗\u000308→\u0003| 12.71 mph / 98% chance of sun / 60m precip |\u000306❄\u000311▇\u000308▇\u000302_____________\u0003|")
   end
 
   it '!alerts' do
@@ -210,7 +210,7 @@ describe Lita::Handlers::OnewheelForecastIo, lita_handler: true do
 
   it '!asciirain' do
     send_message 'asciirain'
-    expect(replies.last).to include("|\u000302_☃\u000306-\u000310~\u000303~\u000309~\u000311*\u000308*\u000307'\u000304'\u000313'\u000302__________________________________________________\u0003|")
+    expect(replies.last).to include("|\u000302_❄\u000306-\u000310~\u000303~\u000309~\u000311*\u000308*\u000307'\u000304'\u000313'\u000302__________________________________________________\u0003|")
   end
 
   it '!7day' do
@@ -220,7 +220,7 @@ describe Lita::Handlers::OnewheelForecastIo, lita_handler: true do
 
   it '!dailyrain' do
     send_message 'dailyrain'
-    expect(replies.last).to eq("Portland, OR 48 hr snows |\u000302_______________________▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁_\u0003| max 4.0%")
+    expect(replies.last).to eq("Portland, OR 48 hr snows |\u000302_______________________❄❄❄❄▁▁▁▁▁▁▁▁▁▁▁▁▁❄❄❄❄❄❄❄❄_\u0003| max 4.0%")
   end
 
   it '!7dayrain' do
@@ -327,13 +327,13 @@ describe Lita::Handlers::OnewheelForecastIo, lita_handler: true do
   it '!forecastallthethings' do
     send_message 'forecastallthethings'
     expect(replies[0]).to eq("Portland, OR weather is currently 28.39°F and clear.  Winds out of the E at 5.74 mph. It will be clear for the hour, and flurries tomorrow morning.  There are also 357.71 ozones.")
-    expect(replies[1]).to include("|\u000302_☃\u000306▃\u000310▅\u000303▅\u000309▅\u000311▇\u000308▇\u000307█\u000304█\u000313█\u000302__________________________________________________\u0003|")
+    expect(replies[1]).to include("|\u000302_❄\u000306▃\u000310▅\u000303▅\u000309▅\u000311▇\u000308▇\u000307█\u000304█\u000313█\u000302__________________________________________________\u0003|")
     expect(replies[2]).to include("|\u000302_\u000313▅\u000310▁\u000303▃\u000309▃\u000311▃\u000308▅\u000307▅\u000304▅\u000313▅\u000302___________________________________________________\u0003|")
     expect(replies[3]).to eq("Portland, OR 24 hr temps: 28.3°F |\u000306_▁▃\u000310▅▇█\u000303██\u000310██▇▅\u000306▅▃▃▃▃▃▃▁▁▁▁\u0003| 28.4°F  Range: 28.3°F - 39.0°F")
     expect(replies[4]).to eq("Portland, OR 48h wind direction 4.3 mph|\u000306↓\u000310↙←\u000311↖↑↗\u000308→↘\u000311↓←←←←←←\u000310←←←←←←←\u000306←←←←←\u000302←←←↙↙↙↙↓↓↓\u000306↓↓↓↓↓↓↓↓↙↙\u0003|4.18 mph Range: 1.39 mph - 12.71 mph")
     expect(replies[5]).to eq("Portland, OR 8 day sun forecast |\u000308█\u000309▃\u000308▇\u000309▁_\u000307▅\u000309▃\u000307▅\u0003| max 100%")
     expect(replies[6]).to eq("Portland, OR 24h cloud cover |___________▁▁▁▁▁▁▁▁▃▅▅▅| max 49.0%")
-    expect(replies[7]).to eq("Portland, OR 48 hr snows |\u000302_______________________▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁_\u0003| max 4.0%")
+    expect(replies[7]).to eq("Portland, OR 48 hr snows |\u000302_______________________❄❄❄❄▁▁▁▁▁▁▁▁▁▁▁▁▁❄❄❄❄❄❄❄❄_\u0003| max 4.0%")
   end
 
   it '!ansipressure' do

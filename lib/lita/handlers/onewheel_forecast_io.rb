@@ -13,6 +13,7 @@ module Lita
       config :api_key
       config :api_uri
       config :colors
+      config :snowflake, default: '❄'
 
       include ::ForecastIo::Constants
       include ::ForecastIo::IrcHandlers
