@@ -119,6 +119,10 @@ module ForecastIo
       }
     end
 
+    def get_snowman
+      '⛄'
+    end
+
     # I have no use for these yet, and yet they're handy to know.
     # def attributes
     #   { :bold       => 2.chr,

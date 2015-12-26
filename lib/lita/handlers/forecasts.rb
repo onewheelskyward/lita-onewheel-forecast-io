@@ -67,7 +67,7 @@ module ForecastIo
       if i_can_has_snow
         data.each_with_index do |datum, index|
           if datum['precipType'] == 'snow'
-            str[index] = '☃'
+            str[index] = get_snowman
           end
         end
       end
