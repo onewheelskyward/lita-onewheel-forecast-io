@@ -1,21 +1,21 @@
 module ForecastIo
   module Forecasts
     def ascii_rain_forecast(forecast)
-      str = do_the_rain_chance_thing(forecast, ascii_chars, 'precipProbability')
+      (str, precip_type) = do_the_rain_chance_thing(forecast, ascii_chars, 'precipProbability')
       max = get_max_by_data_key(forecast, 'minutely', 'precipProbability')
-      "1hr rain probability #{(Time.now).strftime('%H:%M').to_s}|#{str}|#{(Time.now + 3600).strftime('%H:%M').to_s} max #{max * 100}%"
+      "1hr #{precip_type} probability #{(Time.now).strftime('%H:%M').to_s}|#{str}|#{(Time.now + 3600).strftime('%H:%M').to_s} max #{max * 100}%"
     end
 
     def ansi_rain_forecast(forecast)
-      str = do_the_rain_chance_thing(forecast, ansi_chars, 'precipProbability') #, 'probability', get_rain_range_colors)
+      (str, precip_type) = do_the_rain_chance_thing(forecast, ansi_chars, 'precipProbability') #, 'probability', get_rain_range_colors)
       max = get_max_by_data_key(forecast, 'minutely', 'precipProbability')
-      "1hr rain probability #{(Time.now).strftime('%H:%M').to_s}|#{str}|#{(Time.now + 3600).strftime('%H:%M').to_s} max #{max.to_f * 100}%"
+      "1hr #{precip_type} probability #{(Time.now).strftime('%H:%M').to_s}|#{str}|#{(Time.now + 3600).strftime('%H:%M').to_s} max #{max.to_f * 100}%"
     end
 
     def ansi_rain_intensity_forecast(forecast)
-      str = do_the_rain_intensity_thing(forecast, ansi_chars, 'precipIntensity') #, 'probability', get_rain_range_colors)
+      (str, precip_type) = do_the_rain_intensity_thing(forecast, ansi_chars, 'precipIntensity') #, 'probability', get_rain_range_colors)
       max_str = get_max_by_data_key(forecast, 'minutely', 'precipIntensity')
-      "1hr rain intensity #{(Time.now).strftime('%H:%M').to_s}|#{str}|#{(Time.now + 3600).strftime('%H:%M').to_s} #{max_str}"
+      "1hr #{precip_type} intensity #{(Time.now).strftime('%H:%M').to_s}|#{str}|#{(Time.now + 3600).strftime('%H:%M').to_s} #{max_str}"
     end
 
     def ansi_humidity_forecast(forecast)
@@ -76,7 +76,9 @@ module ForecastIo
         str = get_colored_string(data, key, str, get_rain_range_colors)
       end
 
-      str
+      precip_type = i_can_has_snow ? 'snow' : 'rain'
+
+      return str, precip_type
     end
 
     def do_the_rain_intensity_thing(forecast, chars, key) #, type, range_colors = nil)
@@ -84,11 +86,15 @@ module ForecastIo
         return 'No minute-by-minute data available.'  # The "Middle of Nowhere" case.
       end
 
+      i_can_has_snow = false
       data_points = []
       data = forecast['minutely']['data']
 
       data.each do |datum|
         data_points.push datum[key]
+        if datum['precipType'] == 'snow'
+          i_can_has_snow = true
+        end
       end
 
       # Fixed range graph- 0-0.11.
@@ -97,7 +103,10 @@ module ForecastIo
       if config.colors
         str = get_colored_string(data, key, str, get_rain_intensity_range_colors)
       end
-      str
+
+      precip_type = i_can_has_snow ? 'snow' : 'rain'
+
+      return str, precip_type
     end
 
     def do_the_humidity_thing(forecast, chars, key) #, type, range_colors = nil)
