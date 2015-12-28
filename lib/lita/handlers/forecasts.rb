@@ -190,7 +190,7 @@ module ForecastIo
     def do_the_sun_thing(forecast, chars)
       key = 'cloudCover'
       data_points = []
-      data = forecast['daily']['data']
+      data = forecast['hourly']['data']
 
       data.each do |datum|
         data_points.push (1 - datum[key]).to_f  # It's a cloud cover percentage, so let's inverse it to give us sun cover.
@@ -206,6 +206,29 @@ module ForecastIo
       end
 
       max = 1 - get_min_by_data_key(forecast, 'hourly', key)
+
+      "48hr sun forecast |#{str}| max #{(max * 100).to_i}%"
+    end
+
+    def do_the_daily_sun_thing(forecast, chars)
+      key = 'cloudCover'
+      data_points = []
+      data = forecast['daily']['data']
+
+      data.each do |datum|
+        data_points.push (1 - datum[key]).to_f  # It's a cloud cover percentage, so let's inverse it to give us sun cover.
+        datum[key] = (1 - datum[key]).to_f      # Mod the source data for the get_dot_str call below.
+      end
+
+      differential = data_points.max - data_points.min
+
+      str = get_dot_str(chars, data, data_points.min, differential, key)
+
+      if config.colors
+        str = get_colored_string(data, key, str, get_sun_range_colors)
+      end
+
+      max = 1 - get_min_by_data_key(forecast, 'daily', key)
 
       "8 day sun forecast |#{str}| max #{(max * 100).to_i}%"
     end

@@ -120,6 +120,9 @@ module Lita
             help: { '!sunset [location]' => 'Get today\'s sunset time for [location].'})
       route(/^ansisun\s*$/i, :handle_irc_ansisun)
       route(/^ansisun\s+(.+)/i, :handle_irc_ansisun,
+            help: { '!ansisun [location]' => '48 hour chance-of-sun report for [location].'})
+      route(/^dailysun\s*$/i, :handle_irc_dailysun)
+      route(/^dailysun\s+(.+)/i, :handle_irc_dailysun,
             help: { '!ansisun [location]' => '7 day chance-of-sun report for [location].'})
       route(/^asciisun\s*$/i, :handle_irc_asciisun)
       route(/^asciisun\s+(.+)/i, :handle_irc_asciisun,

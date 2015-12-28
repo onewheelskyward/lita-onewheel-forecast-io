@@ -87,6 +87,12 @@ module ForecastIo
       response.reply location.location_name + ' ' + do_the_sun_thing(forecast, ansi_chars)
     end
 
+    def handle_irc_dailysun(response)
+      location = geo_lookup(response.user, response.match_data[1])
+      forecast = get_forecast_io_results(response.user, location)
+      response.reply location.location_name + ' ' + do_the_daily_sun_thing(forecast, ansi_chars)
+    end
+
     def handle_irc_asciisun(response)
       location = geo_lookup(response.user, response.match_data[1])
       forecast = get_forecast_io_results(response.user, location)
