@@ -44,6 +44,13 @@ module ForecastIo
       response.reply location.location_name + ' ' + ansi_temp_forecast(forecast)
     end
 
+    def handle_irc_ieeetemp(response)
+      @scale = 'k'
+      location = geo_lookup(response.user, response.match_data[1])
+      forecast = get_forecast_io_results(response.user, location)
+      response.reply location.location_name + ' ' + ansi_temp_forecast(forecast)
+    end
+
     def handle_irc_ascii_temp(response)
       location = geo_lookup(response.user, response.match_data[1])
       forecast = get_forecast_io_results(response.user, location)

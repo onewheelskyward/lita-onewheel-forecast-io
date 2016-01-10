@@ -36,6 +36,9 @@ module Lita
       route(/^asciitemp\s*$/i, :handle_irc_ascii_temp)
       route(/^asciitemp\s+(.+)/i, :handle_irc_ascii_temp,
             help: { '!asciitemp [location]' => 'Like ansitemp, but with less ansi.'})
+      route(/^ieeetemp\s*$/i, :handle_irc_ieeetemp)
+      route(/^ieeetemp\s+(.+)/i, :handle_irc_ieeetemp,
+            help: {'!ieeetemp [location]' => 'The 24h temperature scale for [location], kelvin-style.'})
 
       # General forecast routes
       route(/^forecastallthethings\s*$/i, :handle_irc_all_the_things)

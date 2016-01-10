@@ -27,6 +27,7 @@ describe Lita::Handlers::OnewheelForecastIo, lita_handler: true do
   it { is_expected.to route('ansihumidity') }
   it { is_expected.to route('ansiintensity') }
   it { is_expected.to route('ansitemp') }
+  it { is_expected.to route('ieeetemp') }
   it { is_expected.to route('ansiwind') }
   it { is_expected.to route('asciiwind') }
   it { is_expected.to route('ansisun') }
@@ -162,6 +163,11 @@ describe Lita::Handlers::OnewheelForecastIo, lita_handler: true do
   it '!ansitemp portland' do
     send_message 'ansitemp portland'
     expect(replies.last).to eq("Portland, OR 24 hr temps: 28.3°F |\u000306_▁▃\u000310▅▇█\u000303██\u000310██▇▅\u000306▅▃▃▃▃▃▃▁▁▁▁\u0003| 28.4°F  Range: 28.3°F - 39.0°F")
+  end
+
+  it '!ieeetemp portland' do
+    send_message 'ieeetemp portland'
+    expect(replies.last).to eq("Portland, OR 24 hr temps: 271.09K |\u000306_▁▃\u000310▅▇█\u000303██\u000310██▇▅\u000306▅▃▃▃▃▃▃▁▁▁▁\u0003| 271.15K  Range: 271.09K - 277.04K")
   end
 
   it '!dailytemp portland' do

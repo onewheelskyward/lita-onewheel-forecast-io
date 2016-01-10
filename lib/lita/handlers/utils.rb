@@ -138,7 +138,7 @@ module ForecastIo
     def get_forecast_io_results(user, location)
       if ! config.api_uri or ! config.api_key
         Lita.logger.error "Configuration missing!  '#{config.api_uri}' '#{config.api_key}'"
-        return
+        raise StandardError.new('Configuration missing!')
       end
       uri = config.api_uri + config.api_key + '/' + "#{location.latitude},#{location.longitude}"
       Lita.logger.debug uri
