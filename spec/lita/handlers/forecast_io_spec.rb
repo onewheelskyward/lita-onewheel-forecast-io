@@ -1,4 +1,5 @@
 require_relative '../../spec_helper'
+require 'geocoder'
 
 describe Lita::Handlers::OnewheelForecastIo, lita_handler: true do
 

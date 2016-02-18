@@ -1,3 +1,4 @@
+require 'geocoder'
 module ForecastIo
   module Utils
     REDIS_KEY = 'forecast_io'
