@@ -58,7 +58,7 @@ module ForecastIo
 
     # Perform a geocoder lookup based on a) the query or b) the user's serialized state.
     # If neither of those exist, default to Portland.
-    def geo_lookup(user, query)
+    def geo_lookup(user, query, persist = true)
       Lita.logger.debug "Performing geolookup for '#{user.name}' for '#{query}'"
 
       default_location = {
@@ -86,7 +86,9 @@ module ForecastIo
         Lita.logger.debug "Redis hget failed, performing lookup for #{query}"
         geocoded = optimistic_geo_wrapper query
         Lita.logger.debug "Geolocation found.  '#{geocoded.inspect}' failed, performing lookup"
-        redis.hset(REDIS_KEY, user.name, geocoded.to_json)
+        if persist
+          redis.hset(REDIS_KEY, user.name, geocoded.to_json)
+        end
       end
 
       # Let's set up the defaults in the event that the geocoder fails.
@@ -165,7 +167,7 @@ module ForecastIo
     end
 
     def handle_geo_lookup(response)
-      location = geo_lookup(response.user, response.match_data[1])
+      location = geo_lookup(response.user, response.match_data[1], persist = false)
       response.reply "#{location.latitude}, #{location.longitude}"
     end
 
