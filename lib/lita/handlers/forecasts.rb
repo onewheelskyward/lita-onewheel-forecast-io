@@ -3,13 +3,13 @@ module ForecastIo
     def ascii_rain_forecast(forecast)
       (str, precip_type) = do_the_rain_chance_thing(forecast, ascii_chars, 'precipProbability')
       max = get_max_by_data_key(forecast, 'minutely', 'precipProbability')
-      "1hr #{precip_type} probability #{(Time.now).strftime('%H:%M').to_s}|#{str}|#{(Time.now + 3600).strftime('%H:%M').to_s} max #{max * 100}%"
+      "1hr #{precip_type} probability #{(Time.now).strftime('%H:%M').to_s}|#{str}|#{(Time.now + 3600).strftime('%H:%M').to_s} max #{(max.to_f * 100).round(2)}%"
     end
 
     def ansi_rain_forecast(forecast)
       (str, precip_type) = do_the_rain_chance_thing(forecast, ansi_chars, 'precipProbability') #, 'probability', get_rain_range_colors)
       max = get_max_by_data_key(forecast, 'minutely', 'precipProbability')
-      "1hr #{precip_type} probability #{(Time.now).strftime('%H:%M').to_s}|#{str}|#{(Time.now + 3600).strftime('%H:%M').to_s} max #{max.to_f * 100}%"
+      "1hr #{precip_type} probability #{(Time.now).strftime('%H:%M').to_s}|#{str}|#{(Time.now + 3600).strftime('%H:%M').to_s} max #{(max.to_f * 100).round(2)}%"
     end
 
     def ansi_rain_intensity_forecast(forecast)
