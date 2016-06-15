@@ -4,12 +4,83 @@ require 'geocoder'
 describe Lita::Handlers::OnewheelForecastIo, lita_handler: true do
 
   before(:each) do
-    mock_geocoder = ::Geocoder::Result::Google.new({'formatted_address' => 'Portland, OR', 'geometry' => { 'location' => { 'lat' => 45.523452, 'lng' => -122.676207 }}})
-    allow(::Geocoder).to receive(:search) { [mock_geocoder] }  # It expects an array of geocoder objects.
+    # mock_geocoder = ::Geocoder::Result::Google.new({'formatted_address' => 'Portland, OR', 'geometry' => { 'location' => { 'lat' => 45.523452, 'lng' => -122.676207 }}})
+    # allow(::Geocoder).to receive(:search) { [mock_geocoder] }  # It expects an array of geocoder objects.
+    Geocoder.configure(:lookup => :test)
+
+    Geocoder::Lookup::Test.add_stub(
+        'Portland, OR', [
+        {
+            'latitude'     => 45.523452,
+            'longitude'    => -122.676207,
+            'address'      => 'Portland, OR, USA',
+            'state'        => 'Oregon',
+            'state_code'   => 'OR',
+            'country'      => 'United States',
+            'country_code' => 'US'
+        }
+      ]
+    )
+
+    Geocoder::Lookup::Test.add_stub(
+        'Portland', [
+        {
+            'latitude'     => 45.523452,
+            'longitude'    => -122.676207,
+            'address'      => 'Portland, OR, USA',
+            'state'        => 'Oregon',
+            'state_code'   => 'OR',
+            'country'      => 'United States',
+            'country_code' => 'US'
+        }
+      ]
+    )
+
+    Geocoder::Lookup::Test.add_stub(
+        'portland', [
+        {
+            'latitude'     => 45.523452,
+            'longitude'    => -122.676207,
+            'address'      => 'Portland, OR, USA',
+            'state'        => 'Oregon',
+            'state_code'   => 'OR',
+            'country'      => 'United States',
+            'country_code' => 'US'
+        }
+      ]
+    )
+
+    Geocoder::Lookup::Test.add_stub(
+        'Paris, france', [
+        {
+            'latitude'     => 48.856614,
+            'longitude'    => 2.3522219,
+            'address'      => 'Paris, FR',
+            'state'        => 'm',
+            'state_code'   => 'm',
+            'country'      => 'France',
+            'country_code' => 'FR'
+        }
+      ]
+    )
+
+    Geocoder::Lookup::Test.add_stub(
+        'Paris', [
+        {
+            'latitude'     => 48.856614,
+            'longitude'    => 2.3522219,
+            'address'      => 'Paris, FR',
+            'state'        => 'm',
+            'state_code'   => 'm',
+            'country'      => 'France',
+            'country_code' => 'FR'
+        }
+      ]
+    )
 
     # Mock up the ForecastAPI call.
     # Todo: add some other mocks to allow more edgy testing (rain percentages, !rain eightball replies, etc
-    mock_weather_json = File.open("spec/mock_weather.json").read
+    mock_weather_json = File.open('spec/fixtures/mock_weather.json').read
     allow(RestClient).to receive(:get) { mock_weather_json }
 
     registry.configure do |config|
@@ -140,13 +211,13 @@ describe Lita::Handlers::OnewheelForecastIo, lita_handler: true do
   end
 
   it '!ansirain no minutes' do
-    allow(RestClient).to receive(:get) { File.open('spec/mock_weather_no_minute.json').read }
+    allow(RestClient).to receive(:get) { File.open('spec/fixtures/mock_weather_no_minute.json').read }
     send_command 'ansirain'
     expect(replies.last).to include('|No minute-by-minute data available.|')
   end
 
   it '!ansiintensity no minutes' do
-    allow(RestClient).to receive(:get) { File.open('spec/mock_weather_no_minute.json').read }
+    allow(RestClient).to receive(:get) { File.open('spec/fixtures/mock_weather_no_minute.json').read }
     send_command 'ansiintensity'
     expect(replies.last).to include('|No minute-by-minute data available.|')
   end
