@@ -4,8 +4,6 @@ require 'geocoder'
 describe Lita::Handlers::OnewheelForecastIo, lita_handler: true do
 
   before(:each) do
-    # mock_geocoder = ::Geocoder::Result::Google.new({'formatted_address' => 'Portland, OR', 'geometry' => { 'location' => { 'lat' => 45.523452, 'lng' => -122.676207 }}})
-    # allow(::Geocoder).to receive(:search) { [mock_geocoder] }  # It expects an array of geocoder objects.
     Geocoder.configure(:lookup => :test)
 
     Geocoder::Lookup::Test.add_stub(
@@ -479,6 +477,14 @@ describe Lita::Handlers::OnewheelForecastIo, lita_handler: true do
   it '!neareststorm' do
     send_command 'neareststorm'
     expect(replies.last).to eq('The nearest storm is 158 mi to the S of you.')
+  end
+
+  it '!neareststorm is zero' do
+    mock_weather_json = File.open('spec/fixtures/heavy_rain.json').read
+    allow(RestClient).to receive(:get) { mock_weather_json }
+
+    send_command 'neareststorm'
+    expect(replies.last).to eq('You\'re in it!')
   end
 
   it '!neareststorm with scale' do
