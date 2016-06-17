@@ -493,6 +493,11 @@ describe Lita::Handlers::OnewheelForecastIo, lita_handler: true do
     expect(replies.last).to eq('The nearest storm is 252.8 km to the S of you.')
   end
 
+  it '!tomorrows' do
+    send_command 'tomorrow'
+    expect(replies.last).to eq('Tomorrow will be much warmer than today.')
+  end
+
   # it 'colors strings' do
     # cstr = Lita::Handlers::ForecastIo.get_colored_string([{:key => 1}], :key, 'x', {1 => :blue})
     # expect(cstr).to equal('x')
