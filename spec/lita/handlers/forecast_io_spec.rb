@@ -1,6 +1,11 @@
 require_relative '../../spec_helper'
 require 'geocoder'
 
+def mock_up(filename)
+  mock_weather_json = File.open("spec/fixtures/#{filename}.json").read
+  allow(RestClient).to receive(:get) { mock_weather_json }
+end
+
 describe Lita::Handlers::OnewheelForecastIo, lita_handler: true do
 
   before(:each) do
@@ -104,8 +109,7 @@ describe Lita::Handlers::OnewheelForecastIo, lita_handler: true do
 
     # Mock up the ForecastAPI call.
     # Todo: add some other mocks to allow more edgy testing (rain percentages, !rain eightball replies, etc
-    mock_weather_json = File.open('spec/fixtures/mock_weather.json').read
-    allow(RestClient).to receive(:get) { mock_weather_json }
+    mock_up('mock_weather')
 
     registry.configure do |config|
       config.handlers.onewheel_forecast_io.api_uri = ''
@@ -165,7 +169,7 @@ describe Lita::Handlers::OnewheelForecastIo, lita_handler: true do
   it { is_expected.to route_command('dailypressure') }
   it { is_expected.to route_command('dailybarometer') }
   it { is_expected.to route_command('neareststorm') }
-  it { is_expected.to route_command('tomorrow ') }
+  it { is_expected.to route_command('tomorrow') }
 
   # This is where we test for regex overflow, so !weeklyrain doesn't try to get a forecast for Rain, Germany.
   it { is_expected.not_to route_command('forecastrain') }
@@ -236,13 +240,13 @@ describe Lita::Handlers::OnewheelForecastIo, lita_handler: true do
   end
 
   it '!ansirain no minutes' do
-    allow(RestClient).to receive(:get) { File.open('spec/fixtures/mock_weather_no_minute.json').read }
+    mock_up 'mock_weather_no_minute'
     send_command 'ansirain'
     expect(replies.last).to include('|No minute-by-minute data available.|')
   end
 
   it '!ansiintensity no minutes' do
-    allow(RestClient).to receive(:get) { File.open('spec/fixtures/mock_weather_no_minute.json').read }
+    mock_up 'mock_weather_no_minute'
     send_command 'ansiintensity'
     expect(replies.last).to include('|No minute-by-minute data available.|')
   end
@@ -481,8 +485,7 @@ describe Lita::Handlers::OnewheelForecastIo, lita_handler: true do
   end
 
   it '!neareststorm is zero' do
-    mock_weather_json = File.open('spec/fixtures/heavy_rain.json').read
-    allow(RestClient).to receive(:get) { mock_weather_json }
+    mock_up 'heavy_rain'
 
     send_command 'neareststorm'
     expect(replies.last).to eq('You\'re in it!')
@@ -496,7 +499,13 @@ describe Lita::Handlers::OnewheelForecastIo, lita_handler: true do
 
   it '!tomorrows' do
     send_command 'tomorrow'
-    expect(replies.last).to eq('Tomorrow will be much warmer than today.')
+    expect(replies.last).to eq('Tomorrow will be warmer than today.')
+  end
+
+  it '!tomorrows' do
+    mock_up 'much_warmer'
+    send_command 'tomorrow'
+    expect(replies.last).to eq('Tomorrow will be much hotter than today.')
   end
 
   # it 'colors strings' do

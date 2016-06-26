@@ -438,5 +438,23 @@ module ForecastIo
     def do_the_nearest_storm_thing(forecast)
       return forecast['currently']['nearestStormDistance'], forecast['currently']['nearestStormBearing']
     end
+
+    def do_the_tomorrow_thing(forecast)
+      # Get today's high
+      # Get tomorrow's high
+      # Get tomorrow's rain chance
+      temp_diff = forecast['daily']['data'][0]['temperatureMax'] - forecast['daily']['data'][1]['temperatureMax']
+      if temp_diff <= 1 and temp_diff >= -1
+        'about the same as'
+      elsif temp_diff > 1 and temp_diff <= 5
+        'cooler than'
+      elsif temp_diff > 5
+        'much colder than'
+      elsif temp_diff < -1 and temp_diff >= -5
+        'warmer than'
+      elsif temp_diff < -5
+        'much hotter than'
+      end
+    end
   end
 end

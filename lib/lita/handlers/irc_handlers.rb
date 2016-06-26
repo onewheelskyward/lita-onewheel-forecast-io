@@ -203,5 +203,12 @@ module ForecastIo
       end
 
     end
+
+    def handle_irc_tomorrow(response)
+      location = geo_lookup(response.user, response.match_data[1])
+      forecast = get_forecast_io_results(response.user, location)
+      tomorrow_will_be = do_the_tomorrow_thing(forecast)
+      response.reply "Tomorrow will be #{tomorrow_will_be} today."
+    end
   end
 end
