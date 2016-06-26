@@ -165,6 +165,7 @@ describe Lita::Handlers::OnewheelForecastIo, lita_handler: true do
   it { is_expected.to route_command('dailypressure') }
   it { is_expected.to route_command('dailybarometer') }
   it { is_expected.to route_command('neareststorm') }
+  it { is_expected.to route_command('tomorrow ') }
 
   # This is where we test for regex overflow, so !weeklyrain doesn't try to get a forecast for Rain, Germany.
   it { is_expected.not_to route_command('forecastrain') }
