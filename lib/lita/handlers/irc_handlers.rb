@@ -30,6 +30,7 @@ module ForecastIo
       response.reply location.location_name + ' ' + do_the_sun_thing(forecast, ansi_chars)
       response.reply location.location_name + ' ' + do_the_cloud_thing(forecast, ansi_chars)
       response.reply location.location_name + ' ' + do_the_daily_rain_thing(forecast)
+      response.reply location.location_name + ' ' + do_the_humidity_thing(forecast, ansi_chars, 'humidity')
     end
 
     def handle_irc_ansirain_intensity(response)

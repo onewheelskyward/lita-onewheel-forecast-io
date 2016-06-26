@@ -447,6 +447,7 @@ describe Lita::Handlers::OnewheelForecastIo, lita_handler: true do
     expect(replies[5]).to eq("Portland, OR 48hr sun forecast |\u000308████████████████████\u000307▇▇▅\u000309▅▅▃\u000303▁_▁\u000309▃▃▃\u000303▁▁▁▁▃\u000309▃▅\u000307▇▇▇▇\u000308▇▇▇▇▇▇\u0003| max 100%")
     expect(replies[6]).to eq("Portland, OR 24h cloud cover |___________▁▁▁▁▁▁▁▁▃▅▅▅| range 0% - 49.0%")
     expect(replies[7]).to eq("Portland, OR 48 hr snows |\u000302_______________________❄❄❄❄▁▁▁▁▁▁▁▁▁▁▁▁▁❄❄❄❄❄❄❄❄_\u0003| max 4.0%")
+    expect(replies.last).to eq("Portland, OR 67%|\u000307▇\u000308▇▇▇\u000311▅▅▅▅▅▅▅▅▅▅\u000308▇▇▇▇▇▇▇\u000307▇▇▇▇▇▇▇▇▇▇▇▇\u000304████████████████\u0003|80% range: 41%-85%")
   end
 
   it '!ansipressure' do
