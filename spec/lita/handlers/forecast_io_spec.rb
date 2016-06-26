@@ -293,7 +293,7 @@ describe Lita::Handlers::OnewheelForecastIo, lita_handler: true do
 
   it '!ansisun' do
     send_command 'ansisun'
-    expect(replies.last).to eq("Portland, OR 48hr sun forecast |\u000308████████████████████\u000307▇▇▅\u000309▅▅▃\u000303▁_▁\u000309▃▃▃\u000303▁▁▁▁▃\u000309▃▅\u000307▇▇▇▇\u000308▇▇▇▇▇▇\u0003| max 88%")
+    expect(replies.last).to eq("Portland, OR 48hr sun forecast |\u000308████████████████████\u000307▇▇▅\u000309▅▅▃\u000303▁_▁\u000309▃▃▃\u000303▁▁▁▁▃\u000309▃▅\u000307▇▇▇▇\u000308▇▇▇▇▇▇\u0003| max 100%")
   end
 
   it '!dailysun' do
@@ -303,7 +303,7 @@ describe Lita::Handlers::OnewheelForecastIo, lita_handler: true do
 
   it '!asciisun' do
     send_command 'asciisun'
-    expect(replies.last).to eq("Portland, OR 48hr sun forecast |\u000308''''''''''''''''''''\u000307**~\u000309~~-\u000303._.\u000309---\u000303....-\u000309-~\u000307****\u000308******\u0003| max 88%")
+    expect(replies.last).to eq("Portland, OR 48hr sun forecast |\u000308''''''''''''''''''''\u000307**~\u000309~~-\u000303._.\u000309---\u000303....-\u000309-~\u000307****\u000308******\u0003| max 100%")
   end
 
   it '!ansicloud' do
@@ -444,8 +444,8 @@ describe Lita::Handlers::OnewheelForecastIo, lita_handler: true do
     expect(replies[2]).to include("|\u000302_\u000313▅\u000310▁\u000303▃\u000309▃\u000311▃\u000308▅\u000307▅\u000304▅\u000313▅\u000302___________________________________________________\u0003|")
     expect(replies[3]).to eq("Portland, OR 24 hr temps: 28.3°F |\u000306_▁▃\u000310▅▇█\u000303██\u000310██▇▅\u000306▅▃▃▃▃▃▃▁▁▁▁\u0003| 28.4°F  Range: 28.3°F - 39.0°F")
     expect(replies[4]).to eq("Portland, OR 48h wind direction 4.3 mph|\u000306↓\u000310↙←\u000311↖↑↗\u000308→↘\u000311↓←←←←←←\u000310←←←←←←←\u000306←←←←←\u000302←←←↙↙↙↙↓↓↓\u000306↓↓↓↓↓↓↓↓↙↙\u0003|4.18 mph Range: 1.39 mph - 12.71 mph")
-    expect(replies[5]).to eq("Portland, OR 48hr sun forecast |\u000308████████████████████\u000307▇▇▅\u000309▅▅▃\u000303▁_▁\u000309▃▃▃\u000303▁▁▁▁▃\u000309▃▅\u000307▇▇▇▇\u000308▇▇▇▇▇▇\u0003| max 88%")
-    expect(replies[6]).to eq("Portland, OR 24h cloud cover |████████████████████▇▇▇| range 51.0% - 100.0%")
+    expect(replies[5]).to eq("Portland, OR 48hr sun forecast |\u000308████████████████████\u000307▇▇▅\u000309▅▅▃\u000303▁_▁\u000309▃▃▃\u000303▁▁▁▁▃\u000309▃▅\u000307▇▇▇▇\u000308▇▇▇▇▇▇\u0003| max 100%")
+    expect(replies[6]).to eq("Portland, OR 24h cloud cover |___________▁▁▁▁▁▁▁▁▃▅▅▅| range 0% - 49.0%")
     expect(replies[7]).to eq("Portland, OR 48 hr snows |\u000302_______________________❄❄❄❄▁▁▁▁▁▁▁▁▁▁▁▁▁❄❄❄❄❄❄❄❄_\u0003| max 4.0%")
   end
 
