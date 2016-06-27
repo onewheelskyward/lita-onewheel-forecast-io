@@ -72,6 +72,8 @@ module Lita
             help: { '!neareststorm [location]' => 'Nearest storm distance for [location].'})
       route(/^tomorrow/i, :handle_irc_tomorrow,
             help: { '!tomorrow' => 'Give me tomorrow\'s forecast as it relates to today.'})
+      route(/^windows/i, :handle_irc_windows,
+            help: { '!windows' => 'Tell me when to close my windows as it\'s warmer outside than in.'})
 
       # State Commands
       route(/^set scale (c|f|k)/i, :handle_irc_set_scale, command: true,

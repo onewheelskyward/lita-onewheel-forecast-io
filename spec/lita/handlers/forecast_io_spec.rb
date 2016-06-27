@@ -170,6 +170,7 @@ describe Lita::Handlers::OnewheelForecastIo, lita_handler: true do
   it { is_expected.to route_command('dailybarometer') }
   it { is_expected.to route_command('neareststorm') }
   it { is_expected.to route_command('tomorrow') }
+  it { is_expected.to route_command('windows') }
 
   # This is where we test for regex overflow, so !weeklyrain doesn't try to get a forecast for Rain, Germany.
   it { is_expected.not_to route_command('forecastrain') }
@@ -508,6 +509,13 @@ describe Lita::Handlers::OnewheelForecastIo, lita_handler: true do
     send_command 'tomorrow'
     expect(replies.last).to eq('Tomorrow will be much hotter than today.')
   end
+
+  it '!windows' do
+    mock_up 'windows'
+    send_command 'windows'
+    expect(replies.last).to eq('Close your windows at 11am.')
+  end
+
 
   # it 'colors strings' do
     # cstr = Lita::Handlers::ForecastIo.get_colored_string([{:key => 1}], :key, 'x', {1 => :blue})

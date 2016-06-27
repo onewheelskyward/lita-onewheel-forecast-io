@@ -211,5 +211,12 @@ module ForecastIo
       tomorrow_will_be = do_the_tomorrow_thing(forecast)
       response.reply "Tomorrow will be #{tomorrow_will_be} today."
     end
+
+    def handle_irc_windows(response)
+      location = geo_lookup(response.user, response.match_data[1])
+      forecast = get_forecast_io_results(response.user, location)
+      windows_time = do_the_windows_thing(forecast)
+      response.reply "#{windows_time}"
+    end
   end
 end

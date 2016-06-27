@@ -457,5 +457,23 @@ module ForecastIo
         'much hotter than'
       end
     end
+
+    # Check for the time of day when it will hit 72F.
+    def do_the_windows_thing(forecast)
+      time_to_close_the_windows = nil
+      forecast['hourly']['data'].each do |hour|
+        if hour['temperature'].to_i >= 72
+          time_to_close_the_windows = hour['time']
+        end
+      end
+
+      # Return some meta here and let the caller decide the text.
+      if time_to_close_the_windows.nil?
+        "Leave 'em open."
+      else
+        time_at = Time.at(time_to_close_the_windows).to_datetime
+        "Shut them down at #{time_at.hour}:00."
+      end
+    end
   end
 end
