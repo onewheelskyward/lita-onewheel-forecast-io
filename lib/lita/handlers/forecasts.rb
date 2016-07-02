@@ -472,7 +472,7 @@ module ForecastIo
         "Leave 'em open."
       else
         time_at = Time.at(time_to_close_the_windows).to_datetime
-        "Shut them down at #{time_at.hour}:00."
+        "Shut them down at #{time_at.strftime('%H:%M')}."
       end
     end
   end
