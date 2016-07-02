@@ -516,7 +516,6 @@ describe Lita::Handlers::OnewheelForecastIo, lita_handler: true do
     expect(replies.last).to eq('Close your windows at 11am.')
   end
 
-
   # it 'colors strings' do
     # cstr = Lita::Handlers::ForecastIo.get_colored_string([{:key => 1}], :key, 'x', {1 => :blue})
     # expect(cstr).to equal('x')
