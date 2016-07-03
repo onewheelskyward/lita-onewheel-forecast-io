@@ -477,7 +477,7 @@ module ForecastIo
         "Leave 'em open, no excess heat today."
       else
         time_at = Time.at(time_to_close_the_windows).to_datetime
-        "Shut them down at #{time_at.strftime('%k:%M')}."
+        "Close the windows at #{time_at.strftime('%k:%M')}."
       end
     end
   end
