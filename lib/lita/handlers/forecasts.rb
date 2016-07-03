@@ -462,6 +462,7 @@ module ForecastIo
     def do_the_windows_thing(forecast)
       time_to_close_the_windows = nil
       forecast['hourly']['data'].each do |hour|
+        puts "#{hour['time']} - #{hour['temperature']}"
         if hour['temperature'].to_i >= 72
           time_to_close_the_windows = hour['time']
         end
@@ -469,7 +470,7 @@ module ForecastIo
 
       # Return some meta here and let the caller decide the text.
       if time_to_close_the_windows.nil?
-        "Leave 'em open."
+        "Leave 'em open, no excess heat today."
       else
         time_at = Time.at(time_to_close_the_windows).to_datetime
         "Shut them down at #{time_at.strftime('%H:%M')}."
