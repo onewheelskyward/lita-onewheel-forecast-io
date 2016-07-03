@@ -464,9 +464,10 @@ module ForecastIo
       forecast['hourly']['data'].each_with_index do |hour, index|
         tm = Time.at(hour['time']).to_datetime.strftime('%k:%M')
         puts "#{hour['time']} - #{tm} - #{hour['temperature']}"
-        if hour['temperature'].to_i >= 72
+        if hour['temperature'].to_i >= 71
           puts "Setting close time to #{hour['time']}"
           time_to_close_the_windows = hour['time']
+          break
         end
         break if index > 12
       end
