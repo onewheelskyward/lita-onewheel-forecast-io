@@ -462,8 +462,10 @@ module ForecastIo
     def do_the_windows_thing(forecast)
       time_to_close_the_windows = nil
       forecast['hourly']['data'].each_with_index do |hour, index|
-        puts "#{hour['time']} - #{hour['temperature']}"
+        tm = Time.at(hour['time']).to_datetime.strftime('%k:%M')
+        puts "#{hour['time']} - #{tm} - #{hour['temperature']}"
         if hour['temperature'].to_i >= 72
+          puts "Setting close time to #{hour['time']}"
           time_to_close_the_windows = hour['time']
         end
         break if index > 12
@@ -474,7 +476,7 @@ module ForecastIo
         "Leave 'em open, no excess heat today."
       else
         time_at = Time.at(time_to_close_the_windows).to_datetime
-        "Shut them down at #{time_at.strftime('%H:%M')}."
+        "Shut them down at #{time_at.strftime('%k:%M')}."
       end
     end
   end

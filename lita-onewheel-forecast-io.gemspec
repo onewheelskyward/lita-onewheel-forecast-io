@@ -1,6 +1,6 @@
 Gem::Specification.new do |spec|
   spec.name          = 'lita-onewheel-forecast-io'
-  spec.version       = '1.3.4'
+  spec.version       = '1.3.5'
   spec.authors       = ['Andrew Kreps']
   spec.email         = ['andrew.kreps@gmail.com']
   spec.description   = <<-EOS
@@ -19,7 +19,7 @@ EOS
   spec.test_files    = spec.files.grep(%r{^(test|spec|features)/})
   spec.require_paths = ['lib']
 
-  spec.add_runtime_dependency 'lita', '~> 4.6'
+  spec.add_runtime_dependency 'lita', '~> 4'
 
   spec.add_development_dependency 'bundler', '~> 1.3'
   # spec.add_development_dependency 'pry-byebug', '~> 3.1'
