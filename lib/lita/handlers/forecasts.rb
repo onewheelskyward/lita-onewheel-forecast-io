@@ -461,11 +461,12 @@ module ForecastIo
     # Check for the time of day when it will hit 72F.
     def do_the_windows_thing(forecast)
       time_to_close_the_windows = nil
-      forecast['hourly']['data'].each do |hour|
+      forecast['hourly']['data'].each_with_index do |hour, index|
         puts "#{hour['time']} - #{hour['temperature']}"
         if hour['temperature'].to_i >= 72
           time_to_close_the_windows = hour['time']
         end
+        break if index > 12
       end
 
       # Return some meta here and let the caller decide the text.
