@@ -1,6 +1,6 @@
 Gem::Specification.new do |spec|
   spec.name          = 'lita-onewheel-forecast-io'
-  spec.version       = '1.3.6'
+  spec.version       = '1.3.7'
   spec.authors       = ['Andrew Kreps']
   spec.email         = ['andrew.kreps@gmail.com']
   spec.description   = <<-EOS
@@ -33,4 +33,5 @@ EOS
   spec.add_runtime_dependency 'geocoder', '~> 1.2'
   spec.add_runtime_dependency 'multi_json', '~> 1.7'
   spec.add_runtime_dependency 'magic-eightball', '~> 0.0'
+  spec.add_runtime_dependency 'tzinfo', '~> 1.2'
 end

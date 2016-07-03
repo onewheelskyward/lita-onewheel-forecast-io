@@ -1,3 +1,5 @@
+require 'tzinfo'
+
 module ForecastIo
   module Forecasts
     def ascii_rain_forecast(forecast)
@@ -476,8 +478,11 @@ module ForecastIo
       if time_to_close_the_windows.nil?
         "Leave 'em open, no excess heat today."
       else
+        timezone = TZInfo::Timezone.get('America/Los_Angeles')
         time_at = Time.at(time_to_close_the_windows).to_datetime
-        "Close the windows at #{time_at.strftime('%k:%M')}."
+        local_time = timezone.utc_to_local(time_at)
+
+        "Close the windows at #{local_time.strftime('%k:%M')}."
       end
     end
   end
