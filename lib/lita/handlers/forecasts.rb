@@ -471,7 +471,7 @@ module ForecastIo
         tm = Time.at(hour['time']).to_datetime.strftime('%k:%M')
         puts "#{hour['time']} - #{tm} - #{hour['temperature']}"
 
-        if hour['temperature'].to_i > high_temp
+        if hour['temperature'] > high_temp
           high_temp = hour['temperature'].to_i
         end
 
