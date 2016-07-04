@@ -463,26 +463,44 @@ module ForecastIo
     # Check for the time of day when it will hit 72F.
     def do_the_windows_thing(forecast)
       time_to_close_the_windows = nil
+      time_to_open_the_windows = nil
+      window_close_temp = 0
+      high_temp = 0
+
       forecast['hourly']['data'].each_with_index do |hour, index|
         tm = Time.at(hour['time']).to_datetime.strftime('%k:%M')
         puts "#{hour['time']} - #{tm} - #{hour['temperature']}"
+
+        if hour['temperature'].to_i > high_temp
+          high_temp = hour['temperature'].to_i
+        end
+
         if hour['temperature'].to_i >= 71
           puts "Setting close time to #{hour['time']}"
           time_to_close_the_windows = hour['time']
+          window_close_temp = hour['temperature']
           break
+        end
+        if time_to_close_the_windows and hour['temperature'].to_i < 71
+          time_to_open_the_windows = hour['time']
         end
         break if index > 12
       end
 
       # Return some meta here and let the caller decide the text.
       if time_to_close_the_windows.nil?
-        "Leave 'em open, no excess heat today."
+        "Leave 'em open, no excess heat today(#{high_temp}°F)."
       else
         timezone = TZInfo::Timezone.get('America/Los_Angeles')
         time_at = Time.at(time_to_close_the_windows).to_datetime
         local_time = timezone.utc_to_local(time_at)
 
-        "Close the windows at #{local_time.strftime('%k:%M')}."
+        output = "Close the windows at #{local_time.strftime('%k:%M')}, it will be #{window_close_temp}°F.  "
+        if time_to_open_the_windows
+          open_time = timezone.utc_to_local(Time.at(time_to_close_the_windows).to_datetime)
+          output += "Open them back up at #{open_time.strftime('%k:%M')}.  "
+        end
+        output += "The high today will be #{high_temp}°F."
       end
     end
   end

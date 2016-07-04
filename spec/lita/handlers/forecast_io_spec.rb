@@ -513,7 +513,7 @@ describe Lita::Handlers::OnewheelForecastIo, lita_handler: true do
   it '!windows' do
     mock_up 'windows'
     send_command 'windows'
-    expect(replies.last).to eq('Close the windows at 16:00.')
+    expect(replies.last).to eq('Close the windows at 16:00, it will be 72°F.  The high today will be 72°F.')
   end
 
   # it 'colors strings' do
