@@ -491,6 +491,7 @@ module ForecastIo
       if time_to_close_the_windows.nil?
         "Leave 'em open, no excess heat today(#{high_temp}°F)."
       else
+        # Todo: base timezone on requested location.
         timezone = TZInfo::Timezone.get('America/Los_Angeles')
         time_at = Time.at(time_to_close_the_windows).to_datetime
         local_time = timezone.utc_to_local(time_at)
