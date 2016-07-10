@@ -353,7 +353,7 @@ module ForecastIo
 
       max = get_max_by_data_key(forecast, 'hourly', 'precipProbability')
 
-      "48 hr #{precip_type}s |#{str}| max #{max.to_f * 100}%"
+      "48 hr #{precip_type}s |#{str}| max #{(max.to_f * 100).round}%"
     end
 
     def do_the_daily_wind_thing(forecast)
@@ -469,14 +469,12 @@ module ForecastIo
 
       forecast['hourly']['data'].each_with_index do |hour, index|
         tm = Time.at(hour['time']).to_datetime.strftime('%k:%M')
-        puts "#{hour['time']} - #{tm} - #{hour['temperature']}"
 
         if hour['temperature'] > high_temp
           high_temp = hour['temperature'].to_i
         end
 
         if hour['temperature'].to_i >= 71
-          puts "Setting close time to #{hour['time']}"
           time_to_close_the_windows = hour['time']
           window_close_temp = hour['temperature']
           break

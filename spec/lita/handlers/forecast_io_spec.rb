@@ -334,7 +334,7 @@ describe Lita::Handlers::OnewheelForecastIo, lita_handler: true do
 
   it '!dailyrain' do
     send_command 'dailyrain'
-    expect(replies.last).to eq("Portland, OR 48 hr snows |\u000302_______________________❄❄❄❄▁▁▁▁▁▁▁▁▁▁▁▁▁❄❄❄❄❄❄❄❄_\u0003| max 4.0%")
+    expect(replies.last).to eq("Portland, OR 48 hr snows |\u000302_______________________❄❄❄❄▁▁▁▁▁▁▁▁▁▁▁▁▁❄❄❄❄❄❄❄❄_\u0003| max 4%")
   end
 
   it '!7dayrain' do
@@ -447,7 +447,7 @@ describe Lita::Handlers::OnewheelForecastIo, lita_handler: true do
     expect(replies[4]).to eq("Portland, OR 48h wind direction 4.3 mph|\u000306↓\u000310↙←\u000311↖↑↗\u000308→↘\u000311↓←←←←←←\u000310←←←←←←←\u000306←←←←←\u000302←←←↙↙↙↙↓↓↓\u000306↓↓↓↓↓↓↓↓↙↙\u0003|4.18 mph Range: 1.39 mph - 12.71 mph")
     expect(replies[5]).to eq("Portland, OR 48hr sun forecast |\u000308████████████████████\u000307▇▇▅\u000309▅▅▃\u000303▁_▁\u000309▃▃▃\u000303▁▁▁▁▃\u000309▃▅\u000307▇▇▇▇\u000308▇▇▇▇▇▇\u0003| max 100%")
     expect(replies[6]).to eq("Portland, OR 24h cloud cover |___________▁▁▁▁▁▁▁▁▃▅▅▅| range 0% - 49.0%")
-    expect(replies[7]).to eq("Portland, OR 48 hr snows |\u000302_______________________❄❄❄❄▁▁▁▁▁▁▁▁▁▁▁▁▁❄❄❄❄❄❄❄❄_\u0003| max 4.0%")
+    expect(replies[7]).to eq("Portland, OR 48 hr snows |\u000302_______________________❄❄❄❄▁▁▁▁▁▁▁▁▁▁▁▁▁❄❄❄❄❄❄❄❄_\u0003| max 4%")
     expect(replies.last).to eq("Portland, OR 67%|\u000307▇\u000308▇▇▇\u000311▅▅▅▅▅▅▅▅▅▅\u000308▇▇▇▇▇▇▇\u000307▇▇▇▇▇▇▇▇▇▇▇▇\u000304████████████████\u0003|80% range: 41%-85%")
   end
 
@@ -514,6 +514,12 @@ describe Lita::Handlers::OnewheelForecastIo, lita_handler: true do
     mock_up 'windows'
     send_command 'windows'
     expect(replies.last).to eq('Close the windows at 16:00, it will be 72°F.  The high today will be 72°F.')
+  end
+
+  it 'will not say a 28.000000000000004% chance of rain' do
+    mock_up '28000000000004percent'
+    send_command 'dailyrain'
+    expect(replies.last).to eq("Portland, OR 48 hr rains |\u000302▁_▁\u000306▃▃▃\u000310▅\u000302▁_▁▁\u000306▃\u000302▁\u000310▃\u000306▃\u000310▅\u000306▃\u000302▁▁▁▁▁▁__________________________\u0003| max 28%")
   end
 
   # it 'colors strings' do
