@@ -70,10 +70,12 @@ module Lita
       route(/^neareststorm\s*$/i, :handle_irc_neareststorm, command: true)
       route(/^neareststorm\s+(.+)$/i, :handle_irc_neareststorm, command: true,
             help: { '!neareststorm [location]' => 'Nearest storm distance for [location].'})
-      route(/^tomorrow/i, :handle_irc_tomorrow,
+      route(/^tomorrow/i, :handle_irc_tomorrow, command: true,
             help: { '!tomorrow' => 'Give me tomorrow\'s forecast as it relates to today.'})
-      route(/^windows/i, :handle_irc_windows)
-      route(/^windows\s+(.+)/i, :handle_irc_windows,
+      route(/^today/i, :handle_irc_today, command: true,
+            help: { '!today' => 'Give me today\'s forecast as it relates to yesterday.'})
+      route(/^windows/i, :handle_irc_windows, command: true)
+      route(/^windows\s+(.+)/i, :handle_irc_windows, command: true,
             help: { '!windows' => 'Tell me when to close my windows as it\'s warmer outside than in.'})
 
       # State Commands

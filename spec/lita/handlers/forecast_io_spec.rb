@@ -513,7 +513,7 @@ describe Lita::Handlers::OnewheelForecastIo, lita_handler: true do
   it '!windows' do
     mock_up 'windows'
     send_command 'windows'
-    expect(replies.last).to eq('Close the windows at 16:00, it will be 72°F.  The high today will be 72°F.')
+    expect(replies.last).to eq('Close the windows at 16:00, it will be 72°F.  Open them back up at 16:00.  The high today will be 72°F.')
   end
 
   it 'will not say a 28.000000000000004% chance of rain' do
@@ -521,6 +521,11 @@ describe Lita::Handlers::OnewheelForecastIo, lita_handler: true do
     send_command 'dailyrain'
     expect(replies.last).to eq("Portland, OR 48 hr rains |\u000302▁_▁\u000306▃▃▃\u000310▅\u000302▁_▁▁\u000306▃\u000302▁\u000310▃\u000306▃\u000310▅\u000306▃\u000302▁▁▁▁▁▁__________________________\u0003| max 28%")
   end
+
+  # it 'will summarize !today in relation to yesterday' do
+  #   send_command 'today'
+  #   expect(replies.last).to eq('Today will be whatever')
+  # end
 
   # it 'colors strings' do
     # cstr = Lita::Handlers::ForecastIo.get_colored_string([{:key => 1}], :key, 'x', {1 => :blue})

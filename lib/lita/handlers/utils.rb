@@ -162,7 +162,18 @@ module ForecastIo
       uri = config.api_uri + config.api_key + '/' + "#{location.latitude},#{location.longitude}"
       Lita.logger.debug uri
       set_scale(user)
-      forecast = gimme_some_weather uri
+      gimme_some_weather uri
+    end
+
+    def get_forecast_io_historical_results(user, location, time)
+      if ! config.api_uri or ! config.api_key
+        Lita.logger.error "Configuration missing!  '#{config.api_uri}' '#{config.api_key}'"
+        raise StandardError.new('Configuration missing!')
+      end
+      uri = config.api_uri + config.api_key + '/' + "#{location.latitude},#{location.longitude},#{time}"
+      Lita.logger.debug uri
+      set_scale(user)
+      gimme_some_weather uri
     end
 
     def handle_geo_lookup(response)

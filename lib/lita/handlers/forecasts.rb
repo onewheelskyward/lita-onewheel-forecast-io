@@ -474,10 +474,9 @@ module ForecastIo
           high_temp = hour['temperature'].to_i
         end
 
-        if hour['temperature'].to_i >= 71
+        if !time_to_close_the_windows and hour['temperature'].to_i >= 71
           time_to_close_the_windows = hour['time']
           window_close_temp = hour['temperature']
-          break
         end
         if time_to_close_the_windows and hour['temperature'].to_i < 71
           time_to_open_the_windows = hour['time']
