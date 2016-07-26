@@ -478,9 +478,11 @@ module ForecastIo
           time_to_close_the_windows = hour['time']
           window_close_temp = hour['temperature']
         end
-        if time_to_close_the_windows and hour['temperature'].to_i < 71
+
+        if !time_to_open_the_windows and time_to_close_the_windows and hour['temperature'].to_i < 71
           time_to_open_the_windows = hour['time']
         end
+
         break if index > 12
       end
 
@@ -495,7 +497,7 @@ module ForecastIo
 
         output = "Close the windows at #{local_time.strftime('%k:%M')}, it will be #{window_close_temp}°F.  "
         if time_to_open_the_windows
-          open_time = timezone.utc_to_local(Time.at(time_to_close_the_windows).to_datetime)
+          open_time = timezone.utc_to_local(Time.at(time_to_open_the_windows).to_datetime)
           output += "Open them back up at #{open_time.strftime('%k:%M')}.  "
         end
         output += "The high today will be #{high_temp}°F."
