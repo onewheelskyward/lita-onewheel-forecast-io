@@ -466,6 +466,7 @@ module ForecastIo
       time_to_open_the_windows = nil
       window_close_temp = 0
       high_temp = 0
+      last_temp = 0
 
       forecast['hourly']['data'].each_with_index do |hour, index|
         tm = Time.at(hour['time']).to_datetime.strftime('%k:%M')
@@ -479,10 +480,11 @@ module ForecastIo
           window_close_temp = hour['temperature']
         end
 
-        if !time_to_open_the_windows and time_to_close_the_windows and hour['temperature'].to_i <= 75
+        if !time_to_open_the_windows and time_to_close_the_windows and hour['temperature'] < last_temp and hour['temperature'].to_i <= 75
           time_to_open_the_windows = hour['time']
         end
 
+        last_temp = hour['temperature']
         break if index > 12
       end
 

@@ -513,7 +513,7 @@ describe Lita::Handlers::OnewheelForecastIo, lita_handler: true do
   it '!windows' do
     mock_up 'windows'
     send_command 'windows'
-    expect(replies.last).to eq('Close the windows at 16:00, it will be 72°F.  Open them back up at 16:00.  The high today will be 72°F.')
+    expect(replies.last).to eq('Close the windows at 16:00, it will be 72°F.  Open them back up at 17:00.  The high today will be 72°F.')
   end
 
   it 'will not say a 28.000000000000004% chance of rain' do
