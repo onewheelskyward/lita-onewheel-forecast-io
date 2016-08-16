@@ -516,6 +516,13 @@ describe Lita::Handlers::OnewheelForecastIo, lita_handler: true do
     expect(replies.last).to eq('Close the windows at 16:00, it will be 72°F.  Open them back up at 17:00.  The high today will be 72°F.')
   end
 
+  it '!windows in c' do
+    mock_up 'windows'
+    send_command 'set scale c'
+    send_command 'windows'
+    expect(replies.last).to eq('Close the windows at 16:00, it will be 22.22°C.  Open them back up at 17:00.  The high today will be 22.22°C.')
+  end
+
   it 'will not say a 28.000000000000004% chance of rain' do
     mock_up '28000000000004percent'
     send_command 'dailyrain'

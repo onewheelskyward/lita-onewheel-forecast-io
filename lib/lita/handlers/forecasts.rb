@@ -497,12 +497,12 @@ module ForecastIo
         time_at = Time.at(time_to_close_the_windows).to_datetime
         local_time = timezone.utc_to_local(time_at)
 
-        output = "Close the windows at #{local_time.strftime('%k:%M')}, it will be #{window_close_temp}°F.  "
+        output = "Close the windows at #{local_time.strftime('%k:%M')}, it will be #{get_temperature window_close_temp}.  "
         if time_to_open_the_windows
           open_time = timezone.utc_to_local(Time.at(time_to_open_the_windows).to_datetime)
           output += "Open them back up at #{open_time.strftime('%k:%M')}.  "
         end
-        output += "The high today will be #{high_temp}°F."
+        output += "The high today will be #{get_temperature high_temp}."
       end
     end
   end
