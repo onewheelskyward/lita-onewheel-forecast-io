@@ -485,7 +485,7 @@ module ForecastIo
         end
 
         last_temp = hour['temperature']
-        break if index > 12
+        break if index > 18
       end
 
       # Return some meta here and let the caller decide the text.
