@@ -472,7 +472,7 @@ module ForecastIo
         if hour['temperature'] > high_temp
           high_temp = hour['temperature'].to_i
         end
-        puts index
+
         if !time_to_close_the_windows and hour['temperature'].to_i >= 71
           if index == 0
             time_to_close_the_windows = 'now'
@@ -492,16 +492,15 @@ module ForecastIo
 
       # Return some meta here and let the caller decide the text.
       if time_to_close_the_windows.nil?
-        "Leave 'em open, no excess heat today(#{high_temp}°F)."
+        "Leave 'em open, no excess heat today(#{get_temperature high_temp})."
       else
         # Todo: base timezone on requested location.
         timezone = TZInfo::Timezone.get('America/Los_Angeles')
-        time_at = Time.at(time_to_close_the_windows).to_datetime
-        local_time = timezone.utc_to_local(time_at)
-
         if time_to_close_the_windows == 'now'
           output = "Close the windows now! It is #{get_temperature window_close_temp}.  "
         else
+          time_at = Time.at(time_to_close_the_windows).to_datetime
+          local_time = timezone.utc_to_local(time_at)
           output = "Close the windows at #{local_time.strftime('%k:%M')}, it will be #{get_temperature window_close_temp}.  "
         end
         if time_to_open_the_windows
