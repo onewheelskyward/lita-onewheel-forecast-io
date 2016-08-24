@@ -6,4 +6,5 @@ Lita.configure do |config|
   config.handlers.onewheel_forecast_io.api_key = 'yourforecastiokey'
   config.handlers.onewheel_forecast_io.api_uri = 'https://api.forecast.io/forecast/'
   config.handlers.onewheel_forecast_io.colors = true
+  config.handlers.onewheel_forecast_io.default_location = 'Portland, OR'
 end

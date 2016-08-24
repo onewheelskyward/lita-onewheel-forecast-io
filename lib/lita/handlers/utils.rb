@@ -57,19 +57,9 @@ module ForecastIo
     end
 
     # Perform a geocoder lookup based on a) the query or b) the user's serialized state.
-    # If neither of those exist, default to Portland.
+    # If neither of those exist, default to config location.
     def geo_lookup(user, query, persist = true)
       Lita.logger.debug "Performing geolookup for '#{user.name}' for '#{query}'"
-
-      default_location = {
-        'formatted_address' => 'Portland, OR',
-        'geometry' => {
-          'location' => {
-            'lat' => 45.5230622,
-            'lng' => -122.6764816
-          }
-        }
-      }
 
       if query.nil? or query.empty?
         Lita.logger.debug "No query specified, pulling from redis #{REDIS_KEY}, #{user.name}"
@@ -80,6 +70,7 @@ module ForecastIo
         Lita.logger.debug "Cached location: #{geocoded.inspect}"
       end
 
+      query = (query.nil?)? config.default_location : query
       Lita.logger.debug "q & g #{query.inspect} #{geocoded.inspect}"
 
       unless geocoded
@@ -89,13 +80,6 @@ module ForecastIo
         if persist
           redis.hset(REDIS_KEY, user.name, geocoded.to_json)
         end
-      end
-
-      # Let's set up the defaults in the event that the geocoder fails.
-      # See https://github.com/onewheelskyward/lita-onewheel-forecast-io/issues/34
-      unless geocoded
-        Lita.logger.debug "Geocoded was #{geocoded.inspect}, setting to default."
-        geocoded = default_location
       end
 
       Lita.logger.debug "geocoded: '#{geocoded}'"

@@ -14,6 +14,7 @@ module Lita
       config :api_uri
       config :colors
       config :snowflake, default: '❄'
+      config :default_location, default: 'Portland, OR'
 
       include ::ForecastIo::Constants
       include ::ForecastIo::IrcHandlers
