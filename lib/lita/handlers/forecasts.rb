@@ -17,7 +17,7 @@ module ForecastIo
     def ansi_rain_intensity_forecast(forecast)
       (str, precip_type) = do_the_rain_intensity_thing(forecast, ansi_chars, 'precipIntensity') #, 'probability', get_rain_range_colors)
       max_str = get_max_by_data_key(forecast, 'minutely', 'precipIntensity')
-      "1hr #{precip_type} intensity #{(Time.now).strftime('%H:%M').to_s}|#{str}|#{(Time.now + 3600).strftime('%H:%M').to_s} #{max_str}"
+      "1hr #{precip_type} intensity #{(Time.now).strftime('%H:%M').to_s}|#{str}|#{(Time.now + 3600).strftime('%H:%M').to_s} max: #{max_str}"
     end
 
     def ansi_humidity_forecast(forecast)
