@@ -541,10 +541,10 @@ describe Lita::Handlers::OnewheelForecastIo, lita_handler: true do
     expect(replies.last).to eq(nil)
   end
 
-  # it 'will summarize !today in relation to yesterday' do
-  #   send_command 'today'
-  #   expect(replies.last).to eq('Today will be whatever')
-  # end
+  it 'will summarize !today in relation to yesterday' do
+    send_command 'today'
+    expect(replies.last).to eq('Today will be cooler than yesterday.')
+  end
 
   # it 'colors strings' do
     # cstr = Lita::Handlers::ForecastIo.get_colored_string([{:key => 1}], :key, 'x', {1 => :blue})
