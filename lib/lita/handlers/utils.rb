@@ -138,24 +138,19 @@ module ForecastIo
     end
 
 
-    def get_forecast_io_results(user, location)
+    # Time should be in the format specified here (subset of 8601)
+    # https://developer.forecast.io/docs/v2#time_call
+    def get_forecast_io_results(user, location, time = nil)
       if ! config.api_uri or ! config.api_key
         Lita.logger.error "Configuration missing!  '#{config.api_uri}' '#{config.api_key}'"
         raise StandardError.new('Configuration missing!')
       end
       uri = config.api_uri + config.api_key + '/' + "#{location.latitude},#{location.longitude}"
-      Lita.logger.debug uri
-      set_scale(user)
-      gimme_some_weather uri
-    end
-
-    def get_forecast_io_historical_results(user, location, time)
-      if ! config.api_uri or ! config.api_key
-        Lita.logger.error "Configuration missing!  '#{config.api_uri}' '#{config.api_key}'"
-        raise StandardError.new('Configuration missing!')
+      if time
+        uri += ",#{time}"
       end
-      uri = config.api_uri + config.api_key + '/' + "#{location.latitude},#{location.longitude},#{time}"
-      Lita.logger.debug uri
+
+      Lita.logger.debug "Requesting forcast data from: #{uri}"
       set_scale(user)
       gimme_some_weather uri
     end

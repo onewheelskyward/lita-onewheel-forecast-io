@@ -215,8 +215,9 @@ module ForecastIo
     def handle_irc_today(response)
       location = geo_lookup(response.user, response.match_data[1])
       forecast = get_forecast_io_results(response.user, location)
-      toay_will_be = do_the_today_thing(forecast)
-      response.reply "Today will be #{toay_will_be} yesterday."
+      yesterday_weather = get_forecast_io_results(response.user, location, Date.today.prev_day.to_s + 'T00:00:00-0700')
+      today_will_be = do_the_today_thing(forecast, yesterday_weather)
+      response.reply "Today will be #{today_will_be} yesterday."
     end
 
     def handle_irc_windows(response)

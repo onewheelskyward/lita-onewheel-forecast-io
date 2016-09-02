@@ -442,14 +442,20 @@ module ForecastIo
       return forecast['currently']['nearestStormDistance'], forecast['currently']['nearestStormBearing']
     end
 
+    def do_the_today_thing(forecast, yesterday)
+      puts "#{forecast['daily']['data'][0]['temperatureMax']} - #{yesterday['daily']['data'][0]['temperatureMax']}"
+      temp_diff = forecast['daily']['data'][0]['temperatureMax'] - forecast['daily']['data'][0]['temperatureMax']
+      get_daily_comparison_text(temp_diff)
+    end
+
     def do_the_tomorrow_thing(forecast)
-      # Get today's high
-      # Get tomorrow's high
-      # Get tomorrow's rain chance
+      puts "#{forecast['daily']['data'][0]['temperatureMax']} - #{forecast['daily']['data'][1]['temperatureMax']}"
+      forecast['daily']['data'][0]['temperatureMax'] - forecast['daily']['data'][1]['temperatureMax']
       temp_diff = forecast['daily']['data'][0]['temperatureMax'] - forecast['daily']['data'][1]['temperatureMax']
       get_daily_comparison_text(temp_diff)
     end
 
+    # If the temperature difference is positive,
     def get_daily_comparison_text(temp_diff)
       if temp_diff <= 1 and temp_diff >= -1
         'about the same as'
@@ -462,14 +468,6 @@ module ForecastIo
       elsif temp_diff < -5
         'much hotter than'
       end
-    end
-
-    def do_the_today_thing(forecast)
-      # Get today's high
-      # Get tomorrow's high
-      # Get tomorrow's rain chance
-      temp_diff = forecast['daily']['data'][1]['temperatureMax'] - forecast['daily']['data'][0]['temperatureMax']
-      get_daily_comparison_text(temp_diff)
     end
 
     # Check for the time of day when it will hit 72F.
