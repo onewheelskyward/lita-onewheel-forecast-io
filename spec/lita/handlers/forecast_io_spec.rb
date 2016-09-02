@@ -543,7 +543,7 @@ describe Lita::Handlers::OnewheelForecastIo, lita_handler: true do
 
   it 'will summarize !today in relation to yesterday' do
     send_command 'today'
-    expect(replies.last).to eq('Today will be cooler than yesterday.')
+    expect(replies.last).to eq('Today will be about the same as yesterday.')
   end
 
   # it 'colors strings' do
