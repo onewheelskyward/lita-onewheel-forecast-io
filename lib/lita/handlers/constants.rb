@@ -119,6 +119,14 @@ module ForecastIo
       }
     end
 
+    # Just a shorthand function to return the configured snowflake.
+    def get_snowman(config)
+      # '⛄'    # Fancy emoji snowman
+      # '❄️'     # Fancy snowflake
+      # '❄'     # Regular snowflake
+      config.snowflake
+    end
+
     # I have no use for these yet, and yet they're handy to know.
     # def attributes
     #   { :bold       => 2.chr,

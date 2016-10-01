@@ -1,21 +1,23 @@
+require 'tzinfo'
+
 module ForecastIo
   module Forecasts
     def ascii_rain_forecast(forecast)
-      str = do_the_rain_chance_thing(forecast, ascii_chars, 'precipProbability')
+      (str, precip_type) = do_the_rain_chance_thing(forecast, ascii_chars, 'precipProbability')
       max = get_max_by_data_key(forecast, 'minutely', 'precipProbability')
-      "1hr rain probability #{(Time.now).strftime('%H:%M').to_s}|#{str}|#{(Time.now + 3600).strftime('%H:%M').to_s} max #{max * 100}%"
+      "1hr #{precip_type} probability #{(Time.now).strftime('%H:%M').to_s}|#{str}|#{(Time.now + 3600).strftime('%H:%M').to_s} max #{(max.to_f * 100).round(2)}%"
     end
 
     def ansi_rain_forecast(forecast)
-      str = do_the_rain_chance_thing(forecast, ansi_chars, 'precipProbability') #, 'probability', get_rain_range_colors)
+      (str, precip_type) = do_the_rain_chance_thing(forecast, ansi_chars, 'precipProbability') #, 'probability', get_rain_range_colors)
       max = get_max_by_data_key(forecast, 'minutely', 'precipProbability')
-      "1hr rain probability #{(Time.now).strftime('%H:%M').to_s}|#{str}|#{(Time.now + 3600).strftime('%H:%M').to_s} max #{max.to_f * 100}%"
+      "1hr #{precip_type} probability #{(Time.now).strftime('%H:%M').to_s}|#{str}|#{(Time.now + 3600).strftime('%H:%M').to_s} max #{(max.to_f * 100).round(2)}%"
     end
 
     def ansi_rain_intensity_forecast(forecast)
-      str = do_the_rain_intensity_thing(forecast, ansi_chars, 'precipIntensity') #, 'probability', get_rain_range_colors)
+      (str, precip_type) = do_the_rain_intensity_thing(forecast, ansi_chars, 'precipIntensity') #, 'probability', get_rain_range_colors)
       max_str = get_max_by_data_key(forecast, 'minutely', 'precipIntensity')
-      "1hr rain intensity #{(Time.now).strftime('%H:%M').to_s}|#{str}|#{(Time.now + 3600).strftime('%H:%M').to_s} #{max_str}"
+      "1hr #{precip_type} intensity #{(Time.now).strftime('%H:%M').to_s}|#{str}|#{(Time.now + 3600).strftime('%H:%M').to_s} max: #{max_str}"
     end
 
     def ansi_humidity_forecast(forecast)
@@ -67,7 +69,7 @@ module ForecastIo
       if i_can_has_snow
         data.each_with_index do |datum, index|
           if datum['precipType'] == 'snow'
-            str[index] = '☃'
+            str[index] = get_snowman config
           end
         end
       end
@@ -76,7 +78,9 @@ module ForecastIo
         str = get_colored_string(data, key, str, get_rain_range_colors)
       end
 
-      str
+      precip_type = i_can_has_snow ? 'snow' : 'rain'
+
+      return str, precip_type
     end
 
     def do_the_rain_intensity_thing(forecast, chars, key) #, type, range_colors = nil)
@@ -84,11 +88,15 @@ module ForecastIo
         return 'No minute-by-minute data available.'  # The "Middle of Nowhere" case.
       end
 
+      i_can_has_snow = false
       data_points = []
       data = forecast['minutely']['data']
 
       data.each do |datum|
         data_points.push datum[key]
+        if datum['precipType'] == 'snow'
+          i_can_has_snow = true
+        end
       end
 
       # Fixed range graph- 0-0.11.
@@ -97,7 +105,10 @@ module ForecastIo
       if config.colors
         str = get_colored_string(data, key, str, get_rain_intensity_range_colors)
       end
-      str
+
+      precip_type = i_can_has_snow ? 'snow' : 'rain'
+
+      return str, precip_type
     end
 
     def do_the_humidity_thing(forecast, chars, key) #, type, range_colors = nil)
@@ -181,6 +192,30 @@ module ForecastIo
     def do_the_sun_thing(forecast, chars)
       key = 'cloudCover'
       data_points = []
+      data = forecast['hourly']['data']
+      sun_mod_data = []
+
+      data.each do |datum|
+        data_points.push (1 - datum[key]).to_f  # It's a cloud cover percentage, so let's inverse it to give us sun cover.
+        sun_mod_data << {key => (1 - datum[key]).to_f}      # Mod the source data for the get_dot_str call below.
+      end
+
+      differential = data_points.max - data_points.min
+
+      str = get_dot_str(chars, sun_mod_data, data_points.min, differential, key)
+
+      if config.colors
+        str = get_colored_string(sun_mod_data, key, str, get_sun_range_colors)
+      end
+
+      max = 1 - get_min_by_data_key(forecast, 'hourly', key)
+
+      "48hr sun forecast |#{str}| max #{(max * 100).to_i}%"
+    end
+
+    def do_the_daily_sun_thing(forecast, chars)
+      key = 'cloudCover'
+      data_points = []
       data = forecast['daily']['data']
 
       data.each do |datum|
@@ -196,7 +231,7 @@ module ForecastIo
         str = get_colored_string(data, key, str, get_sun_range_colors)
       end
 
-      max = 1 - get_min_by_data_key(forecast, 'hourly', key)
+      max = 1 - get_min_by_data_key(forecast, 'daily', key)
 
       "8 day sun forecast |#{str}| max #{(max * 100).to_i}%"
     end
@@ -206,14 +241,18 @@ module ForecastIo
       data = forecast['hourly']['data'].slice(0,23)
 
       max = 0
+      min = 1
       data.each do |datum|
         if datum['cloudCover'] > max
           max = datum['cloudCover']
         end
+        if datum['cloudCover'] < min
+          min = datum['cloudCover']
+        end
       end
       str = get_dot_str(chars, data, 0, 1, 'cloudCover')
 
-      "24h cloud cover |#{str}| max #{max * 100}%"
+      "24h cloud cover |#{str}| range #{min * 100}% - #{max * 100}%"
     end
 
     def do_the_sunrise_thing(forecast)
@@ -300,13 +339,21 @@ module ForecastIo
 
       str = get_dot_str(ansi_chars, data, 0, 1, 'precipProbability')
 
+      if 'snow' == precip_type
+        data.each_with_index do |datum, index|
+          if datum['precipType'] == 'snow'
+            str[index] = get_snowman config
+          end
+        end
+      end
+
       if config.colors
         str = get_colored_string(data, 'precipProbability', str, get_rain_range_colors)
       end
 
       max = get_max_by_data_key(forecast, 'hourly', 'precipProbability')
 
-      "48 hr #{precip_type}s |#{str}| max #{max.to_f * 100}%"
+      "48 hr #{precip_type}s |#{str}| max #{(max.to_f * 100).round}%"
     end
 
     def do_the_daily_wind_thing(forecast)
@@ -393,6 +440,85 @@ module ForecastIo
 
     def do_the_nearest_storm_thing(forecast)
       return forecast['currently']['nearestStormDistance'], forecast['currently']['nearestStormBearing']
+    end
+
+    def do_the_today_thing(forecast, yesterday)
+      puts "#{forecast['daily']['data'][0]['temperatureMax']} - #{yesterday['daily']['data'][0]['temperatureMax']}"
+      temp_diff = forecast['daily']['data'][0]['temperatureMax'] - forecast['daily']['data'][0]['temperatureMax']
+      get_daily_comparison_text(temp_diff)
+    end
+
+    def do_the_tomorrow_thing(forecast)
+      puts "#{forecast['daily']['data'][0]['temperatureMax']} - #{forecast['daily']['data'][1]['temperatureMax']}"
+      forecast['daily']['data'][0]['temperatureMax'] - forecast['daily']['data'][1]['temperatureMax']
+      temp_diff = forecast['daily']['data'][0]['temperatureMax'] - forecast['daily']['data'][1]['temperatureMax']
+      get_daily_comparison_text(temp_diff)
+    end
+
+    # If the temperature difference is positive,
+    def get_daily_comparison_text(temp_diff)
+      if temp_diff <= 1 and temp_diff >= -1
+        'about the same as'
+      elsif temp_diff > 1 and temp_diff <= 5
+        'cooler than'
+      elsif temp_diff > 5
+        'much colder than'
+      elsif temp_diff < -1 and temp_diff >= -5
+        'warmer than'
+      elsif temp_diff < -5
+        'much hotter than'
+      end
+    end
+
+    # Check for the time of day when it will hit 72F.
+    def do_the_windows_thing(forecast)
+      time_to_close_the_windows = nil
+      time_to_open_the_windows = nil
+      window_close_temp = 0
+      high_temp = 0
+      last_temp = 0
+
+      forecast['hourly']['data'].each_with_index do |hour, index|
+        if hour['temperature'] > high_temp
+          high_temp = hour['temperature'].to_i
+        end
+
+        if !time_to_close_the_windows and hour['temperature'].to_i >= 71
+          if index == 0
+            time_to_close_the_windows = 'now'
+          else
+            time_to_close_the_windows = hour['time']
+          end
+          window_close_temp = hour['temperature']
+        end
+
+        if !time_to_open_the_windows and time_to_close_the_windows and hour['temperature'] < last_temp and hour['temperature'].to_i <= 75
+          time_to_open_the_windows = hour['time']
+        end
+
+        last_temp = hour['temperature']
+        break if index > 18
+      end
+
+      # Return some meta here and let the caller decide the text.
+      if time_to_close_the_windows.nil?
+        "Leave 'em open, no excess heat today(#{get_temperature high_temp})."
+      else
+        # Todo: base timezone on requested location.
+        timezone = TZInfo::Timezone.get('America/Los_Angeles')
+        if time_to_close_the_windows == 'now'
+          output = "Close the windows now! It is #{get_temperature window_close_temp}.  "
+        else
+          time_at = Time.at(time_to_close_the_windows).to_datetime
+          local_time = timezone.utc_to_local(time_at)
+          output = "Close the windows at #{local_time.strftime('%k:%M')}, it will be #{get_temperature window_close_temp}.  "
+        end
+        if time_to_open_the_windows
+          open_time = timezone.utc_to_local(Time.at(time_to_open_the_windows).to_datetime)
+          output += "Open them back up at #{open_time.strftime('%k:%M')}.  "
+        end
+        output += "The high today will be #{get_temperature high_temp}."
+      end
     end
   end
 end

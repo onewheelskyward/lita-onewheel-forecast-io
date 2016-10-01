@@ -8,4 +8,5 @@ Lita.configure do |config|
   config.handlers.onewheel_forecast_io.colors = true
   config.handlers.onewheel_forecast_io.img_api_uri = 'https://api.imgur.com/3/'
   config.handlers.onewheel_forecast_io.img_api_key = 'Client-ID <your-clientid>'
+  config.handlers.onewheel_forecast_io.default_location = 'Portland, OR'
 end

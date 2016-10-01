@@ -1,3 +1,4 @@
+require 'geocoder'
 module ForecastIo
   module Utils
     REDIS_KEY = 'forecast_io'
@@ -55,8 +56,11 @@ module ForecastIo
       geocoded
     end
 
-    def geo_lookup(user, query)
+    # Perform a geocoder lookup based on a) the query or b) the user's serialized state.
+    # If neither of those exist, default to config location.
+    def geo_lookup(user, query, persist = true)
       Lita.logger.debug "Performing geolookup for '#{user.name}' for '#{query}'"
+
       if query.nil? or query.empty?
         Lita.logger.debug "No query specified, pulling from redis #{REDIS_KEY}, #{user.name}"
         serialized_geocoded = redis.hget(REDIS_KEY, user.name)
@@ -66,20 +70,19 @@ module ForecastIo
         Lita.logger.debug "Cached location: #{geocoded.inspect}"
       end
 
+      query = (query.nil?)? config.default_location : query
       Lita.logger.debug "q & g #{query.inspect} #{geocoded.inspect}"
-      if (query.nil? or query.empty?) and geocoded.nil?
-        query = 'Portland, OR'
-      end
 
       unless geocoded
         Lita.logger.debug "Redis hget failed, performing lookup for #{query}"
         geocoded = optimistic_geo_wrapper query
         Lita.logger.debug "Geolocation found.  '#{geocoded.inspect}' failed, performing lookup"
-        redis.hset(REDIS_KEY, user.name, geocoded.to_json)
+        if persist
+          redis.hset(REDIS_KEY, user.name, geocoded.to_json)
+        end
       end
 
       Lita.logger.debug "geocoded: '#{geocoded}'"
-
       loc = Location.new(
           geocoded['formatted_address'],
           geocoded['geometry']['location']['lat'],
@@ -135,19 +138,25 @@ module ForecastIo
     end
 
 
-    def get_forecast_io_results(user, location)
+    # Time should be in the format specified here (subset of 8601)
+    # https://developer.forecast.io/docs/v2#time_call
+    def get_forecast_io_results(user, location, time = nil)
       if ! config.api_uri or ! config.api_key
         Lita.logger.error "Configuration missing!  '#{config.api_uri}' '#{config.api_key}'"
-        return
+        raise StandardError.new('Configuration missing!')
       end
       uri = config.api_uri + config.api_key + '/' + "#{location.latitude},#{location.longitude}"
-      Lita.logger.debug uri
+      if time
+        uri += ",#{time}"
+      end
+
+      Lita.logger.debug "Requesting forcast data from: #{uri}"
       set_scale(user)
-      forecast = gimme_some_weather uri
+      gimme_some_weather uri
     end
 
     def handle_geo_lookup(response)
-      location = geo_lookup(response.user, response.match_data[1])
+      location = geo_lookup(response.user, response.match_data[1], persist = false)
       response.reply "#{location.latitude}, #{location.longitude}"
     end
 

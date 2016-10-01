@@ -30,6 +30,7 @@ module ForecastIo
       response.reply location.location_name + ' ' + do_the_sun_thing(forecast, ansi_chars)
       response.reply location.location_name + ' ' + do_the_cloud_thing(forecast, ansi_chars)
       response.reply location.location_name + ' ' + do_the_daily_rain_thing(forecast)
+      response.reply location.location_name + ' ' + do_the_humidity_thing(forecast, ansi_chars, 'humidity')
     end
 
     def handle_irc_ansirain_intensity(response)
@@ -39,6 +40,13 @@ module ForecastIo
     end
 
     def handle_irc_ansitemp(response)
+      location = geo_lookup(response.user, response.match_data[1])
+      forecast = get_forecast_io_results(response.user, location)
+      response.reply location.location_name + ' ' + ansi_temp_forecast(forecast)
+    end
+
+    def handle_irc_ieeetemp(response)
+      @scale = 'k'
       location = geo_lookup(response.user, response.match_data[1])
       forecast = get_forecast_io_results(response.user, location)
       response.reply location.location_name + ' ' + ansi_temp_forecast(forecast)
@@ -85,6 +93,12 @@ module ForecastIo
       location = geo_lookup(response.user, response.match_data[1])
       forecast = get_forecast_io_results(response.user, location)
       response.reply location.location_name + ' ' + do_the_sun_thing(forecast, ansi_chars)
+    end
+
+    def handle_irc_dailysun(response)
+      location = geo_lookup(response.user, response.match_data[1])
+      forecast = get_forecast_io_results(response.user, location)
+      response.reply location.location_name + ' ' + do_the_daily_sun_thing(forecast, ansi_chars)
     end
 
     def handle_irc_asciisun(response)
@@ -189,6 +203,28 @@ module ForecastIo
         response.reply "The nearest storm is #{get_distance(nearest_storm_distance, get_scale(response.user))} to the #{get_cardinal_direction_from_bearing(nearest_storm_bearing)} of you."
       end
 
+    end
+
+    def handle_irc_tomorrow(response)
+      location = geo_lookup(response.user, response.match_data[1])
+      forecast = get_forecast_io_results(response.user, location)
+      tomorrow_will_be = do_the_tomorrow_thing(forecast)
+      response.reply "Tomorrow will be #{tomorrow_will_be} today."
+    end
+
+    def handle_irc_today(response)
+      location = geo_lookup(response.user, response.match_data[1])
+      forecast = get_forecast_io_results(response.user, location, Date.today.to_s + 'T00:00:00-0700')
+      yesterday_weather = get_forecast_io_results(response.user, location, Date.today.prev_day.to_s + 'T00:00:00-0700')
+      today_will_be = do_the_today_thing(forecast, yesterday_weather)
+      response.reply "Today will be #{today_will_be} yesterday."
+    end
+
+    def handle_irc_windows(response)
+      location = geo_lookup(response.user, response.match_data[1])
+      forecast = get_forecast_io_results(response.user, location)
+      windows_time = do_the_windows_thing(forecast)
+      response.reply "#{windows_time}"
     end
   end
 end
