@@ -75,7 +75,8 @@ module Lita
             help: { '!tomorrow' => 'Give me tomorrow\'s forecast as it relates to today.'})
       route(/^today/i, :handle_irc_today, command: true,
             help: { '!today' => 'Give me today\'s forecast as it relates to yesterday.'})
-      route(/^Good morning./, :handle_irc_windows)  # Easter egg alert.  Thank you, zrobo and donpdonp.
+      # route(/^Good morning./, :handle_irc_windows)  # Easter egg alert.  Thank you, zrobo and donpdonp.
+      # Disabled for winter.
       route(/^windows/i, :handle_irc_windows, command: true)
       route(/^windows\s+(.+)/i, :handle_irc_windows, command: true,
             help: { '!windows' => 'Tell me when to close my windows as it\'s warmer outside than in.'})
