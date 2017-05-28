@@ -568,8 +568,8 @@ module ForecastIo
           output += "Open them back up at #{open_time.strftime('%k:%M')}.  "
         end
         output += "The high today will be #{get_temperature high_temp}."
-        datas = { 'timeToClose': local_time,
-                  'timeToOpen': open_time,
+        datas = { 'timeToClose': local_time.strftime('%k:%M'),
+                  'timeToOpen': open_time.strftime('%k:%M'),
                   'tempMax': high_temp,
                   'temp': window_close_temp
         }
