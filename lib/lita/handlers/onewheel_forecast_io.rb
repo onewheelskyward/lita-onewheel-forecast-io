@@ -181,6 +181,7 @@ module Lita
       route(/^dailybarometer\s+(.+)/i, :handle_irc_daily_pressure, command: true,
             help: { '!dailybarometer [location]' => 'Alias for !dailypressure.'})
 
+      http.get '/windows', :handle_http_windows
     end
 
     Lita.register_handler(OnewheelForecastIo)

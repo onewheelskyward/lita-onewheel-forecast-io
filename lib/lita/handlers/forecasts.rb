@@ -520,5 +520,60 @@ module ForecastIo
         output += "The high today will be #{get_temperature high_temp}."
       end
     end
+
+    def do_the_windows_data_thing(forecast)
+      time_to_close_the_windows = nil
+      time_to_open_the_windows = nil
+      window_close_temp = 0
+      high_temp = 0
+      last_temp = 0
+
+      forecast['hourly']['data'].each_with_index do |hour, index|
+        if hour['temperature'] > high_temp
+          high_temp = hour['temperature'].to_i
+        end
+
+        if !time_to_close_the_windows and hour['temperature'].to_i >= 71
+          if index == 0
+            time_to_close_the_windows = 'now'
+          else
+            time_to_close_the_windows = hour['time']
+          end
+          window_close_temp = hour['temperature']
+        end
+
+        if !time_to_open_the_windows and time_to_close_the_windows and hour['temperature'] < last_temp and hour['temperature'].to_i <= 75
+          time_to_open_the_windows = hour['time']
+        end
+
+        last_temp = hour['temperature']
+        break if index > 18
+      end
+
+      # Return some meta here and let the caller decide the text.
+      if time_to_close_the_windows.nil?
+        "Leave 'em open, no excess heat today(#{get_temperature high_temp})."
+      else
+        # Todo: base timezone on requested location.
+        timezone = TZInfo::Timezone.get('America/Los_Angeles')
+        if time_to_close_the_windows == 'now'
+          output = "Close the windows now! It is #{get_temperature window_close_temp}.  "
+        else
+          time_at = Time.at(time_to_close_the_windows).to_datetime
+          local_time = timezone.utc_to_local(time_at)
+          output = "Close the windows at #{local_time.strftime('%k:%M')}, it will be #{get_temperature window_close_temp}.  "
+        end
+        if time_to_open_the_windows
+          open_time = timezone.utc_to_local(Time.at(time_to_open_the_windows).to_datetime)
+          output += "Open them back up at #{open_time.strftime('%k:%M')}.  "
+        end
+        output += "The high today will be #{get_temperature high_temp}."
+        datas = { 'timeToClose': local_time,
+                  'timeToOpen': open_time,
+                  'tempMax': high_temp,
+                  'temp': window_close_temp
+        }
+      end
+    end
   end
 end

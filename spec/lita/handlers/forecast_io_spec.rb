@@ -529,18 +529,18 @@ describe Lita::Handlers::OnewheelForecastIo, lita_handler: true do
     expect(replies.last).to eq("Portland, OR, USA 48 hr rains |\u000302▁_▁\u000306▃▃▃\u000310▅\u000302▁_▁▁\u000306▃\u000302▁\u000310▃\u000306▃\u000310▅\u000306▃\u000302▁▁▁▁▁▁__________________________\u0003| max 28%")
   end
 
-  it 'will return windows for good morning' do
-    mock_up 'windows'
-    send_message 'Good morning.'
-    expect(replies.last).to eq('Close the windows at 16:00, it will be 72°F.  Open them back up at 17:00.  The high today will be 72°F.')
-  end
-
-  it 'will return windows for good morning' do
-    mock_up 'windows'
-    send_message 'good morning!'
-    expect(replies.last).to eq(nil)
-  end
-
+  # it 'will return windows for good morning' do
+  #   mock_up 'windows'
+  #   send_message 'Good morning.'
+  #   expect(replies.last).to eq('Close the windows at 16:00, it will be 72°F.  Open them back up at 17:00.  The high today will be 72°F.')
+  # end
+  #
+  # it 'will return windows for good morning' do
+  #   mock_up 'windows'
+  #   send_message 'good morning!'
+  #   expect(replies.last).to eq(nil)
+  # end
+  #
   it 'will summarize !today in relation to yesterday' do
     send_command 'today'
     expect(replies.last).to eq('Today will be about the same as yesterday.')

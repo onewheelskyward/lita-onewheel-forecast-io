@@ -226,5 +226,12 @@ module ForecastIo
       windows_time = do_the_windows_thing(forecast)
       response.reply "#{windows_time}"
     end
+
+    def handle_http_windows(response)
+      location = geo_lookup(response.user, '97232')
+      forecast = get_forecast_io_results(response.user, location)
+      windows_data = do_the_windows_thing(forecast)
+      response.reply windows_data.to_json
+    end
   end
 end
