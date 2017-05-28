@@ -228,10 +228,10 @@ module ForecastIo
     end
 
     def handle_http_windows(request, response)
-      location = geo_lookup(response.user, '97232')
-      forecast = get_forecast_io_results(response.user, location)
-      windows_data = do_the_windows_thing(forecast)
-      response.reply windows_data.to_json
+      uri = config.api_uri + config.api_key + '/' + '45.5295528,-122.6463158'
+      forecast = gimme_some_weather uri
+      windows_data = do_the_windows_data_thing(forecast)
+      response.write windows_data.to_json
     end
   end
 end
