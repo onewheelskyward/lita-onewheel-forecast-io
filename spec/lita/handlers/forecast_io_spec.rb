@@ -507,7 +507,7 @@ describe Lita::Handlers::OnewheelForecastIo, lita_handler: true do
   it '!tomorrows' do
     mock_up 'much_warmer'
     send_command 'tomorrow'
-    expect(replies.last).to eq('Tomorrow will be much hotter than today.')
+    expect(replies.last).to eq('Tomorrow will be much warmer than today.')
   end
 
   it '!windows' do

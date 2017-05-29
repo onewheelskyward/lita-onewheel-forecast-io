@@ -443,30 +443,27 @@ module ForecastIo
     end
 
     def do_the_today_thing(forecast, yesterday)
-      puts "#{forecast['daily']['data'][0]['temperatureMax']} - #{yesterday['daily']['data'][0]['temperatureMax']}"
-      temp_diff = forecast['daily']['data'][0]['temperatureMax'] - forecast['daily']['data'][0]['temperatureMax']
-      get_daily_comparison_text(temp_diff)
+      temp_diff = forecast['daily']['data'][0]['temperatureMax'] - yesterday['daily']['data'][0]['temperatureMax']
+      get_daily_comparison_text(temp_diff, forecast['daily']['data'][0]['temperatureMax'])
     end
 
     def do_the_tomorrow_thing(forecast)
-      puts "#{forecast['daily']['data'][0]['temperatureMax']} - #{forecast['daily']['data'][1]['temperatureMax']}"
-      forecast['daily']['data'][0]['temperatureMax'] - forecast['daily']['data'][1]['temperatureMax']
       temp_diff = forecast['daily']['data'][0]['temperatureMax'] - forecast['daily']['data'][1]['temperatureMax']
-      get_daily_comparison_text(temp_diff)
+      get_daily_comparison_text(temp_diff, forecast['daily']['data'][0]['temperatureMax'])
     end
 
     # If the temperature difference is positive,
-    def get_daily_comparison_text(temp_diff)
+    def get_daily_comparison_text(temp_diff, high)
       if temp_diff <= 1 and temp_diff >= -1
         'about the same as'
       elsif temp_diff > 1 and temp_diff <= 5
         'cooler than'
       elsif temp_diff > 5
-        'much colder than'
+        (high > 70)? 'much cooler than' : 'much colder than'
       elsif temp_diff < -1 and temp_diff >= -5
         'warmer than'
       elsif temp_diff < -5
-        'much hotter than'
+        (high < 70)? 'much warmer than' : 'much hotter than'
       end
     end
 
