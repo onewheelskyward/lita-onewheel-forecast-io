@@ -209,6 +209,7 @@ module ForecastIo
       location = geo_lookup(response.user, response.match_data[1])
       forecast = get_forecast_io_results(response.user, location)
       tomorrow_will_be = do_the_tomorrow_thing(forecast)
+      Lita.logger.info "Response: Tomorrow will be #{tomorrow_will_be} today."
       response.reply "Tomorrow will be #{tomorrow_will_be} today."
     end
 
@@ -217,6 +218,7 @@ module ForecastIo
       forecast = get_forecast_io_results(response.user, location, Date.today.to_s + 'T00:00:00-0700')
       yesterday_weather = get_forecast_io_results(response.user, location, Date.today.prev_day.to_s + 'T00:00:00-0700')
       today_will_be = do_the_today_thing(forecast, yesterday_weather)
+      Lita.logger.info "Response: Today will be #{today_will_be} yesterday."
       response.reply "Today will be #{today_will_be} yesterday."
     end
 

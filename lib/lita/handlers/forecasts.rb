@@ -443,8 +443,8 @@ module ForecastIo
     end
 
     def do_the_today_thing(forecast, yesterday)
-      Lita.logger.info "Basing today on today - yesterday: #{forecast['daily']['data'][0]['temperatureMax']} - #{yesterday['daily']['data'][0]['temperatureMax']}"
-      temp_diff = forecast['daily']['data'][0]['temperatureMax'] - yesterday['daily']['data'][0]['temperatureMax']
+      Lita.logger.info "Basing today on today - yesterday: #{yesterday['daily']['data'][0]['temperatureMax']} - #{forecast['daily']['data'][0]['temperatureMax']}"
+      temp_diff = yesterday['daily']['data'][0]['temperatureMax'] - forecast['daily']['data'][0]['temperatureMax']
       get_daily_comparison_text(temp_diff, forecast['daily']['data'][0]['temperatureMax'])
     end
 
