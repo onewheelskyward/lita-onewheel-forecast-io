@@ -21,7 +21,7 @@ EOS
 
   spec.add_runtime_dependency 'lita', '~> 4'
 
-  spec.add_development_dependency 'bundler', '~> 1.3'
+  spec.add_development_dependency 'bundler', '~> 2'
   # spec.add_development_dependency 'pry-byebug', '~> 3.1'
   spec.add_development_dependency 'rake', '~> 10.4'
   spec.add_development_dependency 'rack-test', '~> 0.6'
@@ -29,7 +29,7 @@ EOS
   spec.add_development_dependency 'simplecov', '~> 0.10'
   spec.add_development_dependency 'coveralls', '~> 0.8'
 
-  spec.add_runtime_dependency 'rest-client', '~> 1.6'
+  spec.add_runtime_dependency 'rest-client', '~> 2'
   spec.add_runtime_dependency 'geocoder', '~> 1.2'
   spec.add_runtime_dependency 'multi_json', '~> 1.7'
   spec.add_runtime_dependency 'magic-eightball', '~> 0.0'

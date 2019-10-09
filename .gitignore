@@ -18,3 +18,4 @@ test/version_tmp
 tmp
 lita_config.rb
 .rbenv-gemsets
+bin/
