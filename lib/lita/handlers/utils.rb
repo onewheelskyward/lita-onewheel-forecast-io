@@ -84,9 +84,9 @@ module ForecastIo
 
       Lita.logger.debug "geocoded: '#{geocoded}'"
       loc = Location.new(
-          geocoded['formatted_address'],
-          geocoded['geometry']['location']['lat'],
-          geocoded['geometry']['location']['lng']
+          "#{geocoded['address']['city']}, #{geocoded['address']['state']}",
+          geocoded['lat'],
+          geocoded['lng']
       )
 
       Lita.logger.debug "loc: '#{loc}'"
