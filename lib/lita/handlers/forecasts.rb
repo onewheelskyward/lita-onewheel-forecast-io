@@ -502,6 +502,11 @@ module ForecastIo
       # Return some meta here and let the caller decide the text.
       if time_to_close_the_windows.nil?
         "Leave 'em open, no excess heat today(#{get_temperature high_temp})."
+        if high_temp <= 68 and high_temp > 62
+          "Open them up mid-day, high temp #{get_temperature high_temp}."
+        elsif high_temp <= 62
+          "Best leave 'em shut, high temp #{get_temperature high_temp}."
+        end
       else
         # Todo: base timezone on requested location.
         timezone = TZInfo::Timezone.get('America/Los_Angeles')
