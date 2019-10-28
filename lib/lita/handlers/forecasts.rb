@@ -160,8 +160,8 @@ module ForecastIo
     end
 
     def ansi_wind_direction_forecast(forecast)
-      str, data = do_the_wind_direction_thing(forecast, ansi_wind_arrows)
-      "48h wind direction #{get_speed data.first}|#{str}|#{get_speed data.last} Range: #{get_speed(data.min)} - #{get_speed(data.max)}"
+      str, wind_speed, wind_gust = do_the_wind_direction_thing(forecast, ansi_wind_arrows)
+      "48h wind direction #{get_speed wind_speed.first}|#{str}|#{get_speed wind_speed.last} Range: #{get_speed(wind_speed.min)} - #{get_speed(wind_speed.max)}, gusting to #{get_speed gust_data.max}"
     end
 
     def ascii_wind_direction_forecast(forecast)
@@ -174,11 +174,13 @@ module ForecastIo
       data = forecast['hourly']['data'].slice(0,hours - 1)
       str = ''
       data_points = []
+      gust_data = []
 
       data.each_with_index do |datum, index|
         wind_arrow_index = get_cardinal_direction_from_bearing(datum[key])
         str << wind_arrows[wind_arrow_index].to_s
         data_points.push datum['windSpeed']
+        gust_data.push datum['windGust']
         break if index == hours - 1 # We only want (hours) of data.
       end
 
@@ -186,7 +188,7 @@ module ForecastIo
         str = get_colored_string(data, 'windSpeed', str, get_wind_range_colors)
       end
 
-      return str, data_points
+      return str, data_points, gust_data
     end
 
     def do_the_sun_thing(forecast, chars)
