@@ -161,7 +161,7 @@ module ForecastIo
 
     def ansi_wind_direction_forecast(forecast)
       str, wind_speed, wind_gust = do_the_wind_direction_thing(forecast, ansi_wind_arrows)
-      "48h wind direction #{get_speed wind_speed.first}|#{str}|#{get_speed wind_speed.last} Range: #{get_speed(wind_speed.min)} - #{get_speed(wind_speed.max)}, gusting to #{get_speed gust_data.max}"
+      "48h wind direction #{get_speed wind_speed.first}|#{str}|#{get_speed wind_speed.last} Range: #{get_speed(wind_speed.min)} - #{get_speed(wind_speed.max)}, gusting to #{get_speed wind_gust.max}"
     end
 
     def ascii_wind_direction_forecast(forecast)
