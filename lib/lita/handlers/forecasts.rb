@@ -132,6 +132,11 @@ module ForecastIo
       "#{hours} hr temps: #{get_temperature temperature_data.first.round(1)} |#{str}| #{get_temperature temperature_data.last.round(1)}  Range: #{get_temperature temperature_data.min.round(1)} - #{get_temperature temperature_data.max.round(1)}"
     end
 
+    def ansi_windchill_forecast(forecast, hours = 24)
+      str, temperature_data = do_the_windchill_temp_thing(forecast, ansi_chars, hours)
+      "#{hours} hr temps: #{get_temperature temperature_data.first.round(1)} |#{str}| #{get_temperature temperature_data.last.round(1)}  Range: #{get_temperature temperature_data.min.round(1)} - #{get_temperature temperature_data.max.round(1)}"
+    end
+
     def ascii_temp_forecast(forecast, hours = 24)
       str, temperature_data = do_the_temp_thing(forecast, ascii_chars, hours)
       "#{hours} hr temps: #{get_temperature temperature_data.first.round(1)} |#{str}| #{get_temperature temperature_data.last.round(1)}  Range: #{get_temperature temperature_data.min.round(1)} - #{get_temperature temperature_data.max.round(1)}"
@@ -159,14 +164,43 @@ module ForecastIo
       return dot_str, temps
     end
 
+    def do_the_windchill_temp_thing(forecast, chars, hours)
+      temps = []
+      wind = []
+      data = forecast['hourly']['data'].slice(0,hours - 1)
+      key = 'temperature'
+      wind_key = 'windSpeed'
+
+      data.each_with_index do |datum, index|
+        temps.push calculate_windchill(datum[key], datum[wind_key])
+        break if index == hours - 1 # We only want (hours) 24hrs of data.
+      end
+
+      differential = temps.max - temps.min
+
+      # Hmm.  There's a better way.
+      dot_str = get_dot_str(chars, data, temps.min, differential, key)
+
+      if config.colors
+        dot_str = get_colored_string(data, key, dot_str, get_temp_range_colors)
+      end
+
+      return dot_str, temps
+    end
+
+    # Temp must be F.
+    def calculate_windchill(temp, wind)
+      35.74 + (0.6215 * temp) - (35.75 * wind ** 0.16) + (0.4275 * temp * wind ** 0.16)
+    end
+
     def ansi_wind_direction_forecast(forecast)
       str, wind_speed, wind_gust = do_the_wind_direction_thing(forecast, ansi_wind_arrows)
       "48h wind direction #{get_speed wind_speed.first}|#{str}|#{get_speed wind_speed.last} Range: #{get_speed(wind_speed.min)} - #{get_speed(wind_speed.max)}, gusting to #{get_speed wind_gust.max}"
     end
 
     def ascii_wind_direction_forecast(forecast)
-      str, data = do_the_wind_direction_thing(forecast, ascii_wind_arrows)
-      "48h wind direction #{get_speed data.first}|#{str}|#{get_speed data.last} Range: #{get_speed(data.min)} - #{get_speed(data.max)}"
+      str, wind_speed, wind_gust = do_the_wind_direction_thing(forecast, ascii_wind_arrows)
+      "48h wind direction #{get_speed wind_speed.first}|#{str}|#{get_speed wind_speed.last} Range: #{get_speed(wind_speed.min)} - #{get_speed(wind_speed.max)}, gusting to #{get_speed wind_gust.max}"
     end
 
     def do_the_wind_direction_thing(forecast, wind_arrows, hours = 48)

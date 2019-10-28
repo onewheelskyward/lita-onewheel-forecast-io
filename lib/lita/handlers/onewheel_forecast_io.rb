@@ -148,6 +148,9 @@ module Lita
       route(/^ansiwind\s*$/i, :handle_irc_ansiwind, command: true)
       route(/^ansiwind\s+(.+)/i, :handle_irc_ansiwind, command: true,
             help: { '!ansiwind [location]' => '24h wind speed/direction report for [location].'})
+      route(/^ansiwindchill\s*$/i, :handle_irc_ansiwindchill, command: true)
+      route(/^ansiwindchill\s+(.+)/i, :handle_irc_ansiwindchill, command: true,
+            help: { '!ansiwindchill [location]' => '24h windchill temp report for [location].'})
       route(/^asciiwind\s*$/i, :handle_irc_ascii_wind, command: true)
       route(/^asciiwind\s+(.+)/i, :handle_irc_ascii_wind, command: true,
             help: { '!asciiwind [location]' => '24h wind speed/direction report for [location], ascii style.'})
