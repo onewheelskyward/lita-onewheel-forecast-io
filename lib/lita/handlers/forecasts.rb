@@ -134,7 +134,7 @@ module ForecastIo
 
     def ansi_windchill_forecast(forecast, hours = 24)
       str, temperature_data = do_the_windchill_temp_thing(forecast, ansi_chars, hours)
-      "#{hours} hr temps: #{get_temperature temperature_data.first.round(1)} |#{str}| #{get_temperature temperature_data.last.round(1)}  Range: #{get_temperature temperature_data.min.round(1)} - #{get_temperature temperature_data.max.round(1)}"
+      "#{hours} hr windchill temps: #{get_temperature temperature_data.first.round(1)} |#{str}| #{get_temperature temperature_data.last.round(1)}  Range: #{get_temperature temperature_data.min.round(1)} - #{get_temperature temperature_data.max.round(1)}"
     end
 
     def ascii_temp_forecast(forecast, hours = 24)
