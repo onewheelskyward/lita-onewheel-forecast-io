@@ -82,6 +82,15 @@ module Lita
       route(/^windows\s+(.+)/i, :handle_irc_windows, command: true,
             help: { '!windows' => 'Tell me when to close my windows as it\'s warmer outside than in.'})
 
+      # SUN
+      route(/^uv$/i, :handle_irc_uvindex, command: true)
+      route(/^uv\s+(.+)$/i, :handle_irc_uvindex, command: true)
+      route(/^uvindex$/i, :handle_irc_uvindex, command: true)
+      route(/^uvindex\s+(.*)$/i, :handle_irc_uvindex, command: true)
+      route(/^ansiuvindex\s*(.*)$/i, :handle_irc_uvindex, command: true)
+      route(/^ansiuv\s*(.*)$/i, :handle_irc_uvindex, command: true,
+            help: { '!ansiuv' => 'Display the UV index forecast.' })
+
       # State Commands
       route(/^set scale (c|f|k)/i, :handle_irc_set_scale, command: true,
             help: { '!set scale [c|f|k]' => 'Set the scale to your chosen degrees.'})

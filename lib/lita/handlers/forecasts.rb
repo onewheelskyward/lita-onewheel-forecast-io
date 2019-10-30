@@ -615,5 +615,21 @@ module ForecastIo
         }
       end
     end
+
+    def do_the_uvindex_thing(forecast)
+      uvs = []
+      forecast['hourly']['data'].each do |hour|
+        uvs.push hour['uvIndex']
+      end
+
+      data = forecast['hourly']['data']
+      str = get_dot_str(ansi_chars, data, uvs.min, uvs.max - uvs.min, key = 'uvIndex')
+
+      if config.colors
+        str = get_colored_string(data, 'uvIndex', str, get_uvindex_colors)
+      end
+
+      "#{uvs.first} |#{str}| #{uvs.last} range: #{uvs.min}-#{uvs.max}"
+    end
   end
 end
