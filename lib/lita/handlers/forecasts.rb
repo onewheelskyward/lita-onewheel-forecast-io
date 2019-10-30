@@ -629,7 +629,7 @@ module ForecastIo
         str = get_colored_string(data, 'uvIndex', str, get_uvindex_colors)
       end
 
-      "#{uvs.first} |#{str}| #{uvs.last} range: #{uvs.min}-#{uvs.max}"
+      "#{uvs.first} |#{str}| #{uvs.last} max: #{uvs.max}"
     end
   end
 end
