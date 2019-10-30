@@ -139,7 +139,20 @@ module ForecastIo
     #   }
     # end
 
-    # End constants
-
+    def get_uvindex_colors
+      { 0..0 => :black,
+        1..1 => :royal,
+        2..2 => :brown,
+        3..3 => :purple,
+        4..4 => :green,
+        5..5 => :lime,
+        6..6 => :red,
+        7..7 => :orange,
+        8..8 => :yellow,
+        9..9 => :aqua,
+        10..10 => :pink,
+        11..11 => :white
+      }
+    end
   end
 end
