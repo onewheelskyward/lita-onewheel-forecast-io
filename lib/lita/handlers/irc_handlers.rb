@@ -243,8 +243,8 @@ module ForecastIo
     end
 
     def handle_irc_uvindex(response)
-      location = geo_lookup(response.user.name, response.match_data[1])
-      forecast = get_forecast_io_results(response.user.name, location)
+      location = geo_lookup(response.user, response.match_data[1])
+      forecast = get_forecast_io_results(response.user, location)
       str = do_the_uvindex_thing(forecast)
       response.reply "UV Index for #{location.location_name} #{str} [48h forecast]"
     end
