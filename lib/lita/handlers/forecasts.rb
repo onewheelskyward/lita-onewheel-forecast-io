@@ -310,13 +310,7 @@ module ForecastIo
 
       str = get_dot_str(chars, data, data_points.min, differential, key)
 
-      # if config.colors
-      #   str = get_colored_string(data, key, str, get_sun_range_colors)
-      # end
-
-      # max = 10 - get_min_by_data_key(forecast, 'hourly', key)
-
-      "24h fog report |#{str}| visibility #{min}mi - #{max}mi"
+      "48h fog report |#{str}| visibility #{min}mi - #{max}mi"
     end
 
     def do_the_sunrise_thing(forecast)
