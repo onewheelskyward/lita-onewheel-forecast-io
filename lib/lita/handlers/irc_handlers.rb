@@ -125,6 +125,18 @@ module ForecastIo
       response.reply location.location_name + ' ' + do_the_cloud_thing(forecast, ascii_chars)
     end
 
+    def handle_irc_ansifog(response)
+      location = geo_lookup(response.user, response.match_data[1])
+      forecast = get_forecast_io_results(response.user, location)
+      response.reply location.location_name + ' ' + do_the_fog_thing(forecast, ansi_chars)
+    end
+
+    def handle_irc_asciifog(response)
+      location = geo_lookup(response.user, response.match_data[1])
+      forecast = get_forecast_io_results(response.user, location)
+      response.reply location.location_name + ' ' + do_the_fog_thing(forecast, ascii_chars)
+    end
+
     def handle_irc_seven_day(response)
       location = geo_lookup(response.user, response.match_data[1])
       forecast = get_forecast_io_results(response.user, location)

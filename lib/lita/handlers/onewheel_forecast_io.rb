@@ -15,6 +15,7 @@ module Lita
       config :colors
       config :snowflake, default: '❄'
       config :default_location, default: 'Portland, OR'
+      config :geocoder_key
 
       include ::ForecastIo::Constants
       include ::ForecastIo::IrcHandlers
@@ -174,6 +175,12 @@ module Lita
       route(/^ansiclouds*\s*$/i, :handle_irc_ansicloud, command: true)
       route(/^ansiclouds*\s+(.+)/i, :handle_irc_ansicloud, command: true,
             help: { '!ansicloud [location]' => '24h cloud cover report for [location].'})
+      route(/^asciifog*\s*$/i, :handle_irc_asciifog, command: true)
+      route(/^asciifog*\s+(.+)/i, :handle_irc_asciifog, command: true,
+            help: { '!ansicloud [location]' => '24h fog/visibility report for [location].'})
+      route(/^ansifog*\s*$/i, :handle_irc_ansifog, command: true)
+      route(/^ansifog*\s+(.+)/i, :handle_irc_ansifog, command: true,
+            help: { '!ansicloud [location]' => '24h fog/visibility report for [location].'})
 
       # oooOOOoooo
       route(/^ansiozone\s*$/i, :handle_irc_ansiozone, command: true)

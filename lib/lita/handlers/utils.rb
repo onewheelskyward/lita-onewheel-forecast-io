@@ -48,6 +48,10 @@ module ForecastIo
     def optimistic_geo_wrapper(query)
       Lita.logger.debug "Optimistically geo wrapping #{query}!"
       geocoded = nil
+      # ::Geocoder.configure(
+      #     api_key: config.geocoder_key,
+      #     timeout: 10
+      # )
       result = ::Geocoder.search(query)
       Lita.logger.debug "Geocoder result: '#{result.inspect}'"
       if result[0]

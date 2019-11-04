@@ -291,6 +291,33 @@ module ForecastIo
       "24h cloud cover |#{str}| range #{min * 100}% - #{max * 100}%"
     end
 
+    def do_the_fog_thing(forecast, chars)
+      # O ◎ ]
+      data = forecast['hourly']['data'].slice(0,23)
+
+      datas = []
+
+      min = 0
+      max = 10
+
+      data.each do |datum|
+
+        viz = datum['visibility']
+
+        if viz > max
+          max = viz
+        end
+
+        if viz < min
+          min = viz
+        end
+      end
+
+      str = get_dot_str(chars, data, 0, 10, 'visibility')
+
+      "24h fog report |#{str}| visibility #{min}mi - #{max}mi"
+    end
+
     def do_the_sunrise_thing(forecast)
       t = Time.at(fix_time(forecast['daily']['data'][0]['sunriseTime'], forecast['offset']))
       t.strftime("%H:%M:%S")
