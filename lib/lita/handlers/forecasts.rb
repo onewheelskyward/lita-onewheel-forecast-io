@@ -292,28 +292,29 @@ module ForecastIo
     end
 
     def do_the_fog_thing(forecast, chars)
-      # O ◎ ]
-      data = forecast['hourly']['data'].slice(0,23)
+      key = 'visibility'
+      data_points = []
+      data = forecast['hourly']['data']
 
-      datas = []
-
-      min = 0
-      max = 10
+      max = 0
+      min = 10
 
       data.each do |datum|
-
-        viz = datum['visibility']
-
-        if viz > max
-          max = viz
-        end
-
-        if viz < min
-          min = viz
-        end
+        max = datum[key] if datum[key] > max
+        min = datum[key] if datum[key] < min
+        data_points.push (10 - datum[key]).to_f  # It's a visibility number, so let's inverse it to give us fog.
+        datum[key] = (10 - datum[key]).to_f      # Mod the source data for the get_dot_str call below.
       end
 
-      str = get_dot_str(chars, data, 0, 10, 'visibility')
+      differential = data_points.max - data_points.min
+
+      str = get_dot_str(chars, data, data_points.min, differential, key)
+
+      # if config.colors
+      #   str = get_colored_string(data, key, str, get_sun_range_colors)
+      # end
+
+      # max = 10 - get_min_by_data_key(forecast, 'hourly', key)
 
       "24h fog report |#{str}| visibility #{min}mi - #{max}mi"
     end
