@@ -294,7 +294,7 @@ module ForecastIo
     def do_the_fog_thing(forecast, chars)
       key = 'visibility'
       data_points = []
-      data = forecast['hourly']['data']
+      data = forecast['hourly']['data'].slice(0,23)
 
       max = 0
       min = 10
@@ -308,9 +308,9 @@ module ForecastIo
 
       differential = data_points.max - data_points.min
 
-      str = get_dot_str(chars, data, data_points.min, differential, key)
+      str = get_dot_str(chars, data, 0, 10, key)
 
-      "48h fog report |#{str}| visibility #{min}mi - #{max}mi"
+      "24h fog report |#{str}| visibility #{min}mi - #{max}mi"
     end
 
     def do_the_sunrise_thing(forecast)
