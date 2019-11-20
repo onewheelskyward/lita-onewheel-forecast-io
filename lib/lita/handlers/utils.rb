@@ -63,36 +63,107 @@ module ForecastIo
     # Perform a geocoder lookup based on a) the query or b) the user's serialized state.
     # If neither of those exist, default to config location.
     def geo_lookup(user, query, persist = true)
-      Lita.logger.debug "Performing geolookup for '#{user.name}' for '#{query}'"
+      Lita.logger.debug "Performing geolookup for '#{user}' for '#{query}'"
+
+      geocoded = nil
 
       if query.nil? or query.empty?
-        Lita.logger.debug "No query specified, pulling from redis #{REDIS_KEY}, #{user.name}"
-        serialized_geocoded = redis.hget(REDIS_KEY, user.name)
+        Lita.logger.debug "No query specified, pulling from redis '#{REDIS_KEY}', '#{user}'"
+        serialized_geocoded = redis.hget(REDIS_KEY, user)
         unless serialized_geocoded == 'null' or serialized_geocoded.nil?
-          geocoded = JSON.parse(serialized_geocoded)
+          if serialized_geocoded[/^http/]
+            query = serialized_geocoded
+          else
+            geocoded = JSON.parse(serialized_geocoded)
+          end
+          Lita.logger.debug "Cached location: #{geocoded.inspect}"
         end
-        Lita.logger.debug "Cached location: #{geocoded.inspect}"
       end
 
       query = (query.nil?)? config.default_location : query
       Lita.logger.debug "q & g #{query.inspect} #{geocoded.inspect}"
 
-      unless geocoded
-        Lita.logger.debug "Redis hget failed, performing lookup for #{query}"
-        geocoded = optimistic_geo_wrapper query
-        Lita.logger.debug "Geolocation found.  '#{geocoded.inspect}' failed, performing lookup"
+      if query[/^http/] or (!geocoded.nil? and geocoded.key? 'geo') # For now this is aaronpk's loc
+        Lita.logger.debug "Getting location from #{query}"
+        resp = JSON.parse(RestClient.get query)
+
+        locality = ''
+        if resp['geo']
+          locality = resp['geo']['locality']
+        end
+
+        loc = Location.new(
+            locality,
+            resp['location']['latitude'],
+            resp['location']['longitude']
+        )
+
         if persist
-          redis.hset(REDIS_KEY, user.name, geocoded.to_json)
+          redis.hset(REDIS_KEY, user, query)
+        end
+
+      else
+
+        unless geocoded
+          # uri = "https://atlas.p3k.io/api/geocode?input=#{URI.escape query}"
+          # Lita.logger.debug "Redis hget failed, performing lookup for #{query} on #{uri}"
+          geocoded = optimistic_geo_wrapper query, config.geocoder_key
+          # Catch network errors here
+          # begin
+          #   geocoded = JSON.parse RestClient.get(uri)
+          # rescue RuntimeError => e
+          #   puts "x"
+          # end
+
+          Lita.logger.debug "Geolocation found.  '#{geocoded.inspect}' failed, performing lookup"
+          if persist
+            redis.hset(REDIS_KEY, user, geocoded.to_json)
+          end
+        end
+
+        # {"latitude": 45.51179,
+        #  "longitude": -122.67563,
+        #  "locality": "Portland",
+        #  "region": "Oregon",
+        #  "country": "USA",
+        #  "best_name": "Portland",
+        #  "full_name": "Portland, Oregon, USA",
+        #  "postal-code": "97201",
+        #  "timezone": "America\/Los_Angeles",
+        #  "offset": "-07:00",
+        #  "seconds": -25200,
+        #  "localtime": "2018-08-09T08:05:43-07:00"}
+
+        # loc = Location.new(
+        #   geocoded['best_name'],
+        #   geocoded['latitude'],
+        #   geocoded['longitude']
+        # )
+        # loc = Location.new(
+        #   geocoded['formatted_address'],
+        #   geocoded['geometry']['location']['lat'],
+        #   geocoded['geometry']['location']['lng']
+        # )
+
+        if geocoded['best_name']
+          loc = Location.new(
+              geocoded['best_name'],
+              geocoded['latitude'],
+              geocoded['longitude'])
+        elsif geocoded['lon']
+          loc = Location.new(
+              geocoded['display_name'],
+              geocoded['lat'],
+              geocoded['lon'])
+        else
+          loc = Location.new(
+              geocoded['formatted_address'],
+              geocoded['geometry']['location']['lat'],
+              geocoded['geometry']['location']['lng'])
         end
       end
 
       Lita.logger.debug "geocoded: '#{geocoded}'"
-      loc = Location.new(
-          "#{geocoded['address']['city']}, #{geocoded['address']['state']}",
-          geocoded['lat'],
-          geocoded['lon']
-      )
-
       Lita.logger.debug "loc: '#{loc}'"
 
       loc
