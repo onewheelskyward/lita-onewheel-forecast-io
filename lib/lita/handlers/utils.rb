@@ -45,13 +45,12 @@ module ForecastIo
 
     # Geographical stuffs
     # Now with moar caching!
-    def optimistic_geo_wrapper(query)
+    def optimistic_geo_wrapper(query, geocoder_key)
       Lita.logger.debug "Optimistically geo wrapping #{query}!"
+      ::Geocoder.configure(
+          :api_key => geocoder_key
+      )
       geocoded = nil
-      # ::Geocoder.configure(
-      #     api_key: config.geocoder_key,
-      #     timeout: 10
-      # )
       result = ::Geocoder.search(query)
       Lita.logger.debug "Geocoder result: '#{result.inspect}'"
       if result[0]
