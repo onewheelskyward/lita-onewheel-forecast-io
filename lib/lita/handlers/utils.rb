@@ -91,11 +91,13 @@ module ForecastIo
           locality = resp['geo']['locality']
         end
 
-        loc = Location.new(
-            locality,
-            resp['location']['latitude'],
-            resp['location']['longitude']
-        )
+        geocoded = optimistic_geo_wrapper locality, config.geocoder_key
+
+        # loc = Location.new(
+        #     locality,
+        #     resp['location']['latitude'],
+        #     resp['location']['longitude']
+        # )
 
         if persist
           redis.hset(REDIS_KEY, user, query)
@@ -144,22 +146,23 @@ module ForecastIo
         #   geocoded['geometry']['location']['lng']
         # )
 
-        if geocoded['best_name']
-          loc = Location.new(
-              geocoded['best_name'],
-              geocoded['latitude'],
-              geocoded['longitude'])
-        elsif geocoded['lon']
-          loc = Location.new(
-              geocoded['display_name'],
-              geocoded['lat'],
-              geocoded['lon'])
-        else
-          loc = Location.new(
-              geocoded['formatted_address'],
-              geocoded['geometry']['location']['lat'],
-              geocoded['geometry']['location']['lng'])
-        end
+      end
+
+      if geocoded['best_name']
+        loc = Location.new(
+            geocoded['best_name'],
+            geocoded['latitude'],
+            geocoded['longitude'])
+      elsif geocoded['lon']
+        loc = Location.new(
+            geocoded['display_name'],
+            geocoded['lat'],
+            geocoded['lon'])
+      else
+        loc = Location.new(
+            geocoded['formatted_address'],
+            geocoded['geometry']['location']['lat'],
+            geocoded['geometry']['location']['lng'])
       end
 
       Lita.logger.debug "geocoded: '#{geocoded}'"
