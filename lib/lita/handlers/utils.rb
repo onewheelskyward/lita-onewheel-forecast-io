@@ -394,6 +394,14 @@ module ForecastIo
       end
     end
 
+    def get_accumulation(accum_mm)
+      if @scale == 'c' or @scale == 'k'
+        accum_mm.round(0).to_s + 'mm'
+      else
+        inches_from_mm(accum_mm).to_s + 'in'
+      end
+    end
+
     def get_humidity(humidity_decimal)
       (humidity_decimal * 100).round(0).to_s + '%'
     end
@@ -404,6 +412,10 @@ module ForecastIo
 
     def kelvin(degrees_f)
       ((degrees_f.to_f + 459.67) * 5/9).round(2)
+    end
+
+    def inches_from_mm(dist_mm)
+      (dist_mm * 0.0393701).round(1)
     end
 
     def kilometers(speed_imperial)
