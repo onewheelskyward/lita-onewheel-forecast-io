@@ -227,6 +227,8 @@ module ForecastIo
         uri += ",#{time}"
       end
 
+      uri += "?units=si"
+
       Lita.logger.debug "Requesting forcast data from: #{uri}"
       set_scale(user)
       gimme_some_weather uri

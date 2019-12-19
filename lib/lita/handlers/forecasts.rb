@@ -6,20 +6,20 @@ module ForecastIo
       (str, precip_type) = do_the_rain_chance_thing(forecast, ascii_chars, 'precipProbability')
       max = get_max_by_data_key(forecast, 'minutely', 'precipProbability')
       agg = get_aggregate_by_data_key(forecast, 'minutely', 'precipIntensity')
-      "1hr #{precip_type} probability #{(Time.now).strftime('%H:%M').to_s}|#{str}|#{(Time.now + 3600).strftime('%H:%M').to_s} max #{(max.to_f * 100).round(2)}%, #{agg}in accumulation"
+      "1hr #{precip_type} probability #{(Time.now).strftime('%H:%M').to_s}|#{str}|#{(Time.now + 3600).strftime('%H:%M').to_s} max #{(max.to_f * 100).round(2)}%, #{agg}mm accumulation"
     end
 
     def ansi_rain_forecast(forecast)
       (str, precip_type) = do_the_rain_chance_thing(forecast, ansi_chars, 'precipProbability') #, 'probability', get_rain_range_colors)
       max = get_max_by_data_key(forecast, 'minutely', 'precipProbability')
       agg = get_aggregate_by_data_key(forecast, 'minutely', 'precipIntensity')
-      "1hr #{precip_type} probability #{(Time.now).strftime('%H:%M').to_s}|#{str}|#{(Time.now + 3600).strftime('%H:%M').to_s} max #{(max.to_f * 100).round(2)}%, #{agg}in accumulation"
+      "1hr #{precip_type} probability #{(Time.now).strftime('%H:%M').to_s}|#{str}|#{(Time.now + 3600).strftime('%H:%M').to_s} max #{(max.to_f * 100).round(2)}%, #{agg}mm accumulation"
     end
 
     def ansi_rain_intensity_forecast(forecast)
       (str, precip_type) = do_the_rain_intensity_thing(forecast, ansi_chars, 'precipIntensity') #, 'probability', get_rain_range_colors)
       max_str = get_aggregate_by_data_key(forecast, 'minutely', 'precipIntensity')
-      "1hr #{precip_type} intensity #{(Time.now).strftime('%H:%M').to_s}|#{str}|#{(Time.now + 3600).strftime('%H:%M').to_s}, #{max_str}in accumulation"
+      "1hr #{precip_type} intensity #{(Time.now).strftime('%H:%M').to_s}|#{str}|#{(Time.now + 3600).strftime('%H:%M').to_s}, #{max_str}mm accumulation"
     end
 
     def ansi_humidity_forecast(forecast)
@@ -425,7 +425,7 @@ module ForecastIo
       max = get_max_by_data_key(forecast, 'hourly', 'precipProbability')
       agg = get_aggregate_by_data_key(forecast, 'hourly', 'precipIntensity')
 
-      "48 hr #{precip_type}s |#{str}| max #{(max.to_f * 100).round}%, #{agg}in accumulation"
+      "48 hr #{precip_type}s |#{str}| max #{(max.to_f * 100).round}%, #{agg}mm accumulation"
     end
 
     def do_the_daily_wind_thing(forecast)
