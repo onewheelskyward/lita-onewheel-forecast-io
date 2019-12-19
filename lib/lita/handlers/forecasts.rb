@@ -141,8 +141,13 @@ module ForecastIo
     end
 
     def ansi_temp_forecast(forecast, hours = 24)
-      str, temperature_data = do_the_temp_thing(forecast, ansi_chars, hours)
+      str, temperature_data = do_the_temp_thing(forecast, 'temperature', ansi_chars, hours)
       "#{hours} hr temps: #{get_temperature temperature_data.first.round(1)} |#{str}| #{get_temperature temperature_data.last.round(1)}  Range: #{get_temperature temperature_data.min.round(1)} - #{get_temperature temperature_data.max.round(1)}"
+    end
+
+    def ansi_temp_apparent_forecast(forecast, hours = 24)
+      str, temperature_data = do_the_temp_thing(forecast, 'apparentTemperature', ansi_chars, hours)
+      "#{hours} hr apparent temps: #{get_temperature temperature_data.first.round(1)} |#{str}| #{get_temperature temperature_data.last.round(1)}  Range: #{get_temperature temperature_data.min.round(1)} - #{get_temperature temperature_data.max.round(1)}"
     end
 
     def ansi_windchill_forecast(forecast, hours = 24)
@@ -151,14 +156,13 @@ module ForecastIo
     end
 
     def ascii_temp_forecast(forecast, hours = 24)
-      str, temperature_data = do_the_temp_thing(forecast, ascii_chars, hours)
+      str, temperature_data = do_the_temp_thing(forecast, 'temperature', ascii_chars, hours)
       "#{hours} hr temps: #{get_temperature temperature_data.first.round(1)} |#{str}| #{get_temperature temperature_data.last.round(1)}  Range: #{get_temperature temperature_data.min.round(1)} - #{get_temperature temperature_data.max.round(1)}"
     end
 
-    def do_the_temp_thing(forecast, chars, hours)
+    def do_the_temp_thing(forecast, key, chars, hours)
       temps = []
       data = forecast['hourly']['data'].slice(0,hours - 1)
-      key = 'temperature'
 
       data.each_with_index do |datum, index|
         temps.push datum[key]
@@ -337,7 +341,7 @@ module ForecastIo
     end
 
     def conditions(forecast)
-      temp_str, temps = do_the_temp_thing(forecast, ansi_chars, 8)
+      temp_str, temps = do_the_temp_thing(forecast, 'temperature', ansi_chars, 8)
       wind_str, winds = do_the_wind_direction_thing(forecast, ansi_wind_arrows, 8)
       rain_str, rains = do_the_rain_chance_thing(forecast, ansi_chars, 'precipProbability', config.colors, 15)
 

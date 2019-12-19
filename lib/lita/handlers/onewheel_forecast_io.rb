@@ -26,6 +26,9 @@ module Lita
       route(/^ansitemp\s*$/i, :handle_irc_ansitemp, command: true)
       route(/^ansitemp\s+(.+)/i, :handle_irc_ansitemp, command: true,
             help: {'!ansitemp [location]' => 'The 24h temperature scale for [location].'})
+      route(/^ansitempapparent\s*$/i, :handle_irc_ansitempapparent, command: true)
+      route(/^ansitempapparent\s+(.+)/i, :handle_irc_ansitempapparent, command: true,
+            help: {'!ansitemp [location]' => 'The 24h temperature scale for [location].'})
       route(/^dailytemp\s*$/i, :handle_irc_daily_temp, command: true)
       route(/^dailytemp\s+(.+)/i, :handle_irc_daily_temp, command: true,
             help: { '!dailytemp [location]' => '48h temperature scale for [location].'})
