@@ -371,13 +371,14 @@ module ForecastIo
       end
     end
 
-    def get_temperature(temp_f)
+    def get_temperature(temp_c)
       if @scale == 'c'
-        celcius(temp_f).to_s + '°C'
+        #celcius(temp_c).to_s + '°C'
+        temp_c.to_s + '°C'
       elsif @scale == 'k'
-        kelvin(temp_f).to_s + 'K'
+        kelvin(temp_c).to_s + 'K'
       else
-        temp_f.to_s + '°F'
+        fahrenheit(temp_c).to_s + '°F'
       end
     end
 
@@ -409,12 +410,18 @@ module ForecastIo
       (humidity_decimal * 100).round(0).to_s + '%'
     end
 
-    def celcius(degrees_f)
-      (0.5555555556 * (degrees_f.to_f - 32)).round(2)
+    def celcius(degrees_c)
+      #(0.5555555556 * (degrees_c.to_f - 32)).round(2)
+      degrees_c.to_f.round(2)
     end
 
-    def kelvin(degrees_f)
-      ((degrees_f.to_f + 459.67) * 5/9).round(2)
+    def kelvin(degrees_c)
+      #((degrees_c.to_f + 459.67) * 5/9).round(2)
+      (degrees_c.to_f + 459.67).round(2)
+    end
+
+    def fahrenheit(degrees_c)
+      ((degrees_c.to_f * 9/5) + 32).round(2)
     end
 
     def inches_from_mm(dist_mm)
