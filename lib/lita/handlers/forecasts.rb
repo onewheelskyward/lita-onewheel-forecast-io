@@ -207,8 +207,9 @@ module ForecastIo
 
     # Temp must be F.
     def calculate_windchill(temp_c, wind)
-      temp_f = (temp_c * 9/5) + 32
-      35.74 + (0.6215 * temp_f) - (35.75 * wind ** 0.16) + (0.4275 * temp_f * wind ** 0.16)
+      #temp_f = fahrenheit(temp_c)
+      #35.74 + (0.6215 * temp_f) - (35.75 * wind ** 0.16) + (0.4275 * temp_f * wind ** 0.16)
+      13.12 + (0.6215 * temp_c) - (11.37 * (wind ** 0.16)) + (0.3965 * (temp_c * (wind ** 0.16)))
     end
 
     def ansi_wind_direction_forecast(forecast)
