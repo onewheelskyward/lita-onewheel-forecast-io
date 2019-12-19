@@ -142,7 +142,10 @@ module ForecastIo
 
     def ansi_temp_forecast(forecast, hours = 24)
       str, temperature_data = do_the_temp_thing(forecast, 'temperature', ansi_chars, hours)
-      "#{hours} hr temps: #{get_temperature temperature_data.first.round(1)} |#{str}| #{get_temperature temperature_data.last.round(1)}  Range: #{get_temperature temperature_data.min.round(1)} - #{get_temperature temperature_data.max.round(1)}"
+      resp = "#{hours} hr temps: #{get_temperature temperature_data.first.round(1)} "
+      resp += "(feels like #{get_current_apparent_temp(forecast)}) |#{str}| "
+      resp += "#{get_temperature temperature_data.last.round(1)}  Range: "
+      resp += "#{get_temperature temperature_data.min.round(1)} - #{get_temperature temperature_data.max.round(1)}"
     end
 
     def ansi_temp_apparent_forecast(forecast, hours = 24)
@@ -672,6 +675,12 @@ module ForecastIo
       end
 
       "#{uvs.first} |#{str}| #{uvs.last} max: #{uvs.max}"
+    end
+
+    private
+
+    def get_current_apparent_temp(forecast)
+      forecast['hourly']['data'][0]['apparentTemperature']
     end
   end
 end
