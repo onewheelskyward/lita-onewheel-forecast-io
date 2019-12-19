@@ -148,6 +148,9 @@ module ForecastIo
 
       end
 
+      Lita.logger.debug "best_name: #{geocoded['best_name']}"
+      Lita.logger.debug "display_name: #{geocoded['display_name']}"
+      Lita.logger.debug "formatted_address: #{geocoded['formatted_address']}"
       if geocoded['best_name']
         loc = Location.new(
             geocoded['best_name'],
@@ -155,7 +158,7 @@ module ForecastIo
             geocoded['longitude'])
       elsif geocoded['lon']
         loc = Location.new(
-            geocoded['display_name'],
+            "#{geocoded['address']['city']}, #{geocoded['address']['state']}",
             geocoded['lat'],
             geocoded['lon'])
       else
