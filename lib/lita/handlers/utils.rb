@@ -390,11 +390,11 @@ module ForecastIo
       end
     end
 
-    def get_distance(distance_imperial, scale)
-      if scale == 'c'
-        kilometers(distance_imperial).to_s + ' km'
+    def get_distance(distance_metric, scale)
+      if scale == 'f'
+        miles(distance_metric).to_s + ' mi'
       else
-        distance_imperial.to_s + ' mi'
+        distance_metric.to_s + ' km'
       end
     end
 
@@ -428,8 +428,12 @@ module ForecastIo
       (dist_mm * 0.0393701).round(1)
     end
 
-    def kilometers(speed_imperial)
-      (speed_imperial * 1.6).round(2)
+    def kilometers(miles)
+      (miles * 1.6).round(2)
+    end
+
+    def miles(kilometers)
+      (kilometers / 1.6).round(2)
     end
 
     def get_cardinal_direction_from_bearing(bearing)

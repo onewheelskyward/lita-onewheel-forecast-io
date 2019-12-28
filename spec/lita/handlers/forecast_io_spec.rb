@@ -550,4 +550,12 @@ describe Lita::Handlers::OnewheelForecastIo, lita_handler: true do
     # cstr = Lita::Handlers::ForecastIo.get_colored_string([{:key => 1}], :key, 'x', {1 => :blue})
     # expect(cstr).to equal('x')
   # end
+
+  it '!ansifog' do
+    mock_up 'ansifog'
+    send_command 'ansifog'
+    expect(replies.last).to eq('Portland, OR, USA 24h fog report |▅▅▃____________________| visibility 9.12 km - 16 km')
+  end
+
+
 end

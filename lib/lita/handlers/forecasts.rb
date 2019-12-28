@@ -321,21 +321,25 @@ module ForecastIo
       data_points = []
       data = forecast['hourly']['data'].slice(0,23)
 
+      cap = 16
       max = 0
-      min = 10
+      min = 16
 
       data.each do |datum|
+        datum[key] = 16 if datum[key] > 16
+
         max = datum[key] if datum[key] > max
         min = datum[key] if datum[key] < min
-        data_points.push (10 - datum[key]).to_f  # It's a visibility number, so let's inverse it to give us fog.
-        datum[key] = (10 - datum[key]).to_f      # Mod the source data for the get_dot_str call below.
+
+        data_points.push (cap - datum[key]).to_f  # It's a visibility number, so let's inverse it to give us fog.
+        datum[key] = (cap - datum[key]).to_f      # Mod the source data for the get_dot_str call below.
       end
 
-      differential = data_points.max - data_points.min
+      #differential = data_points.max - data_points.min
 
-      str = get_dot_str(chars, data, 0, 10, key)
+      str = get_dot_str(chars, data, 0, cap, key)
 
-      "24h fog report |#{str}| visibility #{min}mi - #{max}mi"
+      "24h fog report |#{str}| visibility #{get_distance min, @scale} - #{get_distance max, @scale}"
     end
 
     def do_the_sunrise_thing(forecast)
