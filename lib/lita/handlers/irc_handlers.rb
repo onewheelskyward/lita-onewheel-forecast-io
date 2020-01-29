@@ -267,5 +267,8 @@ module ForecastIo
       response.reply "UV Index for #{location.location_name} #{str} [48h forecast]"
     end
 
+    def handle_http_cat(response)
+      response.reply "https://http.cat/#{response.match_data[1]}.jpg"
+    end
   end
 end

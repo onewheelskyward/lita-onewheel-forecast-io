@@ -215,7 +215,7 @@ describe Lita::Handlers::OnewheelForecastIo, lita_handler: true do
 
   it '!forecast' do
     send_command 'forecast'
-    expect(replies.last).to eq("Portland, OR, USA weather is currently 28.39°F and clear.  Winds out of the E at 5.74 mph. It will be clear for the hour, and flurries tomorrow morning.  There are also 357.71 ozones.")
+    expect(replies.last).to eq("Portland, OR, USA weather is currently 83.1°F and clear.  Winds out of the E at 5.74 kph. It will be clear for the hour, and flurries tomorrow morning.  There are also 357.71 ozones.")
   end
 
   it '!rain' do
@@ -264,27 +264,27 @@ describe Lita::Handlers::OnewheelForecastIo, lita_handler: true do
 
   it '!ansitemp portland' do
     send_command 'ansitemp portland'
-    expect(replies.last).to eq("Portland, OR, USA 24 hr temps: 28.3°F |\u000306_▁▃\u000310▅▇█\u000303██\u000310██▇▅\u000306▅▃▃▃▃▃▃▁▁▁▁\u0003| 28.4°F  Range: 28.3°F - 39.0°F")
+    expect(replies.last).to eq("Portland, OR, USA 24 hr temps: 82.94°F (feels like 74.23°F) |\u000306_▁▃\u000310▅▇█\u000303██\u000310██▇▅\u000306▅▃▃▃▃▃▃▁▁▁▁\u0003| 83.12°F  Range: 82.94°F - 102.2°F")
   end
 
   it '!ieeetemp portland' do
     send_command 'ieeetemp portland'
-    expect(replies.last).to eq("Portland, OR, USA 24 hr temps: 271.09K |\u000306_▁▃\u000310▅▇█\u000303██\u000310██▇▅\u000306▅▃▃▃▃▃▃▁▁▁▁\u0003| 271.15K  Range: 271.09K - 277.04K")
+    expect(replies.last).to eq("Portland, OR, USA 24 hr temps: 487.97K (feels like 483.13K) |\u000306_▁▃\u000310▅▇█\u000303██\u000310██▇▅\u000306▅▃▃▃▃▃▃▁▁▁▁\u0003| 488.07K  Range: 487.97K - 498.67K")
   end
 
   it '!dailytemp portland' do
     send_command 'dailytemp portland'
-    expect(replies.last).to eq("Portland, OR, USA 48 hr temps: 28.3°F |\u000306_▁▃\u000310▅▅▇\u000303██\u000310▇▇▅▅\u000306▅▃▃▃▃▃▁▁▁▁▁▁▁▃\u000310▅▅▇\u000303█████▇\u000310▇▇▇▅▅▅▅\u000306▅▃▃▃▃\u0003| 30.5°F  Range: 28.3°F - 41.3°F")
+    expect(replies.last).to eq("Portland, OR, USA 48 hr temps: 82.94°F (feels like 74.23°F) |06_▁▃10▅▅▇03██10▇▇▅▅06▅▃▃▃▃▃▁▁▁▁▁▁▁▃10▅▅▇03█████▇10▇▇▇▅▅▅▅06▅▃▃▃▃| 86.9°F  Range: 82.94°F - 106.34°F")
   end
 
   it '!ansiwind portland' do
     send_command 'ansiwind portland'
-    expect(replies.last).to eq("Portland, OR, USA 48h wind direction 4.3 mph|\u000306↓\u000310↙←\u000311↖↑↗\u000308→↘\u000311↓←←←←←←\u000310←←←←←←←\u000306←←←←←\u000302←←←↙↙↙↙↓↓↓\u000306↓↓↓↓↓↓↓↓↙↙\u0003|4.18 mph Range: 1.39 mph - 12.71 mph")
+    expect(replies.last).to eq("Portland, OR, USA 48h wind direction 4.3 kph|06↓10↙←11↖↑↗08→↘11↓←←←←←←10←←←←←←←06←←←←←02←←←↙↙↙↙↓↓↓06↓↓↓↓↓↓↓↓↙↙|4.18 kph Range: 1.39 kph - 12.71 kph, gusting to  kph")
   end
 
   it '!conditions' do
     send_command 'conditions'
-    expect(replies.last).to eq("Portland, OR, USA 28.3°F |\u000306_▁▃\u000310▅▇█\u000303█\u0003| 38.72°F / 4.3 mph |\u000306↓\u000310↙←\u000311↖↑↗\u000308→\u0003| 12.71 mph / 98% chance of sun / 60m precip |\u000306❄\u000311▇\u000308▇\u000302_____________\u0003|")
+    expect(replies.last).to eq("Portland, OR, USA 82.94°F |06_▁▃10▅▇█03█| 101.7°F / 4.3 kph |06↓10↙←11↖↑↗08→| 12.71 kph / 98% chance of sun / 60m precip |06❄11▇08▇02_____________|")
   end
 
   it '!alerts' do
@@ -319,7 +319,7 @@ describe Lita::Handlers::OnewheelForecastIo, lita_handler: true do
 
   it '!asciitemp' do
     send_command 'asciitemp'
-    expect(replies.last).to eq("Portland, OR, USA 24 hr temps: 28.3°F |\u000306_.-\u000310~*'\u000303''\u000310''*~\u000306~------....\u0003| 28.4°F  Range: 28.3°F - 39.0°F")
+    expect(replies.last).to eq("Portland, OR, USA 24 hr temps: 82.94°F (feels like 74.23°F) |\u000306_.-\u000310~*'\u000303''\u000310''*~\u000306~------....\u0003| 83.12°F  Range: 82.94°F - 102.2°F")
   end
 
   it '!asciirain' do

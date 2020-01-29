@@ -382,11 +382,11 @@ module ForecastIo
       end
     end
 
-    def get_speed(speed_imperial)
-      if @scale == 'c'
-        kilometers(speed_imperial).to_s + ' kph'
+    def get_speed(speed_metric)
+      if @scale == 'f'
+        miles(speed_metric).to_s + ' mph'
       else
-        speed_imperial.to_s + ' mph'
+        speed_metric.to_s + ' kph'
       end
     end
 
@@ -425,7 +425,7 @@ module ForecastIo
     end
 
     def inches_from_mm(dist_mm)
-      (dist_mm * 0.0393701).round(1)
+      (dist_mm.to_f * 0.0393701).round(1)
     end
 
     def kilometers(miles)
