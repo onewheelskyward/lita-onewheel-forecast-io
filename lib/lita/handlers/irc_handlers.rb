@@ -339,7 +339,9 @@ module ForecastIo
       '599': 'Network connect timeout error'}
 
       code = response.match_data[1]
-      response.reply "https://http.cat/#{code}.jpg #{codes[code.to_sym]}"
+
+      # if statement brought to you by the efforts of master hacker aaronpk
+      response.reply "https://http.cat/#{code}.jpg #{codes[code.to_sym]}"  if codes[code.to_sym]
     end
   end
 end
