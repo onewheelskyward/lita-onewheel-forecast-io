@@ -290,7 +290,7 @@ module ForecastIo
 
         # If the color changed, let's update the collect_str
         unless color == prev_color
-          colored_str += "\x03" + colors[prev_color] + collect_str
+          colored_str += "\x03" + colors[prev_color].to_s + collect_str.to_s
           collect_str = ''
         end
 
