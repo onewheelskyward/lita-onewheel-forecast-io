@@ -49,17 +49,17 @@ module ForecastIo
     # Based on the temp in F.
     def get_temp_range_colors
       # Absolute zero?  You never know.
-      { -459.7..24.99 => :blue,
-        25..31.99     => :purple,
-        32..38        => :teal,
-        38..45        => :green,
-        45..55        => :lime,
-        55..65        => :aqua,
-        65..75        => :yellow,
-        75..85        => :orange,
-        85..95        => :red,
-        95..99.999    => :brown,
-        100..159.3    => :pink
+      { -273.17..-3.899 => :blue,
+        -3.9..-0.009    => :purple,
+        0..3.333        => :teal,
+        3.334..7.222    => :green,
+        7.223..12.78    => :lime,
+        12.79..18.333   => :aqua,
+        18.334..23.89   => :yellow,
+        23.90..29.44    => :orange,
+        29.45..35       => :red,
+        35.001..37.777  => :brown,
+        37.778..71      => :pink
       }
     end
 
