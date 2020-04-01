@@ -6,6 +6,11 @@
 
 This Lita handler takes location-based queries and returns interesting data about the weather.  Temperatures, rain chance and intensity, and wind speeds are all included.  But wait, there's more!  if you download now, you also get 8-ball style replies with `!rain` and `!snow`!
 
+# WARNING
+
+With the upcoming deprecation of the Darksky api (12/2021) this handler will become useless.  I'm open to suggestions on new data sources, feel free to open an issue with an idea!
+
+
 ## Installation
 
 Add lita-onewheel-forecast-io to your Lita instance's Gemfile, from github since it's currently unpublished:
