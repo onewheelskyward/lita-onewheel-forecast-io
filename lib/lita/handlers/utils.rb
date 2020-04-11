@@ -62,13 +62,13 @@ module ForecastIo
     # Perform a geocoder lookup based on a) the query or b) the user's serialized state.
     # If neither of those exist, default to config location.
     def geo_lookup(user, query, persist = true)
-      Lita.logger.debug "Performing geolookup for '#{user}' for '#{query}'"
+      Lita.logger.debug "Performing geolookup for '#{user.name}' for '#{query}'"
 
       geocoded = nil
 
       if query.nil? or query.empty?
-        Lita.logger.debug "No query specified, pulling from redis '#{REDIS_KEY}', '#{user}'"
-        serialized_geocoded = redis.hget(REDIS_KEY, user)
+        Lita.logger.debug "No query specified, pulling from redis '#{REDIS_KEY}', '#{user.name}'"
+        serialized_geocoded = redis.hget(REDIS_KEY, user.name)
         unless serialized_geocoded == 'null' or serialized_geocoded.nil?
           if serialized_geocoded[/^http/]
             query = serialized_geocoded
