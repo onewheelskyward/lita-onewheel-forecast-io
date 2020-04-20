@@ -175,6 +175,7 @@ module Lita
       route(/^asciiclouds*\s+(.+)/i, :handle_irc_asciicloud, command: true)
       route(/^asciiclouds*\s*$/i, :handle_irc_asciicloud, command: true,
             help: { '!asciicloud [location]' => '24h cloud cover report for [location].'})
+      route(/^cloudcover\s*$/i, :handle_irc_ansicloud, command: true)
       route(/^ansiclouds*\s*$/i, :handle_irc_ansicloud, command: true)
       route(/^ansiclouds*\s+(.+)/i, :handle_irc_ansicloud, command: true,
             help: { '!ansicloud [location]' => '24h cloud cover report for [location].'})
