@@ -570,7 +570,7 @@ module ForecastIo
           high_temp = hour['temperature'].to_i
         end
 
-        if !time_to_close_the_windows and hour['temperature'].to_i >= 71
+        if !time_to_close_the_windows and hour['temperature'].to_i >= 21.5
           if index == 0
             time_to_close_the_windows = 'now'
           else
@@ -579,7 +579,7 @@ module ForecastIo
           window_close_temp = hour['temperature']
         end
 
-        if !time_to_open_the_windows and time_to_close_the_windows and hour['temperature'] < last_temp and hour['temperature'].to_i <= 75
+        if !time_to_open_the_windows and time_to_close_the_windows and hour['temperature'] < last_temp and hour['temperature'].to_i <= 25
           time_to_open_the_windows = hour['time']
         end
 
@@ -590,9 +590,9 @@ module ForecastIo
       # Return some meta here and let the caller decide the text.
       if time_to_close_the_windows.nil?
         "Leave 'em open, no excess heat today(#{get_temperature high_temp})."
-        if high_temp <= 68 and high_temp > 62
+        if high_temp <= 18 and high_temp > 15
           "Open them up mid-day, high temp #{get_temperature high_temp}."
-        elsif high_temp <= 62
+        elsif high_temp <= 18
           "Best leave 'em shut, high temp #{get_temperature high_temp}."
         end
       else
