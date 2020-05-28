@@ -343,5 +343,9 @@ module ForecastIo
       # if statement brought to you by the efforts of master hacker aaronpk
       response.reply "https://http.cat/#{code}.jpg #{codes[code.to_sym]}"  if codes[code.to_sym]
     end
+
+    def handle_sandytraffic(response)
+      response.reply("!sandytraffic #{response.matches[0][0]}")
+    end
   end
 end

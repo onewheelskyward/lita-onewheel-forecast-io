@@ -205,6 +205,7 @@ module Lita
       route(/^dailybarometer\s+(.+)/i, :handle_irc_daily_pressure, command: true,
             help: { '!dailybarometer [location]' => 'Alias for !dailypressure.'})
 
+      route(/^ansitraffic\s+(.+)/i, :handle_sandytraffic, command: true)
       route(/^http\s+(\d+)/i, :handle_http_cat, command: true)
 
       http.get '/windows', :handle_http_windows
