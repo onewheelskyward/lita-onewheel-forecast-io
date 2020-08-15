@@ -1,6 +1,6 @@
 Gem::Specification.new do |spec|
   spec.name          = 'lita-onewheel-forecast-io'
-  spec.version       = '1.15.0'
+  spec.version       = '1.15.1'
   spec.authors       = ['Andrew Kreps']
   spec.email         = ['andrew.kreps@gmail.com']
   spec.description   = <<-EOS
@@ -23,7 +23,7 @@ EOS
 
   spec.add_development_dependency 'bundler', '~> 2'
   # spec.add_development_dependency 'pry-byebug', '~> 3.1'
-  spec.add_development_dependency 'rake', '~> 12'
+  spec.add_development_dependency 'rake', '~> 13'
   spec.add_development_dependency 'rack-test', '~> 0'
   spec.add_development_dependency 'rspec', '~> 3'
   spec.add_development_dependency 'simplecov', '~> 0'
