@@ -607,7 +607,7 @@ module ForecastIo
         end
         if time_to_open_the_windows
           open_time = timezone.utc_to_local(Time.at(time_to_open_the_windows).to_datetime)
-          output += "Open them back up at #{open_time.strftime('%k:%M')}.  "
+          output += "Open them back up at #{open_time.strftime('%H:%M')}.  "
         end
         output += "The high today will be #{get_temperature high_temp}."
       end

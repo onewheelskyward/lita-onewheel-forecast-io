@@ -557,5 +557,11 @@ describe Lita::Handlers::OnewheelForecastIo, lita_handler: true do
     expect(replies.last).to eq('Portland, OR, USA 24h fog report |▅▅▃____________________| visibility 9.12 km - 16 km')
   end
 
+  it '!windows 0200s' do
+    mock_up '0200-windows'
+    send_command 'windows'
+    expect(replies.last).to eq('Close the windows now! It is 90.59°F.  Open them back up at 02:00.  The high today will be 96.8°F.')
+  end
+
 
 end
