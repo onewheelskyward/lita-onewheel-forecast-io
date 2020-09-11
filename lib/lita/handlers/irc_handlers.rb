@@ -364,6 +364,8 @@ module ForecastIo
           show = '43023'
         elsif response.user.name == 'djwong'
           show = '61137'
+        elsif response.user.name == 'philtor'
+          show = '35221'
         else
           Lita.logger.debug "Defaulting to pdx"
           show = "9814"
