@@ -566,7 +566,7 @@ describe Lita::Handlers::OnewheelForecastIo, lita_handler: true do
   it 'aqis' do
     mock_up 'aqi'
     send_command 'ansiaqi'
-    expect(replies.last).to eq("AQI report for PSU STAR LAB SEL: PM2.5 \u00030874\u0003 |\u000308_\u000304▅\u000306█\u000305███\u0003| \u000305318\u0003 max: \u000305318\u0003 \u000314(7 day average to 10 min average)\u0003")
+    expect(replies.last).to eq("AQI report for PSU STAR LAB SEL: PM2.5 0319 |03_08▃04▇06█05███| 05318 max: 05318 14(7 day average to 10 min average)")
   end
 
 end

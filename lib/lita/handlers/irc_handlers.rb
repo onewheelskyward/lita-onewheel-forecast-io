@@ -385,7 +385,7 @@ module ForecastIo
 
       label = aqi['results'][0]['Label']
 
-      stats = {v: [], v1: [], v2: [], v3: [], v4: [], v5: []}
+      stats = {v: [], v1: [], v2: [], v3: [], v4: [], v5: [], v6: []}
 
       Lita.logger.debug "Found #{aqi['results'].length} results, averaging"
       aqi['results'].each do |r|
@@ -400,6 +400,7 @@ module ForecastIo
         stats[:v3].push s['v3']
         stats[:v4].push s['v4']
         stats[:v5].push s['v5']
+        stats[:v6].push s['v6']
       end
 
       stats.keys.each do |statskey|
@@ -412,7 +413,8 @@ module ForecastIo
       end
 
       Lita.logger.debug stats
-      aqis = [stats[:v5],
+      aqis = [stats[:v6],
+              stats[:v5],
               stats[:v4],
               stats[:v3],
               stats[:v2],
