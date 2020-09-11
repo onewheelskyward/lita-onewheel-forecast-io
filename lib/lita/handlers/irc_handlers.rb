@@ -378,6 +378,11 @@ module ForecastIo
 
       resp = RestClient.get "https://www.purpleair.com/json?show=#{show}"
       aqi = JSON.parse resp
+      if aqi['results'].nil?
+        response.reply "Sensor ID #{show} not found (zip code searches are unsupported)"
+        return
+      end
+
       label = aqi['results'][0]['Label']
       stats = JSON.parse aqi['results'][0]['Stats']
       Lita.logger.debug stats
