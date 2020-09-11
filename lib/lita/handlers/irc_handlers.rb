@@ -358,19 +358,24 @@ module ForecastIo
         show = response.matches[0][0]
       else
         Lita.logger.debug response.user.name
-        if response.user.name == 'lampd1'
-          show = '38447'
-        elsif response.user.name == 'aaronpk' or response.user.name == 'zenlinux'
-          show = '43023'
-        elsif response.user.name == 'djwong'
-          show = '61137'
-        elsif response.user.name == 'philtor'
-          show = '35221'
-        else
+        users = {lampd1: 38447,
+                 aaronpk: 43023,
+                 zenlinux: 43023,
+                 djwong: 61137,
+                 philtor: 35221,
+                 agb: 34409}
+        users.keys.each do |u|
+          if u.to_s == response.user.name
+            show = users[u]
+          end
+        end
+
+        unless show
           Lita.logger.debug "Defaulting to pdx"
           show = "9814"
         end
       end
+
       resp = RestClient.get "https://www.purpleair.com/json?show=#{show}"
       aqi = JSON.parse resp
       label = aqi['results'][0]['Label']
