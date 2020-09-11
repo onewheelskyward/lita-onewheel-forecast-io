@@ -364,6 +364,7 @@ module ForecastIo
       end
       resp = RestClient.get "https://www.purpleair.com/json?show=#{show}"
       aqi = JSON.parse resp
+      label = aqi['results'][0]['Label']
       stats = JSON.parse aqi['results'][0]['Stats']
       Lita.logger.debug stats
       aqis = [stats['v5'],
@@ -374,7 +375,7 @@ module ForecastIo
               stats['v']]
 
       reply = do_the_aqi_thing(aqis)
-      response.reply "AQI report for #{place}: PM2.5 #{reply} \x03#{colors[:grey]}(7 day average to 10 min average)\x03"
+      response.reply "AQI report for #{label}: PM2.5 #{reply} \x03#{colors[:grey]}(7 day average to 10 min average)\x03"
       # response.reply "\x03#{colors[color]}█\x03"
 
     end
