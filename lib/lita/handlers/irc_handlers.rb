@@ -366,10 +366,6 @@ module ForecastIo
       reply = do_the_aqi_thing(aqis)
       response.reply "AQI report for Portland, OR: PM2.5 #{reply}"
       # response.reply "\x03#{colors[color]}█\x03"
-      colors.each do |k, v|
-        reply += "\x03#{colors[v]}█\x03"
-      end
-      response.reply reply
 
     end
   end

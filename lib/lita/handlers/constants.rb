@@ -158,11 +158,11 @@ module ForecastIo
     def get_aqi_colors
       { 0..50 => :green,
         51..100 => :yellow,
-        101..150 => :red,
-        151..200 => :purple,
-        201..250 => :green,
-        251..300 => :lime,
-        301..500 => :red,
+        101..150 => :orange,
+        151..200 => :red,
+        201..250 => :purple,
+        251..300 => :pink,
+        301..500 => :royal,
         501..9999 => :black
       }
     end
