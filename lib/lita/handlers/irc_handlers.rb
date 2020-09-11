@@ -378,7 +378,7 @@ module ForecastIo
 
       resp = RestClient.get "https://www.purpleair.com/json?show=#{show}"
       aqi = JSON.parse resp
-      if aqi['results'].nil?
+      if aqi['results'].empty?
         response.reply "Sensor ID #{show} not found (zip code searches are unsupported)"
         return
       end
