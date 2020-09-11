@@ -691,9 +691,19 @@ module ForecastIo
         str = get_colored_string(aqis, nil, str, get_aqi_colors)
       end
 
-      "#{aqis.first} |#{str}| #{aqis.last} max: #{aqis.max}"
+      "#{color_chars(aqis.first, get_aqi_colors)} |#{str}| #{color_chars(aqis.last, get_aqi_colors)} max: #{color_chars(aqis.max, get_aqi_colors)}"
     end
 
+    def color_chars(input, range_hash)
+      color = nil
+      range_hash.keys.each do |range_hash_key|
+        if range_hash_key.cover? input.to_i    # Super secred cover sauce
+          color = range_hash[range_hash_key]
+        end
+      end
+      colored_str = "\x03" + colors[color].to_s + input.to_s + "\x03"
+
+    end
     private
 
     def get_current_apparent_temp(forecast)
