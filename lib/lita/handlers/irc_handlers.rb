@@ -364,7 +364,7 @@ module ForecastIo
               stats['v']]
 
       reply = do_the_aqi_thing(aqis)
-      response.reply reply
+      response.reply "AQI report for Portland, OR: PM2.5 #{reply}
 
     end
   end
