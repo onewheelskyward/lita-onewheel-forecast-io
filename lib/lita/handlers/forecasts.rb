@@ -684,6 +684,16 @@ module ForecastIo
       "#{uvs.first} |#{str}| #{uvs.last} max: #{uvs.max}"
     end
 
+    def do_the_aqi_thing(aqis)
+      str = get_dot_str(ansi_chars, aqis, aqis.min, aqis.max - aqis.min, nil)
+
+      if config.colors
+        str = get_colored_string(aqis, nil, str, get_aqi_colors)
+      end
+
+      "#{aqis.first} |#{str}| #{aqis.last} max: #{aqis.max}"
+    end
+
     private
 
     def get_current_apparent_temp(forecast)

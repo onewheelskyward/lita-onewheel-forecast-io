@@ -280,7 +280,8 @@ module ForecastIo
 
       data_limited.each_with_index do |data, index|
         range_hash.keys.each do |range_hash_key|
-          if range_hash_key.cover? data[key]    # Super secred cover sauce
+          key.nil? ? d = data : d = data[key]
+          if range_hash_key.cover? d    # Super secred cover sauce
             color = range_hash[range_hash_key]
             if index == 0
               prev_color = color
@@ -334,7 +335,8 @@ module ForecastIo
     def get_dot_str(chars, data, min, differential, key)
       str = ''
       data.each do |datum|
-        percentage = get_percentage(datum[key], differential, min)
+        key.nil? ? d = datum : d = datum[key]
+        percentage = get_percentage(d, differential, min)
         str += get_dot(percentage, chars)
       end
       str

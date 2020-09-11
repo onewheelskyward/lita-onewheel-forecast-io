@@ -350,5 +350,22 @@ module ForecastIo
     def handle_sandytraffic(response)
       response.reply("!sandytraffic #{response.matches[0][0]}")
     end
+
+    def handle_ansi_aqi(response)
+      resp = RestClient.get "https://www.purpleair.com/json?show=9814"
+      aqi = JSON.parse resp
+      stats = JSON.parse aqi['results'][0]['Stats']
+      Lita.logger.debug stats
+      aqis = [stats['v5'],
+              stats['v4'],
+              stats['v3'],
+              stats['v2'],
+              stats['v1'],
+              stats['v']]
+
+      reply = do_the_aqi_thing(aqis)
+      response.reply reply
+
+    end
   end
 end

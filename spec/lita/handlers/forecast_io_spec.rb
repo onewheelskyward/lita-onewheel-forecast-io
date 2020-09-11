@@ -475,7 +475,7 @@ describe Lita::Handlers::OnewheelForecastIo, lita_handler: true do
     send_command 'asciiwind'
     expect(replies.last).to eq("Portland, OR, USA 48h wind direction 4.3 mph|\u000306v\u000310,<\u000311\\^/\u000308>.\u000311v<<<<<<\u000310<<<<<<<\u000306<<<<<\u000302<<<,,,,vvv\u000306vvvvvvvv,,\u0003|4.18 mph Range: 1.39 mph - 12.71 mph")
   end
-  
+
   it '!geo' do
     send_command 'geo Paris, france'
     expect(replies.last).to eq('48.856614, 2.3522219')
@@ -563,5 +563,10 @@ describe Lita::Handlers::OnewheelForecastIo, lita_handler: true do
     expect(replies.last).to eq('Close the windows now! It is 90.59°F.  Open them back up at 02:00.  The high today will be 96.8°F.')
   end
 
+  it 'aqis' do
+    mock_up 'aqi'
+    send_command 'ansiaqi'
+    expect(replies.last).to eq('x')
+  end
 
 end
