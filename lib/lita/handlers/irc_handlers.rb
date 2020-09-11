@@ -356,11 +356,18 @@ module ForecastIo
         Lita.logger.debug response.matches[0][0]
         Lita.logger.debug "Performing sensor sweep"
         show = response.matches[0][0]
-        place = "Sensor #{show}"
       else
-        Lita.logger.debug "Defaulting to pdx"
-        show = "9814"
-        place = "Portland, OR"
+        Lita.logger.debug response.user.name
+        if response.user.name == 'lampd1'
+          show = '38447'
+        elsif response.user.name == 'aaronpk' or response.user.name == 'zenlinux'
+          show = '43023'
+        elsif response.user.name == 'djwong'
+          show = '61137'
+        else
+          Lita.logger.debug "Defaulting to pdx"
+          show = "9814"
+        end
       end
       resp = RestClient.get "https://www.purpleair.com/json?show=#{show}"
       aqi = JSON.parse resp
