@@ -566,7 +566,7 @@ describe Lita::Handlers::OnewheelForecastIo, lita_handler: true do
   it 'aqis' do
     mock_up 'aqi'
     send_command 'ansiaqi'
-    expect(replies.last).to eq("AQI report for Portland, OR: PM2.5 \u00030875.1\u0003 |\u000308_\u000304▅\u000305████\u0003| \u000305322.93\u0003 max: \u000305322.93\u0003")
+    expect(replies.last).to eq("AQI report for Portland, OR: PM2.5 \u00030875.1\u0003 |\u000308_\u000304▅\u000305████\u0003| \u000305322.93\u0003 max: \u000305322.93\u0003 \u000314(7 day average to 10 min average)\u0003")
   end
 
 end
