@@ -208,7 +208,7 @@ module Lita
       route(/^ansitraffic\s+(.+)/i, :handle_sandytraffic, command: true)
       route(/^http\s+(\d+)/i, :handle_http_cat, command: true)
 
-      route(/^ansiaqi/i, :handle_ansi_aqi, command: true)
+      route(/^ansiaqi\s*(\d*)$/i, :handle_ansi_aqi, command: true)
 
       http.get '/windows', :handle_http_windows
     end
