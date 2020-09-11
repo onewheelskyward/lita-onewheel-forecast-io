@@ -352,10 +352,13 @@ module ForecastIo
     end
 
     def handle_ansi_aqi(response)
-      if response.matches[0][0] != 'a'
+      if response.matches[0][0].length > 1
+        Lita.logger.debug response.matches[0][0]
+        Lita.logger.debug "Performing sensor sweep"
         show = response.matches[0][0]
         place = "Sensor #{show}"
       else
+        Lita.logger.debug "Defaulting to pdx"
         show = "9814"
         place = "Portland, OR"
       end
