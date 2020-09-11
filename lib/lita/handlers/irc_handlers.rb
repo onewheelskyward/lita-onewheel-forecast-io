@@ -384,14 +384,40 @@ module ForecastIo
       end
 
       label = aqi['results'][0]['Label']
-      stats = JSON.parse aqi['results'][0]['Stats']
+
+      stats = {v: [], v1: [], v2: [], v3: [], v4: [], v5: []}
+
+      Lita.logger.debug "Found #{aqi['results'].length} results, averaging"
+      aqi['results'].each do |r|
+        s = JSON.parse r['Stats']
+        Lita.logger.debug "Result: #{s}"
+        if s['v'] == 0
+          next
+        end
+        stats[:v].push s['v']
+        stats[:v1].push s['v1']
+        stats[:v2].push s['v2']
+        stats[:v3].push s['v3']
+        stats[:v4].push s['v4']
+        stats[:v5].push s['v5']
+      end
+
+      stats.keys.each do |statskey|
+        avg = 0
+        stats[statskey].each do |measurement|
+          avg += measurement
+        end
+        avg = avg / stats[statskey].length
+        stats[statskey] = avg.to_i
+      end
+
       Lita.logger.debug stats
-      aqis = [stats['v5'],
-              stats['v4'],
-              stats['v3'],
-              stats['v2'],
-              stats['v1'],
-              stats['v']]
+      aqis = [stats[:v5],
+              stats[:v4],
+              stats[:v3],
+              stats[:v2],
+              stats[:v1],
+              stats[:v]]
 
       reply = do_the_aqi_thing(aqis)
       response.reply "AQI report for #{label}: PM2.5 #{reply} \x03#{colors[:grey]}(7 day average to 10 min average)\x03"
