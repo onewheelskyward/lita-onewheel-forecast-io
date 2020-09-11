@@ -160,8 +160,8 @@ module ForecastIo
         51..100 => :yellow,
         101..150 => :orange,
         151..200 => :red,
-        201..250 => :purple,
-        251..300 => :pink,
+        201..250 => :pink,
+        251..300 => :purple,
         301..500 => :brown,
         501..9999 => :black
       }
