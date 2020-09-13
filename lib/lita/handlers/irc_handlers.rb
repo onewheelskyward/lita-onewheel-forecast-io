@@ -352,10 +352,60 @@ module ForecastIo
     end
 
     def handle_ansi_aqi(response)
+      aqi = get_aqi_data(response)
+      stats = process_aqi_data(aqi, response)
+
+      aqis = [stats[:v6],
+              stats[:v5],
+              stats[:v4],
+              stats[:v3],
+              stats[:v2],
+              stats[:v1],
+              stats[:v]]
+
+      reply = do_the_aqi_thing(aqis)
+      response.reply "AQI report for #{aqi['results'][0]['Label']}: PM2.5 #{reply} \x03#{colors[:grey]}(7 day average to 10 min average)\x03"
+      # response.reply "\x03#{colors[color]}█\x03"
+
+    end
+
+    def calc_aqi(pm25)
+      pm25 = pm25.to_f
+
+      # so bad.  Put a range in here willya
+      if pm25 > 350.5
+        aqi = weird_aqi_calc(pm25, 500, 401, 500, 350.5)
+      elsif pm25 > 250.5
+        aqi = weird_aqi_calc(pm25, 400, 301, 350.4, 250.5)
+      elsif pm25 > 150.5
+        aqi = weird_aqi_calc(pm25, 300, 201, 250.4, 150.5)
+      elsif pm25 > 55.5
+        aqi = weird_aqi_calc(pm25, 200, 151, 150.4, 55.5)
+      elsif pm25 > 35.5
+        aqi = weird_aqi_calc(pm25, 150, 101, 55.4, 35.5)
+      elsif pm25 > 12.1
+        aqi = weird_aqi_calc(pm25, 100, 51, 35.4, 12.1)
+      elsif pm25 >= 0
+        aqi = weird_aqi_calc(pm25, 50, 0, 12, 0)
+      end
+      Lita.logger.debug "pm2.5 #{pm25} aqi #{aqi}"
+      aqi
+    end
+
+    def weird_aqi_calc(cp, ih, il, bph, bpl)
+      a = ih - il
+      b = bph - bpl
+      c = cp - bpl
+      ((a/b) * c + il).round
+    end
+
+    private
+
+    def get_aqi_data(response)
       if response.matches[0][0].length > 1
         Lita.logger.debug response.matches[0][0]
         Lita.logger.debug "Performing sensor sweep"
-        show = response.matches[0][0]
+        sensor_id = response.matches[0][0]
       else
         Lita.logger.debug response.user.name
         users = {lampd1: 38447,
@@ -370,20 +420,21 @@ module ForecastIo
           end
         end
 
-        unless show
+        unless sensor_id
           Lita.logger.debug "Defaulting to pdx"
-          show = "9814"
+          sensor_id = "9814"
         end
       end
 
-      resp = RestClient.get "https://www.purpleair.com/json?show=#{show}"
+      resp = RestClient.get "https://www.purpleair.com/json?show=#{sensor_id}"
       aqi = JSON.parse resp
+    end
+
+    def process_aqi_data(aqi, response)
       if aqi['results'].empty?
-        response.reply "Sensor ID #{show} not found (zip code searches are unsupported)"
+        response.reply "Sensor ID #{response.matches[0][0]} not found (zip code searches are unsupported)"
         return
       end
-
-      label = aqi['results'][0]['Label']
 
       stats = {v: [], v1: [], v2: [], v3: [], v4: [], v5: [], v6: []}
 
@@ -413,47 +464,7 @@ module ForecastIo
       end
 
       Lita.logger.debug stats
-      aqis = [stats[:v6],
-              stats[:v5],
-              stats[:v4],
-              stats[:v3],
-              stats[:v2],
-              stats[:v1],
-              stats[:v]]
-
-      reply = do_the_aqi_thing(aqis)
-      response.reply "AQI report for #{label}: PM2.5 #{reply} \x03#{colors[:grey]}(7 day average to 10 min average)\x03"
-      # response.reply "\x03#{colors[color]}█\x03"
-
+      stats
     end
-
-    def calc_aqi(pm25)
-      pm25 = pm25.to_f
-
-      if pm25 > 350.5
-        aqi = ca(pm25, 500, 401, 500, 350.5)
-      elsif pm25 > 250.5
-        aqi = ca(pm25, 400, 301, 350.4, 250.5)
-      elsif pm25 > 150.5
-        aqi = ca(pm25, 300, 201, 250.4, 150.5)
-      elsif pm25 > 55.5
-        aqi = ca(pm25, 200, 151, 150.4, 55.5)
-      elsif pm25 > 35.5
-        aqi = ca(pm25, 150, 101, 55.4, 35.5)
-      elsif pm25 > 12.1
-        aqi = ca(pm25, 100, 51, 35.4, 12.1)
-      elsif pm25 >= 0
-        aqi = ca(pm25, 50, 0, 12, 0)
-      end
-      Lita.logger.debug "pm2.5 #{pm25} aqi #{aqi}"
-      aqi
-    end
-
-      def ca(cp, ih, il, bph, bpl)
-        a = ih - il
-        b = bph - bpl
-        c = cp - bpl
-        ((a/b) * c + il).round
-      end
   end
 end

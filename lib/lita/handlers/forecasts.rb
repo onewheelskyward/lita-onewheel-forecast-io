@@ -611,6 +611,9 @@ module ForecastIo
         end
         output += "The high today will be #{get_temperature high_temp}."
       end
+
+      # Insert aqi check here
+
     end
 
     def do_the_windows_data_thing(forecast)
