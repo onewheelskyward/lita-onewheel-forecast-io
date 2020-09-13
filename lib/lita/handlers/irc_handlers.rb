@@ -252,7 +252,7 @@ module ForecastIo
     def handle_irc_windows(response)
       location = geo_lookup(response.user, response.match_data[1])
       forecast = get_forecast_io_results(response.user, location)
-      windows_time = do_the_windows_thing(forecast)
+      windows_time = do_the_windows_thing(forecast, response)
       response.reply "#{windows_time}"
     end
 

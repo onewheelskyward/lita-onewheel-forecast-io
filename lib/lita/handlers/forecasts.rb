@@ -558,7 +558,7 @@ module ForecastIo
     end
 
     # Check for the time of day when it will hit 72F.
-    def do_the_windows_thing(forecast)
+    def do_the_windows_thing(forecast, response)
       time_to_close_the_windows = nil
       time_to_open_the_windows = nil
       window_close_temp = 0
@@ -613,7 +613,13 @@ module ForecastIo
       end
 
       # Insert aqi check here
-      # get_aqi_data response
+      aqi = get_aqi_data response
+      Lita.logger.debug aqi
+      stats = process_aqi_data(aqi, response)
+      Lita.logger.debug stats
+      if stats[:v].to_i >= 75
+        "Close the windows now!  The AQI is #{stats[:v]}, ridonculous."
+      end
     end
 
     def do_the_windows_data_thing(forecast)
@@ -775,7 +781,7 @@ module ForecastIo
         stats[statskey] = calc_aqi avg.to_i
       end
 
-      Lita.logger.debug stats
+      Lita.logger.debug "Stats: #{stats}"
       stats
     end
   end

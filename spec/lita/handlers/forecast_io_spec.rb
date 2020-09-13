@@ -568,5 +568,4 @@ describe Lita::Handlers::OnewheelForecastIo, lita_handler: true do
     send_command 'ansiaqi'
     expect(replies.last).to eq("AQI report for PSU STAR LAB SEL: PM2.5 \u00030866\u0003 |\u000308_\u000304▅\u000306▇\u000314████\u0003| \u000314368\u0003 max: \u000314368\u0003 \u000314(7 day average to 10 min average)\u0003")
   end
-
 end
