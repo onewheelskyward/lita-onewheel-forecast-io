@@ -735,6 +735,7 @@ module ForecastIo
     end
 
     def get_aqi_data(response)
+      sensor_id = '9814'
       if response.matches[0][0].length > 1
         Lita.logger.debug response.matches[0][0]
         Lita.logger.debug "Performing sensor sweep"
@@ -751,7 +752,7 @@ module ForecastIo
         # corvalis 57995
         users.keys.each do |u|
           if u.to_s == response.user.name
-            show = users[u]
+            sensor_id = users[u]
           end
         end
 
