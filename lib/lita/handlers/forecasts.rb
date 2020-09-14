@@ -618,7 +618,22 @@ module ForecastIo
       stats = process_aqi_data(aqi, response)
       Lita.logger.debug stats
       if stats[:v].to_i >= 75
-        "Close the windows now!  The AQI is #{stats[:v]}, ridonculous."
+        aqi_desc = 'moderate.'
+        case stats[:v].to_i
+        when 100..150
+          aqi_desc = 'unhealthy.'
+        when 151..200
+          aqi_desc = 'don\'t go outside and like, breathe.'
+        when 201..250
+          aqi_desc = 'unconscionable!'
+        when 251..300
+          aqi_desc = 'terribad!'
+        when 300..500
+          aqi_desc = 'ridonculous!'
+        when 500..9999
+          aqi_desc = 'unbelievable.'
+        end
+        "Close the windows now!  The AQI is #{stats[:v]}, #{aqi_desc}"
       end
     end
 
