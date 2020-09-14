@@ -369,6 +369,24 @@ module ForecastIo
 
     end
 
+    def handle_emoji_aqi(response)
+      aqi = get_aqi_data(response)
+      stats = process_aqi_data(aqi, response)
+
+      aqis = [stats[:v6],
+              stats[:v5],
+              stats[:v4],
+              stats[:v3],
+              stats[:v2],
+              stats[:v1],
+              stats[:v]]
+
+      reply = do_the_aqi_thing(aqis, aqi_emoji_chars)
+      response.reply "AQI report for #{aqi['results'][0]['Label']}: PM2.5 #{reply} \x03#{colors[:grey]}(7 day average to 10 min average)\x03"
+      # response.reply "\x03#{colors[color]}█\x03"
+
+    end
+
     def calc_aqi(pm25)
       pm25 = pm25.to_f
 

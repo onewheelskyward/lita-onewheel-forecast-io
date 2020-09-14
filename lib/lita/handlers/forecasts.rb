@@ -693,8 +693,8 @@ module ForecastIo
       "#{uvs.first} |#{str}| #{uvs.last} max: #{uvs.max}"
     end
 
-    def do_the_aqi_thing(aqis)
-      str = get_dot_str(ansi_chars, aqis, aqis.min, aqis.max - aqis.min, nil)
+    def do_the_aqi_thing(aqis, chars = ansi_chars)
+      str = get_dot_str(chars, aqis, aqis.min, aqis.max - aqis.min, nil)
 
       if config.colors
         str = get_colored_string(aqis, nil, str, get_aqi_colors)
@@ -732,6 +732,8 @@ module ForecastIo
                  djwong: 61137,
                  philtor: 35221,
                  agb: 34409}
+        # philomath 41507
+        # corvalis 57995
         users.keys.each do |u|
           if u.to_s == response.user.name
             show = users[u]

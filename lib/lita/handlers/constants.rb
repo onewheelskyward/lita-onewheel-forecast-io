@@ -16,6 +16,10 @@ module ForecastIo
       %w[_ . - ~ * ']
     end
 
+    def aqi_emoji_chars
+      %w[🌳 🟠 🩸 🦠 ☢️ 🤮]   # Thx, agj #pdxtech
+    end
+
     # Based on the chance of precipitation.
     def get_rain_range_colors
       { 0..0.10    => :blue,
