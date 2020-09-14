@@ -267,10 +267,10 @@ module ForecastIo
       Lita.logger.debug request.env['QUERY_STRING']
       # aqi = get_aqi_data(response)
       # stats = process_aqi_data(aqi, response)
-
+      query = Rack::Utils.parse_nested_query Rack::Utils.parse_nested_query
       robot = request.env['lita.robot']
       source = Lita::Source.new(user: nil, room: '#booberries')
-      robot.send_messages(source, 'xyz')
+      robot.send_messages(source, "#{query[pm25-std]} #{query[pm25-env]}")
       # response.write stats[:v]
     end
 
