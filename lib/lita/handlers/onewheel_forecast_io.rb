@@ -213,6 +213,7 @@ module Lita
       route(/^aqi\s*(\d*)$/i, :handle_ansi_aqi, command: true)
 
       http.get '/windows', :handle_http_windows
+      http.post '/aqi', :handle_http_aqi
     end
 
     Lita.register_handler(OnewheelForecastIo)

@@ -263,6 +263,17 @@ module ForecastIo
       response.write windows_data.to_json
     end
 
+    def handle_http_aqi(request, response)
+      Lita.logger.debug request.env['QUERY_STRING']
+      # aqi = get_aqi_data(response)
+      # stats = process_aqi_data(aqi, response)
+
+      robot = request.env['lita.robot']
+      source = Lita::Source.new(user: nil, room: '#booberries')
+      robot.send_messages(source, 'xyz')
+      # response.write stats[:v]
+    end
+
     def handle_irc_uvindex(response)
       location = geo_lookup(response.user, response.match_data[1])
       forecast = get_forecast_io_results(response.user, location)
