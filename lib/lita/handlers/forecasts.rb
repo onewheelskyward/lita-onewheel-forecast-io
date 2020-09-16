@@ -776,9 +776,10 @@ module ForecastIo
 
       Lita.logger.debug "Found #{aqi['results'].length} results, averaging"
       aqi['results'].each do |r|
+        Lita.logger.debug r
         s = JSON.parse r['Stats']
         Lita.logger.debug "Result: #{s}"
-        if s['v'] == 0
+        if s['v'] == 0 or r['Flag'] == 1
           next
         end
         stats[:v].push s['v']
