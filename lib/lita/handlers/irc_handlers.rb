@@ -271,7 +271,8 @@ module ForecastIo
       Lita.logger.debug query
       robot = request.env['lita.robot']
       source = Lita::Source.new(user: nil, room: '#booberries')
-      robot.send_messages(source, "PM2.5 standard: #{query['pm25-std']} PM2.5 env: #{query['pm25-env']}")
+
+      robot.send_messages(source, query.inspect)
       # response.write stats[:v]
     end
 
