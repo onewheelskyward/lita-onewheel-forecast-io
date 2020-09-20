@@ -634,6 +634,8 @@ module ForecastIo
           aqi_desc = 'unbelievable.'
         end
         output = "Close the windows now!  The AQI is #{stats[:v]}, #{aqi_desc}"
+      else
+        output += "  Today's AQI is #{stats[:v].to_i}."
       end
 
       output
