@@ -633,8 +633,10 @@ module ForecastIo
         when 500..9999
           aqi_desc = 'unbelievable.'
         end
-        "Close the windows now!  The AQI is #{stats[:v]}, #{aqi_desc}"
+        output = "Close the windows now!  The AQI is #{stats[:v]}, #{aqi_desc}"
       end
+
+      output
     end
 
     def do_the_windows_data_thing(forecast)
