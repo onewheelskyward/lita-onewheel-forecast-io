@@ -712,15 +712,18 @@ module ForecastIo
       "#{uvs.first} |#{str}| #{uvs.last} max: #{uvs.max}"
     end
 
-    def do_the_aqi_thing(aqis, chars = ansi_chars)
+    def do_the_aqi_thing(aqis, chars = ansi_chars, use_colors = true)
       str = get_dot_str(chars, aqis, 0, 500, nil)
       # str = get_dot_str(chars, aqis, aqis.min, aqis.max - aqis.min, nil)
 
+      output = "#{aqis.first} |#{str}| #{aqis.last} max: #{aqis.max}"
+
       if config.colors
         str = get_colored_string(aqis, nil, str, get_aqi_colors)
+        output = "#{color_chars(aqis.first, get_aqi_colors)} |#{str}| #{color_chars(aqis.last, get_aqi_colors)} max: #{color_chars(aqis.max, get_aqi_colors)}"
       end
 
-      "#{color_chars(aqis.first, get_aqi_colors)} |#{str}| #{color_chars(aqis.last, get_aqi_colors)} max: #{color_chars(aqis.max, get_aqi_colors)}"
+      output
     end
 
     def color_chars(input, range_hash)

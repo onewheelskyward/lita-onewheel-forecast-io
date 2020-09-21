@@ -394,8 +394,13 @@ module ForecastIo
               stats[:v1],
               stats[:v]]
 
-      reply = do_the_aqi_thing(aqis, aqi_emoji_chars)
-      response.reply "AQI report for #{aqi['results'][0]['Label']}: PM2.5 #{reply} \x03#{colors[:grey]}(7 day average to 10 min average)\x03"
+      reply = do_the_aqi_thing(aqis, aqi_emoji_chars, config.colors)
+
+      if config.colors
+        response.reply "AQI report for #{aqi['results'][0]['Label']}: PM2.5 #{reply} \x03#{colors[:grey]}(7 day average to 10 min average)\x03"
+      else
+        response.reply "AQI report for #{aqi['results'][0]['Label']}: PM2.5 #{reply} (7 day average to 10 min average)\x03"
+      end
       # response.reply "\x03#{colors[color]}█\x03"
 
     end
