@@ -564,6 +564,7 @@ module ForecastIo
       window_close_temp = 0
       high_temp = 0
       last_temp = 0
+      output = ''
 
       forecast['hourly']['data'].each_with_index do |hour, index|
         if hour['temperature'] > high_temp
@@ -589,27 +590,27 @@ module ForecastIo
 
       # Return some meta here and let the caller decide the text.
       if time_to_close_the_windows.nil?
-        "Leave 'em open, no excess heat today(#{get_temperature high_temp})."
+        output = "Leave 'em open, no excess heat today(#{get_temperature high_temp})."
         if high_temp <= 18 and high_temp > 15
-          "Open them up mid-day, high temp #{get_temperature high_temp}."
+          output = "Open them up mid-day, high temp #{get_temperature high_temp}."
         elsif high_temp <= 18
-          "Best leave 'em shut, high temp #{get_temperature high_temp}."
+          output = "Best leave 'em shut, high temp #{get_temperature high_temp}."
         end
       else
         # Todo: base timezone on requested location.
         timezone = TZInfo::Timezone.get('America/Los_Angeles')
         if time_to_close_the_windows == 'now'
-          output = "Close the windows now! It is #{get_temperature window_close_temp}.  "
+          output = "Close the windows now! It is #{get_temperature window_close_temp}."
         else
           time_at = Time.at(time_to_close_the_windows).to_datetime
           local_time = timezone.utc_to_local(time_at)
-          output = "Close the windows at #{local_time.strftime('%k:%M')}, it will be #{get_temperature window_close_temp}.  "
+          output = "Close the windows at #{local_time.strftime('%k:%M')}, it will be #{get_temperature window_close_temp}."
         end
         if time_to_open_the_windows
           open_time = timezone.utc_to_local(Time.at(time_to_open_the_windows).to_datetime)
-          output += "Open them back up at #{open_time.strftime('%H:%M')}.  "
+          output += "  Open them back up at #{open_time.strftime('%H:%M')}."
         end
-        output += "The high today will be #{get_temperature high_temp}."
+        output += "  The high today will be #{get_temperature high_temp}."
       end
 
       # Insert aqi check here
@@ -633,7 +634,7 @@ module ForecastIo
         when 500..9999
           aqi_desc = 'unbelievable.'
         end
-        output = "Close the windows now!  The AQI is #{stats[:v]}, #{aqi_desc}"
+        output = "  Close the windows now!  The AQI is #{stats[:v]}, #{aqi_desc}"
       else
         output += "  Today's AQI is #{stats[:v].to_i}."
       end
