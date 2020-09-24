@@ -40,6 +40,7 @@ module ForecastIo
       unless forecast[key].nil?
         data_points = []
         forecast[key]['data'].each do |data_point|
+          Lita.logger.debug data_point
           data_points.push data_point[datum]
         end
         data_points.sum
@@ -429,8 +430,9 @@ module ForecastIo
       end
 
       max = get_max_by_data_key(forecast, 'daily', 'precipProbability')
+      accum = get_sum_by_data_key(forecast, 'daily', 'precipIntensity')
 
-      "7day #{precip_type}s |#{str}| max #{max * 100}%"
+      "7day #{precip_type}s |#{str}| max #{max * 100}%, #{get_accumulation accum * 24} accumulation."
     end
 
     def do_the_daily_rain_thing(forecast)
