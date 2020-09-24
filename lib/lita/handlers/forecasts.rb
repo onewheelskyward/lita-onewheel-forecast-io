@@ -36,6 +36,16 @@ module ForecastIo
       end
     end
 
+    def get_sum_by_data_key(forecast, key, datum)
+      unless forecast[key].nil?
+        data_points = []
+        forecast[key]['data'].each do |data_point|
+          data_points.push data_point[datum]
+        end
+        data_points.sum
+      end
+    end
+
     def get_avg_by_data_key(forecast, key, datum)
       unless forecast[key].nil?
         data_points = []
@@ -450,7 +460,7 @@ module ForecastIo
       end
 
       max = get_max_by_data_key(forecast, 'hourly', 'precipProbability')
-      agg = get_aggregate_by_data_key(forecast, 'hourly', 'precipIntensity')
+      agg = get_sum_by_data_key(forecast, 'hourly', 'precipIntensity')
 
       "48 hr #{precip_type}s |#{str}| max #{(max.to_f * 100).round}%, #{get_accumulation agg} accumulation"
     end
