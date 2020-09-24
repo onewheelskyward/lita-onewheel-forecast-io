@@ -12,7 +12,7 @@ module ForecastIo
     def ansi_rain_forecast(forecast)
       (str, precip_type) = do_the_rain_chance_thing(forecast, ansi_chars, 'precipProbability') #, 'probability', get_rain_range_colors)
       max = get_max_by_data_key(forecast, 'minutely', 'precipProbability')
-      agg = get_max_by_data_key(forecast, 'minutely', 'precipIntensity')
+      agg = get_avg_by_data_key(forecast, 'minutely', 'precipIntensity')
       "1hr #{precip_type} probability #{(Time.now).strftime('%H:%M').to_s}|#{str}|#{(Time.now + 3600).strftime('%H:%M').to_s} max #{(max.to_f * 100).round(2)}%, #{get_accumulation agg} accumulation"
     end
 
@@ -33,6 +33,17 @@ module ForecastIo
           data_points.push data_point[datum]
         end
         data_points.max
+      end
+    end
+
+    def get_avg_by_data_key(forecast, key, datum)
+      unless forecast[key].nil?
+        data_points = []
+        forecast[key]['data'].each do |data_point|
+          data_points.push data_point[datum].to_f
+        end
+        avg = data_points.sum / data_points.length
+
       end
     end
 

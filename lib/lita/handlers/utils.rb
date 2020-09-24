@@ -401,11 +401,11 @@ module ForecastIo
     end
 
     def get_accumulation(accum_mm)
-      if @scale == 'c' or @scale == 'k'
+      # if @scale == 'c' or @scale == 'k'
         accum_mm.round(0).to_s + 'mm'
-      else
-        inches_from_mm(accum_mm).to_s + 'in'
-      end
+      # else
+      #   inches_from_mm(accum_mm).to_s + 'in'
+      # end
     end
 
     def get_humidity(humidity_decimal)
