@@ -17,7 +17,7 @@ module ForecastIo
     end
 
     def aqi_emoji_chars
-      %w[🌳 🟠 🩸 🦠 ☢️ 🤮]   # Thx, agj #pdxtech
+      %w[🏆 🌳 🟠 🩸 🦠 ☢️ 🤮]   # Thx, agj #pdxtech
     end
 
     # Based on the chance of precipitation.

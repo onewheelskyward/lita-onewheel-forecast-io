@@ -736,7 +736,7 @@ module ForecastIo
       "#{uvs.first} |#{str}| #{uvs.last} max: #{uvs.max}"
     end
 
-    def do_the_aqi_thing(aqis, chars = ansi_chars, use_colors = true)
+    def do_the_aqi_thing(aqis, chars = ansi_chars)
       str = get_dot_str(chars, aqis, 0, 500, nil)
       # str = get_dot_str(chars, aqis, aqis.min, aqis.max - aqis.min, nil)
 
