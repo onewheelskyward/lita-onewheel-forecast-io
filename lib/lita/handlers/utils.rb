@@ -402,7 +402,7 @@ module ForecastIo
 
     def get_accumulation(accum_mm)
       # if @scale == 'c' or @scale == 'k'
-        accum_mm.round(0).to_s + 'mm'
+        accum_mm.to_f.round(0).to_s + 'mm'
       # else
       #   inches_from_mm(accum_mm).to_s + 'in'
       # end

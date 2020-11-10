@@ -135,7 +135,7 @@ module ForecastIo
       end
 
       # Fixed range graph- 0-0.11.
-      str = get_dot_str(chars, data, 0, 0.11, key)
+      str = get_dot_str(chars, data, 0, 10, key)
 
       if config.colors
         str = get_colored_string(data, key, str, get_rain_intensity_range_colors)
@@ -541,10 +541,12 @@ module ForecastIo
     end
 
     def get_alerts(forecast)
-      str = ''
+      str = []
       forecast['alerts'].each do |alert|
         alert['description'].match /\.\.\.(\w+)\.\.\./
-        str += "#{alert['uri']}\n"
+        desc = alert['description'][0..alert['description'].rindex('...')]
+        str.push desc
+        str.push alert['uri']
       end
       str
     end

@@ -100,7 +100,9 @@ module ForecastIo
       location = geo_lookup(response.user, response.match_data[1])
       forecast = get_forecast_io_results(response.user, location)
       alerts = get_alerts(forecast)
-      response.reply alerts
+      alerts.each do |alert|
+        response.reply alert
+      end
     end
 
     def handle_irc_ansisun(response)
