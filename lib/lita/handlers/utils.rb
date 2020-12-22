@@ -394,9 +394,9 @@ module ForecastIo
 
     def get_wind_speed(speed_metric)
       if @scale == 'f'
-        miles(speed_metric * 3.6).to_s + ' mph'
+        miles(speed_metric * 3.6).round(2).to_s + ' mph'
       else
-        (speed_metric * 3.6).to_s + ' kph'
+        (speed_metric * 3.6).round(2).to_s + ' kph'
       end
     end
 
