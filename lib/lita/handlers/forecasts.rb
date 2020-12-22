@@ -481,7 +481,7 @@ module ForecastIo
         str = get_colored_string(data, 'windSpeed', str, get_wind_range_colors)
       end
 
-      "7day winds #{get_speed winds.first}|#{str}|#{get_speed winds.last} range #{get_speed winds.min}-#{get_speed winds.max}"
+      "7day winds #{get_wind_speed winds.first}|#{str}|#{get_wind_speed winds.last} range #{get_wind_speed winds.min}-#{get_wind_speed winds.max}"
     end
 
     def do_the_daily_humidity_thing(forecast)
