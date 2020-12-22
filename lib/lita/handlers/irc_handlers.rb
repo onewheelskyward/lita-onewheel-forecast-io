@@ -83,17 +83,17 @@ module ForecastIo
     end
 
     def handle_irc_ansiwind(response)
-      response.reply "Sorry, darksky's api lies about wind now.  Try the main interface at https://darksky.net"
-      # location = geo_lookup(response.user, response.match_data[1])
-      # forecast = get_forecast_io_results(response.user, location)
-      # response.reply location.location_name + ' ' + ansi_wind_direction_forecast(forecast)
+      # response.reply "Sorry, darksky's api lies about wind now.  Try the main interface at https://darksky.net"
+      location = geo_lookup(response.user, response.match_data[1])
+      forecast = get_forecast_io_results(response.user, location)
+      response.reply location.location_name + ' ' + ansi_wind_direction_forecast(forecast)
     end
 
     def handle_irc_ascii_wind(response)
-      response.reply "Sorry, darksky's api lies about wind now.  Try the main interface at https://darksky.net"
-      # location = geo_lookup(response.user, response.match_data[1])
-      # forecast = get_forecast_io_results(response.user, location)
-      # response.reply location.location_name + ' ' + ascii_wind_direction_forecast(forecast)
+      # response.reply "Sorry, darksky's api lies about wind now.  Try the main interface at https://darksky.net"
+      location = geo_lookup(response.user, response.match_data[1])
+      forecast = get_forecast_io_results(response.user, location)
+      response.reply location.location_name + ' ' + ascii_wind_direction_forecast(forecast)
     end
 
     def handle_irc_alerts(response)
