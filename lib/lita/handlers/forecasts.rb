@@ -769,7 +769,7 @@ module ForecastIo
     end
 
     def get_aqi_data(response)
-      sensor_id = '9814'
+      sensor_id = '23805'
       if response.matches[0][0].length > 1
         Lita.logger.debug response.matches[0][0]
         Lita.logger.debug "Performing sensor sweep"
