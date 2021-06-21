@@ -781,7 +781,7 @@ module ForecastIo
                  zenlinux: 43023,
                  djwong: 61137,
                  philtor: 35221,
-                 bkero: 97333,
+                 bkero: 83445,
                  agb: 34409}
         # philomath 41507
         # corvalis 57995
