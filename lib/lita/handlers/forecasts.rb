@@ -769,38 +769,41 @@ module ForecastIo
     end
 
     def get_aqi_data(response)
+      Lita.logger.debug "get_aqi_data called with #{response.matches[0][0]}"
       sensor_id = '23805'
+
+      # hardcoded map of sensors
+      users = {lampd1: 38447,
+               aaronpk: 43023,
+               zenlinux: 43023,
+               djwong: 61137,
+               philtor: 35221,
+               bkero: 83445,
+               agb: 34409,
+               donpdonp: 39215,
+               onewheelskyward: 83445}
+      # philomath 41507
+      # corvalis 57995
+
       if response.matches[0][0].length > 1
         Lita.logger.debug response.matches[0][0]
-        Lita.logger.debug "Performing sensor sweep"
         sensor_id = response.matches[0][0]
-      else
-        Lita.logger.debug response.user.name
-        users = {lampd1: 38447,
-                 aaronpk: 43023,
-                 zenlinux: 43023,
-                 djwong: 61137,
-                 philtor: 35221,
-                 bkero: 83445,
-                 agb: 34409,
-                 donpdonp: 39215,
-                 onewheelskyward: 83445}
-        # philomath 41507
-        # corvalis 57995
-        users.keys.each do |u|
-          if u.to_s == response.user.name
-            sensor_id = users[u]
-          end
-        end
-
+        Lita.logger.debug "Performing sensor sweep for #{sensor_id}"
         unless sensor_id
-          Lita.logger.debug "Defaulting to pdx"
-          sensor_id = "9814"
+          Lita.logger.debug 'Defaulting to pdx'
+          sensor_id = '9814'
         end
       end
 
       resp = RestClient.get "https://www.purpleair.com/json?show=#{sensor_id}"
       aqi = JSON.parse resp
+      if aqi['results'].length == 0 and users.has_key? response.user.name.to_sym
+        # Possible zip instead of sensor
+        Lita.logger.debug "calling https://www.purpleair.com/json?show=#{users[response.user.name.to_sym]}"
+        resp = RestClient.get "https://www.purpleair.com/json?show=#{users[response.user.name]}"
+        aqi = JSON.parse resp
+      end
+      aqi
     end
 
     def process_aqi_data(aqi, response)
