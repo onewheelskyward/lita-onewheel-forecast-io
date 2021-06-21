@@ -783,7 +783,8 @@ module ForecastIo
                  philtor: 35221,
                  bkero: 83445,
                  agb: 34409,
-                 donpdonp: 39215}
+                 donpdonp: 39215,
+                 onewheelskyward: 83445}
         # philomath 41507
         # corvalis 57995
         users.keys.each do |u|
