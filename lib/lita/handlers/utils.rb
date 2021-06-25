@@ -67,7 +67,7 @@ module ForecastIo
       geocoded = nil
 
       # I don't know why it thinks 97222 is in france
-      if query.length == 5 and query.to_i >= 10000 and query.to_i <= 99999
+      if !query.nil? and query.length == 5 and query.to_i >= 10000 and query.to_i <= 99999
         Lita.logger.debug "Post-pending usa to #{query}"
         query += ', usa'
       end
