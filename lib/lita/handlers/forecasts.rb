@@ -807,8 +807,13 @@ module ForecastIo
       if aqi['results'].to_a.length == 0 and users.has_key? response.user.name.to_sym
         # Possible zip instead of sensor
         Lita.logger.debug "calling https://www.purpleair.com/json?show=#{users[response.user.name.to_sym]}"
-        resp = RestClient.get "https://www.purpleair.com/json?show=#{users[response.user.name]}"
-        aqi = JSON.parse resp
+        begin
+          resp = RestClient.get "https://www.purpleair.com/json?show=#{users[response.user.name]}"
+          aqi = JSON.parse resp
+        rescue RuntimeError => e
+          Lita.logger.debug "Exception found #{e}"
+          return
+        end
       end
       aqi
     end
