@@ -568,4 +568,10 @@ describe Lita::Handlers::OnewheelForecastIo, lita_handler: true do
   #   send_command 'ansiaqi'
   #   expect(replies.last).to eq("AQI report for PSU STAR LAB SEL: PM2.5 \u00030866\u0003 |\u000308_\u000304▅\u000306▇\u000314████\u0003| \u000314368\u0003 max: \u000314368\u0003 \u000314(7 day average to 10 min average)\u0003")
   # end
+
+  it '!7day extreme' do
+    mock_up '7dayextreme'
+    send_command '7day'
+    expect(replies.last).to eq("Portland, OR, USA 7day high/low temps 87.08°F |\u000304_▃\u000313🔥🔥🔥\u000305▇▅\u000304▅\u0003| 93.92°F / 56.12°F |\u000311_▅\u000308▇\u000307██\u000308▇▇▇\u0003| 67.46°F Range: 56.16°F - 108.41°F")
+  end
 end

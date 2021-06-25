@@ -398,6 +398,12 @@ module ForecastIo
       differential = maxtemps.max - maxtemps.min
       max_str = get_dot_str(ansi_chars, data, maxtemps.min, differential, 'temperatureMax')
 
+      maxtemps.each_with_index do |t, i|
+        if t.to_f > 38.5
+          max_str[i] = "🔥"
+        end
+      end
+
       differential = mintemps.max - mintemps.min
       min_str = get_dot_str(ansi_chars, data, mintemps.min, differential, 'temperatureMin')
 
