@@ -7,102 +7,101 @@ def mock_up(filename)
 end
 
 describe Lita::Handlers::OnewheelForecastIo, lita_handler: true do
-
   before(:each) do
     Geocoder.configure(:lookup => :test)
 
     Geocoder::Lookup::Test.add_stub(
-        'Portland, OR', [
+      'Portland, OR', [
         {
-            'formatted_address' => 'Portland, OR, USA',
+          'formatted_address' => 'Portland, OR, USA',
 
-            'geometry' => {
-                'location' => {
-                    'lat'     => 45.523452,
-                    'lng'    => -122.676207,
-                    'address'      => 'Portland, OR, USA',
-                    'state'        => 'Oregon',
-                    'state_code'   => 'OR',
-                    'country'      => 'United States',
-                    'country_code' => 'US'
-                }
+          'geometry' => {
+            'location' => {
+              'lat' => 45.523452,
+              'lng' => -122.676207,
+              'address' => 'Portland, OR, USA',
+              'state' => 'Oregon',
+              'state_code' => 'OR',
+              'country' => 'United States',
+              'country_code' => 'US'
             }
+          }
         }
       ]
     )
 
     Geocoder::Lookup::Test.add_stub(
-        'Portland', [
+      'Portland', [
         {
-            'formatted_address' => 'Portland, OR, USA',
-            'geometry' => {
-                'location' => {
-                    'lat'     => 45.523452,
-                    'lng'    => -122.676207,
-                    'address'      => 'Portland, OR, USA',
-                    'state'        => 'Oregon',
-                    'state_code'   => 'OR',
-                    'country'      => 'United States',
-                    'country_code' => 'US'
-                }
+          'formatted_address' => 'Portland, OR, USA',
+          'geometry' => {
+            'location' => {
+              'lat' => 45.523452,
+              'lng' => -122.676207,
+              'address' => 'Portland, OR, USA',
+              'state' => 'Oregon',
+              'state_code' => 'OR',
+              'country' => 'United States',
+              'country_code' => 'US'
             }
+          }
         }
       ]
     )
 
     Geocoder::Lookup::Test.add_stub(
-        'portland', [
+      'portland', [
         {
-            'formatted_address' => 'Portland, OR, USA',
-            'geometry' => {
-                'location' => {
-                    'lat'     => 45.523452,
-                    'lng'    => -122.676207,
-                    'address'      => 'Portland, OR, USA',
-                    'state'        => 'Oregon',
-                    'state_code'   => 'OR',
-                    'country'      => 'United States',
-                    'country_code' => 'US'
-                }
+          'formatted_address' => 'Portland, OR, USA',
+          'geometry' => {
+            'location' => {
+              'lat' => 45.523452,
+              'lng' => -122.676207,
+              'address' => 'Portland, OR, USA',
+              'state' => 'Oregon',
+              'state_code' => 'OR',
+              'country' => 'United States',
+              'country_code' => 'US'
             }
+          }
         }
       ]
     )
 
     Geocoder::Lookup::Test.add_stub(
-        'Paris, france', [
+      'Paris, france', [
         {
-            'formatted_address' => 'Paris, FR',
-            'geometry' => {
-                'location' => {
-                    'lat'     => 48.856614,
-                    'lng'     => 2.3522219,
-                    'address'      => 'Paris, FR',
-                    'state'        => 'm',
-                    'state_code'   => 'm',
-                    'country'      => 'France',
-                    'country_code' => 'FR'
-                }
+          'formatted_address' => 'Paris, FR',
+          'geometry' => {
+            'location' => {
+              'lat' => 48.856614,
+              'lng' => 2.3522219,
+              'address' => 'Paris, FR',
+              'state' => 'm',
+              'state_code' => 'm',
+              'country' => 'France',
+              'country_code' => 'FR'
             }
+          }
         }
       ]
     )
 
     Geocoder::Lookup::Test.add_stub(
-        'Paris', [
+      'Paris', [
         {
-            'formatted_address' => 'Paris, FR',
-            'geometry' => {
-                'location' => {
-                    'lat'     => 48.856614,
-                    'lng'    => 2.3522219,
-                    'address'      => 'Paris, FR',
-                    'state'        => 'm',
-                    'state_code'   => 'm',
-                    'country'      => 'France',
-                    'country_code' => 'FR'
-                }
+          'formatted_address' => 'Paris, FR',
+          'geometry' => {
+            'location' => {
+              'lat' => 48.856614,
+              'lng' => 2.3522219,
+              'address' => 'Paris, FR',
+              'state' => 'm',
+              'state_code' => 'm',
+              'country' => 'France',
+              'country_code' => 'FR'
             }
+          }
         }
       ]
     )
@@ -264,12 +263,12 @@ describe Lita::Handlers::OnewheelForecastIo, lita_handler: true do
 
   it '!ansitemp portland' do
     send_command 'ansitemp portland'
-    expect(replies.last).to eq("Portland, OR, USA 24 hr temps: 82.94°F (feels like 74.23°F) |\u000307_▁\u000304▃▅▇\u000305█\u000313███\u000305█\u000304▇▅▅▃▃▃▃▃\u000307▃▁▁▁▁\u0003| 83.12°F  Range: 82.94°F - 102.2°F")
+      expect(replies.last).to eq("Portland, OR, USA 24 hr temps: 82.94°F (feels like 74.23°F) |\u000307_▁\u000304▃▅▇\u000305█\u000313███\u000305█\u000304▇▅▅▅▃▃▃▃\u000307▃▁▃▁▁\u0003| 83.12°F  Range: 82.94°F - 100.58°F")
   end
 
   it '!ieeetemp portland' do
     send_command 'ieeetemp portland'
-    expect(replies.last).to eq("Portland, OR, USA 24 hr temps: 487.97K (feels like 483.13K) |\u000307_▁\u000304▃▅▇\u000305█\u000313███\u000305█\u000304▇▅▅▃▃▃▃▃\u000307▃▁▁▁▁\u0003| 488.07K  Range: 487.97K - 498.67K")
+    expect(replies.last).to eq("Portland, OR, USA 24 hr temps: 487.97K (feels like 483.13K) |\u000307_▁\u000304▃▅▇\u000305█\u000313███\u000305█\u000304▇▅▅▅▃▃▃▃\u000307▃▁▃▁▁\u0003| 488.07K  Range: 487.97K - 497.77K")
   end
 
   it '!dailytemp portland' do
@@ -573,5 +572,11 @@ describe Lita::Handlers::OnewheelForecastIo, lita_handler: true do
     mock_up '7dayextreme'
     send_command '7day'
     expect(replies.last).to eq("Portland, OR, USA 7day high/low temps 87.08°F |\u000304_▃\u000313🔥🔥🔥\u000305▇▅\u000304▅\u0003| 93.92°F / 56.12°F |\u000311_▅\u000308▇\u000307██\u000308▇▇▇\u0003| 67.46°F Range: 56.16°F - 108.41°F")
+  end
+
+  it '!ansitemp extremes' do
+    mock_up '7dayextreme'
+    send_command 'ansitemp'
+    expect(replies.last).to eq("Portland, OR, USA 24 hr temps: 86.36°F (feels like 86.27°F) |04▇13🔥🔥07▅▅▅08▅▃▃▃▁▁11_08▁▁▃▃07▅▅▅▅04▇▇| 88.52°F  Range: 64.76°F - 102.2°F")
   end
 end

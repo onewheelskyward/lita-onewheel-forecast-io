@@ -516,5 +516,15 @@ module ForecastIo
       end
     end
 
+
+    def make_fire(dot_str, maxtemps)
+      maxtemps.each_with_index do |t, i|
+        if t.to_f > 38.5
+          dot_str[i] = "🔥"
+        end
+      end
+      dot_str
+    end
+
   end
 end

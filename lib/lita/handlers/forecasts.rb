@@ -202,6 +202,8 @@ module ForecastIo
       # Hmm.  There's a better way.
       dot_str = get_dot_str(chars, data, temps.min, differential, key)
 
+      dot_str = make_fire dot_str, temps
+
       if config.colors
         dot_str = get_colored_string(data, key, dot_str, get_temp_range_colors)
       end
@@ -398,11 +400,7 @@ module ForecastIo
       differential = maxtemps.max - maxtemps.min
       max_str = get_dot_str(ansi_chars, data, maxtemps.min, differential, 'temperatureMax')
 
-      maxtemps.each_with_index do |t, i|
-        if t.to_f > 38.5
-          max_str[i] = "🔥"
-        end
-      end
+      make_fire(max_str, maxtemps)
 
       differential = mintemps.max - mintemps.min
       min_str = get_dot_str(ansi_chars, data, mintemps.min, differential, 'temperatureMin')
@@ -645,34 +643,34 @@ module ForecastIo
       end
 
       # Insert aqi check here
-      aqi = get_aqi_data response
-      Lita.logger.debug aqi
-      stats = process_aqi_data(aqi, response)
-      Lita.logger.debug stats
-      if stats.nil?
-        return
-      end
-
-      if stats[:v].to_i >= 75
-        aqi_desc = 'moderate.'
-        case stats[:v].to_i
-        when 100..150
-          aqi_desc = 'unhealthy.'
-        when 151..200
-          aqi_desc = 'don\'t go outside and like, breathe.'
-        when 201..250
-          aqi_desc = 'unconscionable!'
-        when 251..300
-          aqi_desc = 'terribad!'
-        when 300..500
-          aqi_desc = 'ridonculous!'
-        when 500..9999
-          aqi_desc = 'unbelievable.'
-        end
-        output = "  Close the windows now!  The AQI is #{stats[:v]}, #{aqi_desc}"
-      else
-        output += "  Today's AQI is #{stats[:v].to_i}."
-      end
+      # aqi = get_aqi_data response
+      # Lita.logger.debug aqi
+      # stats = process_aqi_data(aqi, response)
+      # Lita.logger.debug stats
+      # if stats.nil?
+      #   return
+      # end
+      #
+      # if stats[:v].to_i >= 75
+      #   aqi_desc = 'moderate.'
+      #   case stats[:v].to_i
+      #   when 100..150
+      #     aqi_desc = 'unhealthy.'
+      #   when 151..200
+      #     aqi_desc = 'don\'t go outside and like, breathe.'
+      #   when 201..250
+      #     aqi_desc = 'unconscionable!'
+      #   when 251..300
+      #     aqi_desc = 'terribad!'
+      #   when 300..500
+      #     aqi_desc = 'ridonculous!'
+      #   when 500..9999
+      #     aqi_desc = 'unbelievable.'
+      #   end
+      #   output = "  Close the windows now!  The AQI is #{stats[:v]}, #{aqi_desc}"
+      # else
+      #   output += "  Today's AQI is #{stats[:v].to_i}."
+      # end
 
       output
     end
