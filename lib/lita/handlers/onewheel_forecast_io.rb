@@ -82,7 +82,21 @@ module Lita
             help: { '!today' => 'Give me today\'s forecast as it relates to yesterday.'})
       # route(/^Good morning./, :handle_irc_windows)  # Easter egg alert.  Thank you, zrobo and donpdonp.
       # Disabled for winter.
-      route(/^windows$/i, :handle_irc_windows, command: true)
+      route(/^linux$/i, :handle_irc_windows, command: true)
+      route(/^macos$/i, :handle_irc_windows, command: true)
+      route(/^osx$/i, :handle_irc_windows, command: true)
+      route(/^beos$/i, :handle_irc_windows, command: true)
+      route(/^os2$/i, :handle_irc_windows, command: true)
+      route(/^aix$/i, :handle_irc_windows, command: true)
+      route(/^unix$/i, :handle_irc_windows, command: true)
+      route(/^systemv$/i, :handle_irc_windows, command: true)
+      route(/^solaris$/i, :handle_irc_windows, command: true)
+      route(/^sunos$/i, :handle_irc_windows, command: true)
+      route(/^hpus$/i, :handle_irc_windows, command: true)
+      route(/^amiga$/i, :handle_irc_windows, command: true)
+      route(/^palmos$/i, :handle_irc_windows, command: true)
+      route(/^ios$/i, :handle_irc_windows, command: true)
+      route(/^android$/i, :handle_irc_windows, command: true)
       route(/^windows\s+(.+)/i, :handle_irc_windows, command: true,
             help: { '!windows' => 'Tell me when to close my windows as it\'s warmer outside than in.'})
 
