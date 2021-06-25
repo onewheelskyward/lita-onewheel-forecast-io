@@ -642,35 +642,34 @@ module ForecastIo
         output += "  The high today will be #{get_temperature high_temp}."
       end
 
-      # Insert aqi check here
-      # aqi = get_aqi_data response
-      # Lita.logger.debug aqi
-      # stats = process_aqi_data(aqi, response)
-      # Lita.logger.debug stats
-      # if stats.nil?
-      #   return
-      # end
-      #
-      # if stats[:v].to_i >= 75
-      #   aqi_desc = 'moderate.'
-      #   case stats[:v].to_i
-      #   when 100..150
-      #     aqi_desc = 'unhealthy.'
-      #   when 151..200
-      #     aqi_desc = 'don\'t go outside and like, breathe.'
-      #   when 201..250
-      #     aqi_desc = 'unconscionable!'
-      #   when 251..300
-      #     aqi_desc = 'terribad!'
-      #   when 300..500
-      #     aqi_desc = 'ridonculous!'
-      #   when 500..9999
-      #     aqi_desc = 'unbelievable.'
-      #   end
-      #   output = "  Close the windows now!  The AQI is #{stats[:v]}, #{aqi_desc}"
-      # else
-      #   output += "  Today's AQI is #{stats[:v].to_i}."
-      # end
+      aqi = get_aqi_data response
+      Lita.logger.debug aqi
+      stats = process_aqi_data(aqi, response)
+      Lita.logger.debug stats
+      if stats.nil?
+        return output
+      end
+
+      if stats[:v].to_i >= 75
+        aqi_desc = 'moderate.'
+        case stats[:v].to_i
+        when 100..150
+          aqi_desc = 'unhealthy.'
+        when 151..200
+          aqi_desc = 'don\'t go outside and like, breathe.'
+        when 201..250
+          aqi_desc = 'unconscionable!'
+        when 251..300
+          aqi_desc = 'terribad!'
+        when 300..500
+          aqi_desc = 'ridonculous!'
+        when 500..9999
+          aqi_desc = 'unbelievable.'
+        end
+        output = "  Close the windows now!  The AQI is #{stats[:v]}, #{aqi_desc}"
+      else
+        output += "  Today's AQI is #{stats[:v].to_i}."
+      end
 
       output
     end
@@ -816,7 +815,7 @@ module ForecastIo
 
     def process_aqi_data(aqi, response)
       if aqi['results'].to_a.empty?
-        response.reply "Sensor ID #{response.matches[0][0]} not found (zip code searches are unsupported)"
+        # response.reply "Sensor ID #{response.matches[0][0]} not found (zip code searches are unsupported)"
         return
       end
 
