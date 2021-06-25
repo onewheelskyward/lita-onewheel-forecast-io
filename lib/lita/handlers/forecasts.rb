@@ -819,7 +819,7 @@ module ForecastIo
     end
 
     def process_aqi_data(aqi, response)
-      if aqi['results'].to_a.empty?
+      if aqi.nil? or aqi['results'].to_a.empty?
         # response.reply "Sensor ID #{response.matches[0][0]} not found (zip code searches are unsupported)"
         return
       end
