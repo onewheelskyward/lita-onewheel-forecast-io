@@ -247,7 +247,7 @@ module ForecastIo
 
     def ascii_wind_direction_forecast(forecast)
       str, wind_speed, wind_gust = do_the_wind_direction_thing(forecast, ascii_wind_arrows)
-      "48h wind direction #{get_speed wind_wind_speed.first}|#{str}|#{get_wind_speed wind_speed.last} Range: #{get_wind_speed(wind_speed.min)} - #{get_wind_speed(wind_speed.max)}, gusting to #{get_wind_speed wind_gust.max}"
+      "48h wind direction #{get_speed wind_speed.first}|#{str}|#{get_wind_speed wind_speed.last} Range: #{get_wind_speed(wind_speed.min)} - #{get_wind_speed(wind_speed.max)}, gusting to #{get_wind_speed wind_gust.max}"
     end
 
     def do_the_wind_direction_thing(forecast, wind_arrows, hours = 48)
@@ -643,6 +643,10 @@ module ForecastIo
       Lita.logger.debug aqi
       stats = process_aqi_data(aqi, response)
       Lita.logger.debug stats
+      if stats.nil?
+        return
+      end
+
       if stats[:v].to_i >= 75
         aqi_desc = 'moderate.'
         case stats[:v].to_i
@@ -797,7 +801,7 @@ module ForecastIo
 
       resp = RestClient.get "https://www.purpleair.com/json?show=#{sensor_id}"
       aqi = JSON.parse resp
-      if aqi['results'].length == 0 and users.has_key? response.user.name.to_sym
+      if aqi['results'].to_a.length == 0 and users.has_key? response.user.name.to_sym
         # Possible zip instead of sensor
         Lita.logger.debug "calling https://www.purpleair.com/json?show=#{users[response.user.name.to_sym]}"
         resp = RestClient.get "https://www.purpleair.com/json?show=#{users[response.user.name]}"
@@ -807,7 +811,7 @@ module ForecastIo
     end
 
     def process_aqi_data(aqi, response)
-      if aqi['results'].empty?
+      if aqi['results'].to_a.empty?
         response.reply "Sensor ID #{response.matches[0][0]} not found (zip code searches are unsupported)"
         return
       end
