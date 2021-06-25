@@ -97,6 +97,7 @@ module Lita
       route(/^palmos$/i, :handle_irc_windows, command: true)
       route(/^ios$/i, :handle_irc_windows, command: true)
       route(/^android$/i, :handle_irc_windows, command: true)
+      route(/^windows$/i, :handle_irc_windows, command: true)
       route(/^windows\s+(.+)/i, :handle_irc_windows, command: true,
             help: { '!windows' => 'Tell me when to close my windows as it\'s warmer outside than in.'})
 
