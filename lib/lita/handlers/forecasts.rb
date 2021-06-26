@@ -601,7 +601,7 @@ module ForecastIo
         end
 
         if !time_to_close_the_windows and hour['temperature'].to_i >= 21.5
-          if index == 0
+          if index.zero?
             time_to_close_the_windows = 'now'
           else
             time_to_close_the_windows = hour['time']
@@ -640,6 +640,10 @@ module ForecastIo
           output += "  Open them back up at #{open_time.strftime('%H:%M')}."
         end
         output += "  The high today will be #{get_temperature high_temp}."
+      end
+
+      if time_to_open_the_windows.nil?
+        output += "  No suitable time to open the windows found.  I only have 48h of temperature data."
       end
 
       aqi = get_aqi_data response
@@ -687,7 +691,7 @@ module ForecastIo
         end
 
         if !time_to_close_the_windows and hour['temperature'].to_i >= 71
-          if index == 0
+          if index.zero?
             time_to_close_the_windows = 'now'
           else
             time_to_close_the_windows = hour['time']
@@ -804,7 +808,7 @@ module ForecastIo
 
       resp = RestClient.get "https://www.purpleair.com/json?show=#{sensor_id}"
       aqi = JSON.parse resp
-      if aqi['results'].to_a.length == 0 and users.has_key? response.user.name.to_sym
+      if aqi['results'].to_a.length.zero? and users.has_key? response.user.name.to_sym
         # Possible zip instead of sensor
         Lita.logger.debug "calling https://www.purpleair.com/json?show=#{users[response.user.name.to_sym]}"
         begin
@@ -831,7 +835,7 @@ module ForecastIo
         Lita.logger.debug r
         s = JSON.parse r['Stats']
         Lita.logger.debug "Result: #{s}"
-        if s['v'] == 0 or r['Flag'] == 1
+        if (s['v']).zero? or r['Flag'] == 1
           next
         end
         stats[:v].push s['v']
