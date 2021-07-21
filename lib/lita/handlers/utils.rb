@@ -85,7 +85,7 @@ module ForecastIo
         end
       end
 
-      query = (query.nil?)? config.default_location : query
+      query = (query.nil?)? config.default_location.to_s : query
       Lita.logger.debug "q & g #{query.inspect} #{geocoded.inspect}"
 
       if query[/^http/] or (!geocoded.nil? and geocoded.key? 'geo') # For now this is aaronpk's loc
