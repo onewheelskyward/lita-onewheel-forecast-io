@@ -30,7 +30,7 @@ EOS
   spec.add_development_dependency 'coveralls', '~> 0'
 
   spec.add_runtime_dependency 'rest-client', '~> 2'
-  spec.add_runtime_dependency 'geocoder', '~> 1.5'
+  spec.add_runtime_dependency 'geocoder', '~> 1.6'
   spec.add_runtime_dependency 'multi_json', '~> 1.7'
   spec.add_runtime_dependency 'magic-eightball', '~> 0.0'
   spec.add_runtime_dependency 'tzinfo', '~> 1.2'

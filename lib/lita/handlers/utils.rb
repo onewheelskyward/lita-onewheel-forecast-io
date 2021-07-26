@@ -51,6 +51,7 @@ module ForecastIo
           :api_key => geocoder_key
       )
       geocoded = nil
+
       result = ::Geocoder.search(query)
       Lita.logger.debug "Geocoder result: '#{result.inspect}'"
       if result[0]
@@ -67,10 +68,10 @@ module ForecastIo
       geocoded = nil
 
       # I don't know why it thinks 97222 is in france
-      if !query.nil? and query.length == 5 and query.to_i >= 10000 and query.to_i <= 99999
-        Lita.logger.debug "Post-pending usa to #{query}"
-        query += ', usa'
-      end
+      # if !query.nil? and query.length == 5 and query.to_i >= 10000 and query.to_i <= 99999
+      #   Lita.logger.debug "Post-pending usa to #{query}"
+      #   query += ', usa'
+      # end
 
       if query.nil? or query.empty?
         Lita.logger.debug "No query specified, pulling from redis '#{REDIS_KEY}', '#{user.name}'"
@@ -112,15 +113,15 @@ module ForecastIo
       else
 
         unless geocoded
-          # uri = "https://atlas.p3k.io/api/geocode?input=#{URI.escape query}"
-          # Lita.logger.debug "Redis hget failed, performing lookup for #{query} on #{uri}"
-          geocoded = optimistic_geo_wrapper query, config.geocoder_key
+          uri = "https://atlas.p3k.io/api/geocode?input=#{URI.encode_www_form_component query}"
+          Lita.logger.debug "Redis hget failed, performing lookup for #{query} on #{uri}"
+          # geocoded = optimistic_geo_wrapper query, config.geocoder_key
           # Catch network errors here
-          # begin
-          #   geocoded = JSON.parse RestClient.get(uri)
-          # rescue RuntimeError => e
-          #   puts "x"
-          # end
+          begin
+            geocoded = JSON.parse RestClient.get(uri)
+          rescue RuntimeException => e
+            puts e
+          end
 
           Lita.logger.debug "Geolocation found.  '#{geocoded.inspect}' failed, performing lookup"
           if persist
