@@ -231,7 +231,7 @@ module Lita
       route(/^emojiaqi\s*(\d*)$/i, :handle_emoji_aqi, command: true)
       route(/^aqi\s*(\d*)$/i, :handle_ansi_aqi, command: true)
 
-      route(/^ansiwhen\s+(\d+)(\w)$/, :handle_ansi_when, command: true)
+      route(/^ansiwhen\s+(\d{1,3})(\w*)$/, :handle_ansi_when, command: true)
 
       http.get '/windows', :handle_http_windows
       http.post '/aqi', :handle_http_aqi

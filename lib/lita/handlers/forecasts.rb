@@ -751,21 +751,34 @@ module ForecastIo
 
     def do_the_ansiwhen_thing(forecast, target, target_unit = 'F')
       Lita.logger.debug "Looking for #{target} #{target_unit}"
-      target_time = ''
-      temp = ''
+      target_time = nil
+      temp = nil
+      max = -500
 
       forecast['hourly']['data'].each do |hour|
-        if fahrenheit(hour['temperature']).to_i > target.to_i
+        forecast_temp = fahrenheit(hour['temperature']).to_i
+
+        if forecast_temp > max
+          max = forecast_temp
+        end
+
+        if forecast_temp > target.to_i
           target_time = hour['time']
-          temp = fahrenheit(hour['temperature']).to_s
+          temp = forecast_temp.to_s
           break
         end
       end
 
-      Lita.logger.debug "Found time #{target_time} and temp #{temp}"
-      target_time = Time.at(target_time).to_datetime.strftime("%H:%M")
+      Lita.logger.debug "Found time #{target_time} and temp #{temp} and max #{max}"
+      unless target_time.nil?
+        target_time = Time.at(target_time).to_datetime.strftime("%H:%M")
+      end
 
       # target_time = DateTime.strptime(target_time.to_s, '%s')
+      if target_time.nil?
+        temp = max
+      end
+
       [target_time, temp]
     end
 

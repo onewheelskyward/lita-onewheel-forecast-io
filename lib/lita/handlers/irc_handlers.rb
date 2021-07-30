@@ -289,7 +289,12 @@ module ForecastIo
       location = geo_lookup(response.user, '')
       forecast = get_forecast_io_results(response.user, location)
       time, temp = do_the_ansiwhen_thing(forecast, response.matches[0][0])
-      response.reply "It will be #{temp}F at #{time} in #{location.location_name}"
+
+      if time.nil?
+        response.reply "It will never be #{response.matches[0][0]}F, I hope.  Max temp today is #{temp}."
+      else
+        response.reply "It will be #{temp}F at #{time} in #{location.location_name}"
+      end
     end
 
     def handle_http_cat(response)
