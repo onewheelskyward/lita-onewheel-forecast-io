@@ -113,6 +113,10 @@ module ForecastIo
       else
 
         unless geocoded
+          if query.empty?
+            query = 'Portland,or'
+          end
+
           uri = "https://atlas.p3k.io/api/geocode?input=#{URI.encode_www_form_component query}"
           Lita.logger.debug "Redis hget failed, performing lookup for #{query} on #{uri}"
           # geocoded = optimistic_geo_wrapper query, config.geocoder_key

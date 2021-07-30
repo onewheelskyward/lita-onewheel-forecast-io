@@ -753,10 +753,12 @@ module ForecastIo
       Lita.logger.debug "Looking for #{target} #{target_unit}"
       target_time = ''
       temp = ''
+
       forecast['hourly']['data'].each do |hour|
         if fahrenheit(hour['temperature']).to_i > target.to_i
           target_time = hour['time']
           temp = fahrenheit(hour['temperature']).to_s
+          break
         end
       end
 

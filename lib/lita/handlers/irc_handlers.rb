@@ -286,7 +286,7 @@ module ForecastIo
     end
 
     def handle_ansi_when(response)
-      location = geo_lookup(response.user, response.match_data[1])
+      location = geo_lookup(response.user, '')
       forecast = get_forecast_io_results(response.user, location)
       time, temp = do_the_ansiwhen_thing(forecast, response.matches[0][0])
       response.reply "It will be #{temp}F at #{time} in #{location.location_name}"
