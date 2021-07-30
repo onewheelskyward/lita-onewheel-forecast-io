@@ -285,6 +285,13 @@ module ForecastIo
       response.reply "UV Index for #{location.location_name} #{str} [48h forecast]"
     end
 
+    def handle_ansi_when(response)
+      location = geo_lookup(response.user, response.match_data[1])
+      forecast = get_forecast_io_results(response.user, location)
+      time, temp = do_the_ansiwhen_thing(forecast, response.matches[0][0])
+      response.reply "It will be #{temp}F at #{time} in #{location.location_name}"
+    end
+
     def handle_http_cat(response)
       codes = {'100': 'Continue',
       '101': 'Switching Protocols',

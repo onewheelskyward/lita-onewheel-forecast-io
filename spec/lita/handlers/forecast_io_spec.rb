@@ -579,4 +579,10 @@ describe Lita::Handlers::OnewheelForecastIo, lita_handler: true do
     send_command 'ansitemp'
     expect(replies.last).to eq("Portland, OR, USA 24 hr temps: 86.36°F (feels like 86.27°F) |04▇13🔥🔥07▅▅▅08▅▃▃▃▁▁11_08▁▁▃▃07▅▅▅▅04▇▇| 88.52°F  Range: 64.76°F - 102.2°F")
   end
+
+  it '!ansiwhen 80s' do
+    mock_up '7dayextreme'
+    send_command 'ansiwhen 80F'
+    expect(replies.last).to eq("Portland, OR, USA 24 hr temps: 86.36°F (feels like 86.27°F) |04▇13🔥🔥07▅▅▅08▅▃▃▃▁▁11_08▁▁▃▃07▅▅▅▅04▇▇| 88.52°F  Range: 64.76°F - 102.2°F")
+  end
 end

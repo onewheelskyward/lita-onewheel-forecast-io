@@ -749,6 +749,24 @@ module ForecastIo
       "#{uvs.first} |#{str}| #{uvs.last} max: #{uvs.max}"
     end
 
+    def do_the_ansiwhen_thing(forecast, target, target_unit = 'F')
+      Lita.logger.debug "Looking for #{target} #{target_unit}"
+      target_time = ''
+      temp = ''
+      forecast['hourly']['data'].each do |hour|
+        if fahrenheit(hour['temperature']).to_i > target.to_i
+          target_time = hour['time']
+          temp = fahrenheit(hour['temperature']).to_s
+        end
+      end
+
+      Lita.logger.debug "Found time #{target_time} and temp #{temp}"
+      target_time = Time.at(target_time).to_datetime.strftime("%H:%M")
+
+      # target_time = DateTime.strptime(target_time.to_s, '%s')
+      [target_time, temp]
+    end
+
     def do_the_aqi_thing(aqis, chars = ansi_chars)
       str = get_dot_str(chars, aqis, 0, 500, nil)
       # str = get_dot_str(chars, aqis, aqis.min, aqis.max - aqis.min, nil)
