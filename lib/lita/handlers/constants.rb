@@ -50,7 +50,7 @@ module ForecastIo
       }
     end
 
-    # Based on the temp in F.
+    # Based on the temp in C.
     def get_temp_range_colors
       # Absolute zero?  You never know.
       { -273.17..-3.899 => :blue,
