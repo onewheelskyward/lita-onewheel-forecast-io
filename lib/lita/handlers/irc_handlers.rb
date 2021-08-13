@@ -297,6 +297,16 @@ module ForecastIo
       end
     end
 
+    def handle_ansi_hot(response)
+      location = geo_lookup(response.user, '')
+      forecast = get_forecast_io_results(response.user, location)
+      if forecast['currently']['temperature'].to_i > 30
+        response.reply "Yep."
+      else
+        response.reply "Nope."
+      end
+    end
+
     def handle_http_cat(response)
       codes = {'100': 'Continue',
       '101': 'Switching Protocols',

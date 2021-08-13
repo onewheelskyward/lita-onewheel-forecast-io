@@ -230,6 +230,7 @@ module Lita
       route(/^ansiaqi\s*(\d*)$/i, :handle_ansi_aqi, command: true)
       route(/^emojiaqi\s*(\d*)$/i, :handle_emoji_aqi, command: true)
       route(/^aqi\s*(\d*)$/i, :handle_ansi_aqi, command: true)
+      route(/^hot$/i, :handle_ansi_hot, command: true)
 
       route(/^ansiwhen\s+(\d{1,3})(\w*)$/, :handle_ansi_when, command: true)
 
