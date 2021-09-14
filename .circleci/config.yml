@@ -18,4 +18,4 @@ jobs:
       - ruby/bundle-install
       - run:
           name: rspec
-          command: rspec -fp spec
+          command: bundle exec rspec -fp spec
