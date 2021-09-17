@@ -228,6 +228,7 @@ module Lita
       route(/^http\s+(\d+)/i, :handle_http_cat, command: true)
 
       route(/^ansiaqi\s*(\d*)$/i, :handle_ansi_aqi, command: true)
+      route(/^ansismoke\s*(\d*)$/i, :handle_ansi_aqi, command: true)
       route(/^emojiaqi\s*(\d*)$/i, :handle_emoji_aqi, command: true)
       route(/^aqi\s*(\d*)$/i, :handle_ansi_aqi, command: true)
       route(/^hot$/i, :handle_ansi_hot, command: true)
