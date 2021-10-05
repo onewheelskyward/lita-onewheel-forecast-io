@@ -406,6 +406,7 @@ describe Lita::Handlers::OnewheelForecastIo, lita_handler: true do
   it '!ansiwhen 80s' do
     mock_up '7dayextreme'
     send_command 'ansiwhen 80F'
-    expect(replies.last).to eq("It will be 86F at 18:00 in Portland, Oregon, USA")
+    expect(replies.last).to include('It will be 86F at')
+    expect(replies.last).to include('in Portland, Oregon, USA')
   end
 end
