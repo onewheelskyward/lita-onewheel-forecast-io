@@ -123,48 +123,23 @@ module ForecastIo
           # Catch network errors here
           begin
             geocoded = JSON.parse RestClient.get(uri)
-          rescue RuntimeException => e
+          rescue RuntimeError => e
             puts e
           end
 
           Lita.logger.debug "Geolocation found.  '#{geocoded.inspect}' failed, performing lookup"
           if persist
-            redis.hset(REDIS_KEY, user, geocoded.to_json)
+            redis.hset(REDIS_KEY, user.name, geocoded.to_json)
           end
         end
-
-        # {"latitude": 45.51179,
-        #  "longitude": -122.67563,
-        #  "locality": "Portland",
-        #  "region": "Oregon",
-        #  "country": "USA",
-        #  "best_name": "Portland",
-        #  "full_name": "Portland, Oregon, USA",
-        #  "postal-code": "97201",
-        #  "timezone": "America\/Los_Angeles",
-        #  "offset": "-07:00",
-        #  "seconds": -25200,
-        #  "localtime": "2018-08-09T08:05:43-07:00"}
-
-        # loc = Location.new(
-        #   geocoded['best_name'],
-        #   geocoded['latitude'],
-        #   geocoded['longitude']
-        # )
-        # loc = Location.new(
-        #   geocoded['formatted_address'],
-        #   geocoded['geometry']['location']['lat'],
-        #   geocoded['geometry']['location']['lng']
-        # )
-
       end
 
       Lita.logger.debug "best_name: #{geocoded['best_name']}"
       Lita.logger.debug "display_name: #{geocoded['display_name']}"
       Lita.logger.debug "formatted_address: #{geocoded['formatted_address']}"
-      if geocoded['best_name']
+      if geocoded['full_name']
         loc = Location.new(
-            geocoded['best_name'],
+            geocoded['full_name'],
             geocoded['latitude'],
             geocoded['longitude'])
       elsif geocoded['lon']

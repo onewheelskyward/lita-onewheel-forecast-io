@@ -28,6 +28,7 @@ EOS
   spec.add_development_dependency 'rspec', '~> 3'
   spec.add_development_dependency 'simplecov', '~> 0'
   spec.add_development_dependency 'coveralls', '~> 0'
+  spec.add_development_dependency 'webmock', '~> 3.14.0'
 
   spec.add_runtime_dependency 'rest-client', '~> 2'
   spec.add_runtime_dependency 'geocoder', '~> 1.6'
