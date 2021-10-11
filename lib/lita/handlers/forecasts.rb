@@ -642,7 +642,7 @@ module ForecastIo
         output += "  The high today will be #{get_temperature high_temp}."
       end
 
-      if time_to_open_the_windows.nil? and high_temp > 24
+      if time_to_open_the_windows.nil? and high_temp > 24    # High heat mode- it might not drop to 75 for several days in our current climate
         output += "  No suitable time to open the windows found.  I only have 48h of temperature data."
       end
 
