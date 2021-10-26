@@ -409,4 +409,9 @@ describe Lita::Handlers::OnewheelForecastIo, lita_handler: true do
     expect(replies.last).to include('It will be 86F at')
     expect(replies.last).to include('in Portland, Oregon, USA')
   end
+
+  it '!ansitempapparents' do
+    send_command 'ansitempapparent portland'
+    expect(replies.last).to eq("Portland, Oregon, USA 24 hr apparent temps: 74.3°F |08▃_▃07▅▇▇04███07█▇▅08▃▁▃▃▃▃▁▁▃▁▁| 72.14°F  Range: 70.52°F - 88.7°F")
+  end
 end

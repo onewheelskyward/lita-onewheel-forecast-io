@@ -48,7 +48,7 @@ module ForecastIo
     def handle_irc_ansitempapparent(response)
       location = geo_lookup(response.user, response.match_data[1])
       forecast = get_forecast_io_results(response.user, location)
-      response.reply location.location_name + ' ' + ansi_temp_forecast(forecast)
+      response.reply location.location_name + ' ' + ansi_temp_apparent_forecast(forecast)
     end
 
     def handle_irc_ansiwindchill(response)
