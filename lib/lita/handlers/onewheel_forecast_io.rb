@@ -46,6 +46,8 @@ module Lita
             help: {'!ieeetemp [location]' => 'The 24h temperature scale for [location], kelvin-style.'})
 
       # General forecast routes
+      route(/^allrain\s*$/i, :handle_irc_all_rain, command: true)
+      route(/^allrain\s+(.+)$/i, :handle_irc_all_rain, command: true)
       route(/^ansiallthethings\s*$/i, :handle_irc_all_the_things, command: true)
       route(/^forecastallthethings\s*$/i, :handle_irc_all_the_things, command: true)
       route(/^forecastallthethings\s+(.+)/i, :handle_irc_all_the_things, command: true,

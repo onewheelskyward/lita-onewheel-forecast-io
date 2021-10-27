@@ -33,6 +33,14 @@ module ForecastIo
       response.reply location.location_name + ' ' + do_the_humidity_thing(forecast, ansi_chars, 'humidity')
     end
 
+    def handle_irc_all_rain(response)
+      location = geo_lookup(response.user, response.match_data[1])
+      forecast = get_forecast_io_results(response.user, location)
+      response.reply location.location_name + ' ' + ansi_rain_forecast(forecast)
+      response.reply location.location_name + ' ' + ansi_rain_intensity_forecast(forecast)
+      response.reply location.location_name + ' ' + do_the_daily_rain_thing(forecast)
+    end
+
     def handle_irc_ansirain_intensity(response)
       location = geo_lookup(response.user, response.match_data[1])
       forecast = get_forecast_io_results(response.user, location)

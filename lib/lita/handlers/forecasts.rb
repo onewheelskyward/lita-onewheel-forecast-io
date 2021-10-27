@@ -68,16 +68,17 @@ module ForecastIo
       end
     end
 
-    def get_aggregate_by_data_key(forecast, key, datum)
-      unless forecast[key].nil?
-        sum = 0
-        forecast[key]['data'].each do |data_point|
-          Lita.logger.debug "Adding #{data_point[datum]} to #{sum}"
-          sum += data_point[datum].to_f
-        end
-        sum.round(3)
-      end
-    end
+    # Honestly don't remember where I used this.
+    # def get_aggregate_by_data_key(forecast, key, datum)
+    #   unless forecast[key].nil?
+    #     sum = 0
+    #     forecast[key]['data'].each do |data_point|
+    #       Lita.logger.debug "Adding #{data_point[datum]} to #{sum}"
+    #       sum += data_point[datum].to_f
+    #     end
+    #     sum.round(3)
+    #   end
+    # end
 
     def do_the_rain_chance_thing(forecast, chars, key, use_color = config.colors, minute_limit = nil)
       if forecast['minutely'].nil?
@@ -235,7 +236,7 @@ module ForecastIo
       return dot_str, temps
     end
 
-    # Temp must be F.
+    # Temp must be C.
     def calculate_windchill(temp_c, wind)
       #temp_f = fahrenheit(temp_c)
       #35.74 + (0.6215 * temp_f) - (35.75 * wind ** 0.16) + (0.4275 * temp_f * wind ** 0.16)

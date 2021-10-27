@@ -414,4 +414,24 @@ describe Lita::Handlers::OnewheelForecastIo, lita_handler: true do
     send_command 'ansitempapparent portland'
     expect(replies.last).to eq("Portland, Oregon, USA 24 hr apparent temps: 74.3°F |08▃_▃07▅▇▇04███07█▇▅08▃▁▃▃▃▃▁▁▃▁▁| 72.14°F  Range: 70.52°F - 88.7°F")
   end
+
+  # todo: replace with actual wind-chilly day
+  it '!ansiwindchills' do
+    send_command 'ansiwindchill portland'
+    expect(replies.last).to eq("Portland, Oregon, USA 24 hr windchill temps: 86.9°F |07??04?▃▅05▇13▇▇▇05▇04▅▃▁▁▁???07?????| 87.26°F  Range: 86.9°F - 108.32°F")
+  end
+
+  it '!ansifogs' do
+    send_command 'ansifog portland'
+    expect(replies.last).to eq("Portland, Oregon, USA 24h fog report |▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅| visibility 10 km - 10 km")
+  end
+
+  it '!allrains' do
+    send_command 'allrain portland'
+    expect(replies[0]).to include("Portland, Oregon, USA 1hr snow probability")
+    expect(replies[0]).to include("|02_❄06▃10▅03▅09▅11▇08▇07█04█13█02__________________________________________________|")
+    expect(replies[1]).to include("Portland, Oregon, USA 1hr snow intensity")
+    expect(replies[1]).to include("|02_13▁10▁03▁09▁11▁08▁07▁04▁13▁02___________________________________________________|")
+    expect(replies[2]).to include("Portland, Oregon, USA 48 hr snows |02_______________________❄❄❄❄▁▁▁▁▁▁▁▁▁▁▁▁▁❄❄❄❄❄❄❄❄_| max 4%, 0mm accumulation")
+  end
 end
