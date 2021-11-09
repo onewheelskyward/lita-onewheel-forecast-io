@@ -175,6 +175,12 @@ module ForecastIo
       response.reply location.location_name + ' ' + do_the_daily_rain_thing(forecast)
     end
 
+    def handle_irc_day_rain(response)
+      location = geo_lookup(response.user, response.match_data[1])
+      forecast = get_forecast_io_results(response.user, location)
+      response.reply location.location_name + ' ' + do_the_daily_rain_thing(forecast, 24)
+    end
+
     def handle_irc_seven_day_rain(response)
       location = geo_lookup(response.user, response.match_data[1])
       forecast = get_forecast_io_results(response.user, location)

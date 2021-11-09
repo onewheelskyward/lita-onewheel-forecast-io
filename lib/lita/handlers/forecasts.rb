@@ -470,16 +470,17 @@ module ForecastIo
       "7day #{precip_type}s |#{str}| max #{max * 100}%, #{get_accumulation accum * 24} accumulation."
     end
 
-    def do_the_daily_rain_thing(forecast)
+    def do_the_daily_rain_thing(forecast, hours = 48)
       precip_type = 'rain'
       rains = []
 
       data = forecast['hourly']['data']
-      data.each do |day|
+      data.each_with_index do |day, i|
         if day['precipType'] == 'snow'
           precip_type = 'snow'
         end
         rains.push day['precipProbability']
+        break if i >= hours
       end
 
       str = get_dot_str(ansi_chars, data, 0, 1, 'precipProbability')
@@ -499,7 +500,7 @@ module ForecastIo
       max = get_max_by_data_key(forecast, 'hourly', 'precipProbability')
       agg = get_sum_by_data_key(forecast, 'hourly', 'precipIntensity')
 
-      "48 hr #{precip_type}s |#{str}| max #{(max.to_f * 100).round}%, #{get_accumulation agg} accumulation"
+      "#{hours} hr #{precip_type}s |#{str}| max #{(max.to_f * 100).round}%, #{get_accumulation agg} accumulation"
     end
 
     def do_the_daily_wind_thing(forecast)

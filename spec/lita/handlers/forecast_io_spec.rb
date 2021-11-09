@@ -436,13 +436,18 @@ describe Lita::Handlers::OnewheelForecastIo, lita_handler: true do
     expect(replies[2]).to include("Portland, Oregon, USA 48 hr snows |02_______________________❄❄❄❄▁▁▁▁▁▁▁▁▁▁▁▁▁❄❄❄❄❄❄❄❄_| max 4%, 0mm accumulation")
   end
 
-  it '!r2s' do
+  it '!nextrains' do
     new_time = Time.local(2021, 11, 8, 18, 0, 0)
     Timecop.freeze(new_time)
     mock_up 'raininbound'
     send_command 'nextrain'
-    expect(replies.last).to eq('')
+    expect(replies.last).to eq('In Portland, Oregon, USA the next rain is forecast for about 5 hours')
     Timecop.return
   end
 
+  it '!dayrains' do
+    mock_up 'raininbound'
+    send_command 'dayrain'
+    expect(replies.last).to eq 'Portland, Oregon, USA 24 hr rains |02▁▁▁_▁▁03▅04███07█11▇03▅▅▅10▅▃▃▃06▃10▅▅03▅▅▅▅▅▅10▅▅▅▅▅▅06▃▃▃10▅▅▃06▃▃02▁▁06▃▃10▃03▅11▇| max 89%, 13mm accumulation'
+  end
 end

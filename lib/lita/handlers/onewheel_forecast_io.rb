@@ -140,6 +140,9 @@ module Lita
       route(/^dailyrain\s*$/i, :handle_irc_daily_rain, command: true)
       route(/^dailyrain\s+(.+)/i, :handle_irc_daily_rain, command: true,
             help: { '!dailyrain [location]' => '48h rain chance report for [location].'})
+      route(/^dayrain\s*$/i, :handle_irc_day_rain, command: true)
+      route(/^dayrain\s+(.+)/i, :handle_irc_day_rain, command: true,
+            help: { '!dayrain [location]' => '24h rain chance report for [location].'})
       route(/^dailysnow\s*$/i, :handle_irc_daily_rain, command: true)
       route(/^dailysnow\s+(.+)/i, :handle_irc_daily_rain, command: true,
             help: { '!dailysnow [location]' => 'Alias for !dailyrain.'})
