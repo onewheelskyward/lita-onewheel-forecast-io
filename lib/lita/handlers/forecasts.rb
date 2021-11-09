@@ -184,6 +184,7 @@ module ForecastIo
         end
         if not min_start.nil? and m['precipProbability'].to_f < 0.20
           min_end = m['time']
+          break
         end
         pintensity = m['precipIntensity'].to_f if m['precipIntensity'].to_f > pintensity
       end
