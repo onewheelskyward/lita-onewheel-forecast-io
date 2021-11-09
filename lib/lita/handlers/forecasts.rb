@@ -193,8 +193,8 @@ module ForecastIo
 
       case pintensity * 100
       when 0..20 then pintense_str = "low"
-      when 21..70 then pintense_str = "moderate"
-      when 70..inf then pintense_str = "hide ya pets hide ya kids"
+      when 21..50 then pintense_str = "moderate"
+      when 51..inf then pintense_str = "hide ya pets hide ya kids"
       end
 
       unless min_start.nil?
