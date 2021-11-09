@@ -11,12 +11,7 @@ module ForecastIo
 
     def next_rain_forecast(forecast)
       (rain_str, precip_type) = do_the_next_rain_thing(forecast)
-      if rain_str <= 0
-        rain_str = "now."
-      else
-        rain_str = "#{rain_str} #{rain_str.to_i == 1? 'hour' : 'hours'}"
-      end
-      "about #{rain_str}"
+      rain_str
     end
 
     def ansi_rain_forecast(forecast)
@@ -176,20 +171,59 @@ module ForecastIo
     def do_the_next_rain_thing(forecast)
       i_can_has_snow = false
       rain_time = nil
+      mindata = forecast['minutely']['data']
       data = forecast['hourly']['data']
 
-      data.each do |datum|
-        if datum['precipType'] == 'snow'
-          i_can_has_snow = true
+      min_start = nil
+      min_end = nil
+      pintensity = 0
+
+      mindata.each do |m|
+        if min_start.nil? and m['precipProbability'].to_f >= 0.20
+          min_start = m['time']
         end
-        if datum['precipProbability'].to_f >= 0.2
-          rain_time = datum['time']
-          break
+        if not min_start.nil? and m['precipProbability'].to_f < 0.20
+          min_end = m['time']
         end
+        pintensity = m['precipIntensity'].to_f if m['precipIntensity'].to_f > pintensity
       end
 
-      rain_time = rain_time - Time.now.to_i
-      rain_time = rain_time / 60 / 60
+      pintense_str = ''
+
+      case pintensity * 100
+      when 0..20 then pintense_str = "low"
+      when 21..70 then pintense_str = "moderate"
+      when 70..inf then pintense_str = "hide ya pets hide ya kids"
+      end
+
+      unless min_start.nil?
+        t1 = Time.now.to_i
+        rain_time = "#{(min_start - t1) / 60} minutes, ending in about #{(min_end - t1) / 60} minutes.  Max intensity is #{pintense_str}."
+      end
+
+      if min_start.nil?
+        data.each do |datum|
+          if datum['precipType'] == 'snow'
+            i_can_has_snow = true
+          end
+          if datum['precipProbability'].to_f >= 0.2
+            rain_time = datum['time']
+            break
+          end
+        end
+
+        rain_time = rain_time - Time.now.to_i
+        rain_time = rain_time / 60 / 60
+
+        if rain_time <= 0
+          rain_time = "now."
+        else
+          rain_time = "#{rain_time} #{rain_time.to_i == 1? 'hour' : 'hours'}"
+        end
+        rain_time = "about #{rain_time}"
+      end
+
+
       return rain_time, i_can_has_snow
     end
 
