@@ -9,6 +9,16 @@ module ForecastIo
       "1hr #{precip_type} probability #{(Time.now).strftime('%H:%M').to_s}|#{str}|#{(Time.now + 3600).strftime('%H:%M').to_s} max #{(max.to_f * 100).round(2)}%, #{get_accumulation agg} accumulation"
     end
 
+    def next_rain_forecast(forecast)
+      (rain_str, precip_type) = do_the_next_rain_thing(forecast)
+      if rain_str <= 0
+        rain_str = "now."
+      else
+        rain_str = "#{rain_str} #{rain_str.to_i == 1? 'hour' : 'hours'}"
+      end
+      "about #{rain_str}"
+    end
+
     def ansi_rain_forecast(forecast)
       (str, precip_type) = do_the_rain_chance_thing(forecast, ansi_chars, 'precipProbability') #, 'probability', get_rain_range_colors)
       max = get_max_by_data_key(forecast, 'minutely', 'precipProbability')
@@ -161,6 +171,26 @@ module ForecastIo
         str = get_colored_string(data, key, str, get_humidity_range_colors)
       end
       "#{get_humidity data_points.first}|#{str}|#{get_humidity data_points.last} range: #{get_humidity data_points.min}-#{get_humidity data_points.max}"
+    end
+
+    def do_the_next_rain_thing(forecast)
+      i_can_has_snow = false
+      rain_time = nil
+      data = forecast['hourly']['data']
+
+      data.each do |datum|
+        if datum['precipType'] == 'snow'
+          i_can_has_snow = true
+        end
+        if datum['precipProbability'].to_f >= 0.2
+          rain_time = datum['time']
+          break
+        end
+      end
+
+      rain_time = rain_time - Time.now.to_i
+      rain_time = rain_time / 60 / 60
+      return rain_time, i_can_has_snow
     end
 
     def ansi_temp_forecast(forecast, hours = 24)

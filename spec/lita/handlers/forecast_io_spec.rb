@@ -3,6 +3,7 @@
 require_relative '../../spec_helper'
 require 'geocoder'
 require 'webmock/rspec'
+require 'timecop'
 # include WebMock::API
 
 def mock_up(filename)
@@ -434,4 +435,14 @@ describe Lita::Handlers::OnewheelForecastIo, lita_handler: true do
     expect(replies[1]).to include("|02_13▁10▁03▁09▁11▁08▁07▁04▁13▁02___________________________________________________|")
     expect(replies[2]).to include("Portland, Oregon, USA 48 hr snows |02_______________________❄❄❄❄▁▁▁▁▁▁▁▁▁▁▁▁▁❄❄❄❄❄❄❄❄_| max 4%, 0mm accumulation")
   end
+
+  it '!r2s' do
+    new_time = Time.local(2021, 11, 8, 18, 0, 0)
+    Timecop.freeze(new_time)
+    mock_up 'raininbound'
+    send_command 'nextrain'
+    expect(replies.last).to eq('')
+    Timecop.return
+  end
+
 end

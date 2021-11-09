@@ -19,6 +19,14 @@ module ForecastIo
       response.reply location.location_name + ' ' + ascii_rain_forecast(forecast)
     end
 
+    def handle_irc_nextrain(response)
+      location = geo_lookup(response.user, response.match_data[1])
+      forecast = get_forecast_io_results(response.user, location)
+      (rain_time, type) = next_rain_forecast(forecast)
+
+      response.reply "In #{location.location_name} the next rain is forecast for #{rain_time}"
+    end
+
     def handle_irc_all_the_things(response)
       location = geo_lookup(response.user, response.match_data[1])
       forecast = get_forecast_io_results(response.user, location)
