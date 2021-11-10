@@ -512,5 +512,17 @@ module ForecastIo
       dot_str
     end
 
+    # Turn intensity into a string.
+    # intensity is like a 4 decimal float, we only care about the first couple.
+    def get_intensity_str(pintensity)
+      pintense_str = 'low'
+      case pintensity * 100
+      # when 0..20 then pintense_str = "low"
+      when 21..50 then pintense_str = "moderate"
+      when 51..999 then pintense_str = "hide ya pets hide ya kids"
+      end
+      pintense_str
+    end
+
   end
 end

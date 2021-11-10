@@ -189,13 +189,7 @@ module ForecastIo
         pintensity = m['precipIntensity'].to_f if m['precipIntensity'].to_f > pintensity
       end
 
-      pintense_str = ''
-
-      case pintensity * 100
-      when 0..20 then pintense_str = "low"
-      when 21..50 then pintense_str = "moderate"
-      when 51..inf then pintense_str = "hide ya pets hide ya kids"
-      end
+      pintense_str = get_intensity_str(pintensity)
 
       unless min_start.nil?
         t1 = Time.now.to_i
