@@ -458,4 +458,12 @@ describe Lita::Handlers::OnewheelForecastIo, lita_handler: true do
     send_command 'nextrain'
     expect(replies.last).to eq 'In Portland, Oregon, USA the next rain is forecast in 6 minutes, ending in about 59 minutes.  Max intensity is low.'
   end
+
+  it '!nextrain nows' do
+    new_time = Time.at(1637006300)
+    Timecop.freeze(new_time)
+    mock_up 'rainnow'
+    send_command 'nextrain'
+    expect(replies.last).to eq 'In Portland, Oregon, USA the next rain is forecast in now, ending in a long while.  Max intensity is hide ya pets hide ya kids.'
+  end
 end

@@ -243,6 +243,9 @@ module Lita
 
       route(/^ansiwhen\s+(\d{1,3})(\w*)$/, :handle_ansi_when, command: true)
 
+      # admin
+      route(/^ansiloc\s+(\w+)$/i, :handle_irc_ansiloc, command: true)
+
       http.get '/windows', :handle_http_windows
       http.post '/aqi', :handle_http_aqi
     end

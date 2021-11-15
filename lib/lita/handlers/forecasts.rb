@@ -193,7 +193,22 @@ module ForecastIo
 
       unless min_start.nil?
         t1 = Time.now.to_i
-        rain_time = "#{(min_start - t1) / 60} minutes, ending in about #{(min_end - t1) / 60} minutes.  Max intensity is #{pintense_str}."
+        rain_start = min_start - t1
+        rain_time = ''
+
+        if rain_start < 0
+          rain_time = "now, "
+        else
+          rain_time = "#{(rain_start) / 60} minutes, "
+        end
+
+        if min_end.nil?
+          rain_time += "ending in a long while."
+        else
+          rain_time += "ending in about #{(min_end - t1) / 60} minutes."
+        end
+
+        rain_time += "  Max intensity is #{pintense_str}."
       end
 
       if min_start.nil?

@@ -481,7 +481,8 @@ module ForecastIo
       ((a/b) * c + il).round
     end
 
-    private
+    def handle_ansi_loc(response)
+    end
 
   end
 end
