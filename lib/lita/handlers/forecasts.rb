@@ -45,7 +45,7 @@ module ForecastIo
       unless forecast[key].nil?
         data_points = []
         forecast[key]['data'].each do |data_point|
-          Lita.logger.debug data_point
+          # Lita.logger.debug data_point
           data_points.push data_point[datum]
         end
         data_points.sum
@@ -540,6 +540,7 @@ module ForecastIo
           precip_type = 'snow'
         end
         rains.push day['precipProbability']
+        # Lita.logger.debug("break if #{i} > #{hours}")
         break if i >= hours
       end
 
@@ -739,9 +740,9 @@ module ForecastIo
       end
 
       aqi = get_aqi_data response
-      Lita.logger.debug aqi
+      # Lita.logger.debug aqi
       stats = process_aqi_data(aqi, response)
-      Lita.logger.debug stats
+      # Lita.logger.debug stats
       if stats.nil?
         return output
       end
@@ -957,9 +958,9 @@ module ForecastIo
 
       Lita.logger.debug "Found #{aqi['results'].length} results, averaging"
       aqi['results'].each do |r|
-        Lita.logger.debug r
+        # Lita.logger.debug r
         s = JSON.parse r['Stats']
-        Lita.logger.debug "Result: #{s}"
+        # Lita.logger.debug "Result: #{s}"
         if (s['v']).zero? or r['Flag'] == 1
           next
         end

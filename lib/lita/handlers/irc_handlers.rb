@@ -47,6 +47,7 @@ module ForecastIo
       response.reply location.location_name + ' ' + ansi_rain_forecast(forecast)
       response.reply location.location_name + ' ' + ansi_rain_intensity_forecast(forecast)
       response.reply location.location_name + ' ' + do_the_daily_rain_thing(forecast)
+      response.reply location.location_name + ' ' + do_the_daily_rain_thing(forecast, 24)
     end
 
     def handle_irc_ansirain_intensity(response)
