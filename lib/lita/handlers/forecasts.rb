@@ -176,7 +176,7 @@ module ForecastIo
 
       min_start = nil
       min_end = nil
-      pintensity = 0
+      raintensity = 0
 
       mindata.each do |m|
         if min_start.nil? and m['precipProbability'].to_f >= 0.20
@@ -186,20 +186,21 @@ module ForecastIo
           min_end = m['time']
           break
         end
-        pintensity = m['precipIntensity'].to_f if m['precipIntensity'].to_f > pintensity
+        raintensity = m['precipIntensity'].to_f if m['precipIntensity'].to_f > raintensity
       end
 
-      pintense_str = get_intensity_str(pintensity)
+      pintense_str = get_intensity_str(raintensity)
 
+      # If rain is starting/ending this hour, do the minute detail thing
       unless min_start.nil?
         t1 = Time.now.to_i
         rain_start = min_start - t1
         rain_time = ''
 
         if rain_start < 0
-          rain_time = "now, "
+          rain_time = "for now, "
         else
-          rain_time = "#{(rain_start) / 60} minutes, "
+          rain_time = "in #{(rain_start) / 60} minutes, "
         end
 
         if min_end.nil?
@@ -211,6 +212,7 @@ module ForecastIo
         rain_time += "  Max intensity is #{pintense_str}."
       end
 
+      # No minutes, let's step through hourly.
       if min_start.nil?
         data.each do |datum|
           if datum['precipType'] == 'snow'
@@ -218,6 +220,7 @@ module ForecastIo
           end
           if datum['precipProbability'].to_f >= 0.2
             rain_time = datum['time']
+            raintensity = datum['precipIntensity']
             break
           end
         end
@@ -230,9 +233,22 @@ module ForecastIo
         else
           rain_time = "#{rain_time} #{rain_time.to_i == 1? 'hour' : 'hours'}"
         end
-        rain_time = "about #{rain_time}"
+        rain_time = "in about #{rain_time}"
       end
 
+      # if min_end.nil?
+      #   data.each do |datum|
+      #     if datum['precipProbability'].to_f < 0.2
+      #       rain_time = datum['time']
+      #       break
+      #     end
+      #   end
+      #
+      #   rain_time = rain_time - Time.now.to_i
+      #   rain_time = rain_time / 60 / 60
+      #
+      #   rain_time = "#{rain_time} #{rain_time.to_i == 1? 'hour' : 'hours'}"
+      # end
 
       return rain_time, i_can_has_snow
     end

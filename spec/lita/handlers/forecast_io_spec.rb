@@ -441,7 +441,7 @@ describe Lita::Handlers::OnewheelForecastIo, lita_handler: true do
     Timecop.freeze(new_time)
     mock_up 'raininbound'
     send_command 'nextrain'
-    expect(replies.last).to eq('In Portland, Oregon, USA the next rain is forecast for about 5 hours')
+    expect(replies.last).to eq('In Portland, Oregon, USA the next rain is forecast in about 5 hours')
     Timecop.return
   end
 
@@ -456,7 +456,7 @@ describe Lita::Handlers::OnewheelForecastIo, lita_handler: true do
     Timecop.freeze(new_time)
     mock_up 'raininminutes'
     send_command 'nextrain'
-    expect(replies.last).to eq 'In Portland, Oregon, USA the next rain is forecast in 6 minutes, ending in about 59 minutes.  Max intensity is low.'
+    expect(replies.last).to eq 'In Portland, Oregon, USA the next rain is forecast in 6 minutes, ending in about 12 minutes.  Max intensity is low.'
   end
 
   it '!nextrain nows' do
@@ -464,6 +464,14 @@ describe Lita::Handlers::OnewheelForecastIo, lita_handler: true do
     Timecop.freeze(new_time)
     mock_up 'rainnow'
     send_command 'nextrain'
-    expect(replies.last).to eq 'In Portland, Oregon, USA the next rain is forecast in now, ending in a long while.  Max intensity is hide ya pets hide ya kids.'
+    expect(replies.last).to eq 'In Portland, Oregon, USA the next rain is forecast for now, ending in a long while.  Max intensity is hide ya pets hide ya kids.'
+  end
+
+  it '!nextrain nows til tomorrow' do
+    new_time = Time.at(1637352000)
+    Timecop.freeze(new_time)
+    mock_up 'rainendingtomorrow'
+    send_command 'nextrain'
+    expect(replies.last).to eq 'In Portland, Oregon, USA the next rain is forecast for now, ending in a long while.  Max intensity is hide ya pets hide ya kids.'
   end
 end

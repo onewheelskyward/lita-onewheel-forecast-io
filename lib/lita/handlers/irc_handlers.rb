@@ -24,7 +24,7 @@ module ForecastIo
       forecast = get_forecast_io_results(response.user, location)
       (rain_time, type) = next_rain_forecast(forecast)
 
-      response.reply "In #{location.location_name} the next rain is forecast in #{rain_time}"
+      response.reply "In #{location.location_name} the next rain is forecast #{rain_time}"
     end
 
     def handle_irc_all_the_things(response)
