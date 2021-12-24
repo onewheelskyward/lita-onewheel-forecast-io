@@ -541,7 +541,15 @@ module ForecastIo
         end
         rains.push day['precipProbability']
         # Lita.logger.debug("break if #{i} > #{hours}")
-        break if i >= hours
+        # break if i >= hours
+      end
+
+      # gotta send rains / not 48 h of data
+      if hours < 48
+        num = 48 - hours
+        (0..num).each do
+          data.pop
+        end
       end
 
       str = get_dot_str(ansi_chars, data, 0, 1, 'precipProbability')

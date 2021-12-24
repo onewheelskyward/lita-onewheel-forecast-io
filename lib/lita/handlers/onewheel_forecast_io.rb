@@ -161,6 +161,9 @@ module Lita
       route(/^asciirain\s*$/i, :handle_irc_ascii_rain, command: true)
       route(/^asciirain\s+(.+)/i, :handle_irc_ascii_rain, command: true,
             help: { '!asciirain [location]' => '60m rain chance report for [location], ascii style!'})
+      route(/^asciisnow\s*$/i, :handle_irc_ascii_rain, command: true)
+      route(/^asciisnow\s+(.+)/i, :handle_irc_ascii_rain, command: true,
+            help: { '!asciisnow [location]' => '60m snow chance report for [location], ascii style!'})
       route(/^nextrain\s*$/i, :handle_irc_nextrain, command: true)
       route(/^nextrain\s+(.+)$/i, :handle_irc_nextrain, command: true,
             help: { '!nextrain [location]' => 'Get the next known instance of rain available.'})

@@ -448,7 +448,7 @@ describe Lita::Handlers::OnewheelForecastIo, lita_handler: true do
   it '!dayrains' do
     mock_up 'raininbound'
     send_command 'dayrain'
-    expect(replies.last).to eq 'Portland, Oregon, USA 24 hr rains |02▁▁▁_▁▁03▅04███07█11▇03▅▅▅10▅▃▃▃06▃10▅▅03▅▅▅▅▅▅10▅▅▅▅▅▅06▃▃▃10▅▅▃06▃▃02▁▁06▃▃10▃03▅11▇| max 89%, 13mm accumulation'
+    expect(replies.last).to eq 'Portland, Oregon, USA 24 hr rains |02▁▁▁_▁▁03▅04███07█11▇03▅▅▅10▅▃▃▃06▃10▅▅03▅▅| max 89%, 10mm accumulation'
   end
 
   it '!nextrains in minutes' do
