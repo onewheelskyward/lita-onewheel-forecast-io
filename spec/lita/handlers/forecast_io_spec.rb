@@ -437,11 +437,11 @@ describe Lita::Handlers::OnewheelForecastIo, lita_handler: true do
   end
 
   it '!nextrains' do
-    new_time = Time.local(2021, 11, 8, 18, 0, 0)
+    new_time = Time.utc(2021, 11, 8, 18, 0, 0)
     Timecop.freeze(new_time)
     mock_up 'raininbound'
     send_command 'nextrain'
-    expect(replies.last).to eq('In Portland, Oregon, USA the next rain is forecast in about 5 hours')
+    expect(replies.last).to eq('In Portland, Oregon, USA the next rain is forecast in about 13 hours')
     Timecop.return
   end
 
