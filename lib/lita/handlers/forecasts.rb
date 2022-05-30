@@ -747,13 +747,14 @@ module ForecastIo
         output += "  No suitable time to open the windows found.  I only have 48h of temperature data."
       end
 
-      aqi = get_aqi_data response
+      # Commenting out cuz purpleair is locking down.
+      # aqi = get_aqi_data response
       # Lita.logger.debug aqi
-      stats = process_aqi_data(aqi, response)
+      # stats = process_aqi_data(aqi, response)
       # Lita.logger.debug stats
-      if stats.nil?
-        return output
-      end
+      # if stats.nil?
+      return output
+      # end
 
       if stats[:v].to_i >= 75
         aqi_desc = 'moderate.'
