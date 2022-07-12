@@ -493,8 +493,8 @@ module ForecastIo
                     "\x03#{c[:grey]}█",
                     "\x03#{c[:black]}█"]
 
-      col_colors = ["\x03#{c[:royal]}█",
-                    "\x03#{c[:blue]}█",
+      col_colors = ["\x03#{c[:blue]}█",
+                    "\x03#{c[:royal]}█",
                     "\x03#{c[:teal]}█",
                     "\x03#{c[:aqua]}█",
                     "\x03#{c[:green]}█",
@@ -503,8 +503,8 @@ module ForecastIo
                     "\x03#{c[:orange]}█",
                     "\x03#{c[:red]}█",
                     "\x03#{c[:brown]}█",
-                    "\x03#{c[:purple]}█",
-                    "\x03#{c[:pink]}█"]
+                    "\x03#{c[:pink]}█",
+                    "\x03#{c[:purple]}█"]
 
       response.reply bnw_colors.join
       response.reply col_colors.join
