@@ -249,6 +249,8 @@ module Lita
       # admin
       route(/^ansiloc\s+(\w+)$/i, :handle_irc_ansiloc, command: true)
 
+      route(/^ansitest$/i, :handle_irc_ansitest, command: true)
+
       http.get '/windows', :handle_http_windows
       http.post '/aqi', :handle_http_aqi
     end

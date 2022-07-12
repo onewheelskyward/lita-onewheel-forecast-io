@@ -482,8 +482,14 @@ module ForecastIo
       ((a/b) * c + il).round
     end
 
-    def handle_ansi_loc(response)
+    def handle_irc_ansiloc(response)
     end
 
+    def handle_irc_ansitest(response)
+      # Taste the rainbow!
+      c = colors
+      response.reply "#{c[:white]}█#{c[:grey]}█#{c[:silver]}█#{c[:black]}█"
+      response.reply "#{c[:royal]}█#{c[:blue]}█#{c[:aqua]}█#{c[:purple}█#{c[:brown}█#{c[:green}█#{c[:lime}█#{c[:teal}█#{c[:yellow}█#{c[:orange}█#{c[:red}█#{c[:pink}█"
+    end
   end
 end
