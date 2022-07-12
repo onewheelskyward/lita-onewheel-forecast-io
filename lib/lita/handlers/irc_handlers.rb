@@ -488,8 +488,8 @@ module ForecastIo
     def handle_irc_ansitest(response)
       # Taste the rainbow!
       c = colors
-      response.reply "#{c[:white]}█#{c[:grey]}█#{c[:silver]}█#{c[:black]}█"
-      response.reply "#{c[:royal]}█#{c[:blue]}█#{c[:aqua]}█#{c[:purple]}█#{c[:brown]}█#{c[:green]}█#{c[:lime]}█#{c[:teal]}█#{c[:yellow]}█#{c[:orange]}█#{c[:red]}█#{c[:pink]}█"
+      response.reply "\x03#{c[:white]}█\x03#{c[:grey]}█\x03#{c[:silver]}█\x03#{c[:black]}█"
+      response.reply "\x03#{c[:royal]}█\x03#{c[:blue]}█\x03#{c[:aqua]}█\x03#{c[:purple]}█\x03#{c[:brown]}█\x03#{c[:green]}█\x03#{c[:lime]}█\x03#{c[:teal]}█\x03#{c[:yellow]}█\x03#{c[:orange]}█\x03#{c[:red]}█\x03#{c[:pink]}█"
     end
   end
 end
