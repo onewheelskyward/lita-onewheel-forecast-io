@@ -489,7 +489,7 @@ module ForecastIo
       # Taste the rainbow!
       c = colors
       response.reply "#{c[:white]}█#{c[:grey]}█#{c[:silver]}█#{c[:black]}█"
-      response.reply "#{c[:royal]}█#{c[:blue]}█#{c[:aqua]}█#{c[:purple}█#{c[:brown}█#{c[:green}█#{c[:lime}█#{c[:teal}█#{c[:yellow}█#{c[:orange}█#{c[:red}█#{c[:pink}█"
+      response.reply "#{c[:royal]}█#{c[:blue]}█#{c[:aqua]}█#{c[:purple]}█#{c[:brown]}█#{c[:green]}█#{c[:lime]}█#{c[:teal]}█#{c[:yellow]}█#{c[:orange]}█#{c[:red]}█#{c[:pink]}█"
     end
   end
 end
