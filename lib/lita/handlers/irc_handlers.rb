@@ -439,7 +439,7 @@ module ForecastIo
     end
 
     def handle_emoji_aqi(response)
-      aqi = get_aqi_data(response, config.api_key)
+      aqi = get_aqi_data(response, config.purpleair_api_key)
       stats = process_aqi_data(aqi, response)
 
       aqis = [stats[:v6],
