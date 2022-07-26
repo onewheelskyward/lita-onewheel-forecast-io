@@ -914,13 +914,15 @@ module ForecastIo
       forecast['hourly']['data'][0]['apparentTemperature']
     end
 
-    def get_aqi_data(response)
+    def get_aqi_data(response, api_key)
       Lita.logger.debug "get_aqi_data called with #{response.matches[0][0]}"
       sensor_id = '23805'
+      # headers = {'X-API-Key':
+      #            }  # Hack for the 2022 lockdown
+      # ua = 'curl/7.79.1' # 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.5005.63 Safari/537.36'
 
       # hardcoded map of sensors
-      users = {lampd1: 38447,
-               aaronpk: 43023,
+      users = {aaronpk: 43023,
                zenlinux: 43023,
                djwong: 61137,
                philtor: 35221,
@@ -941,14 +943,36 @@ module ForecastIo
         end
       end
 
-      resp = RestClient.get "https://www.purpleair.com/json?show=#{sensor_id}"
+      RestClient.log = 'stdout'
+      # Lita.logger.debug("Grabbing token")
+      # token = RestClient.get "https://map.purpleair.com/token",
+      #                        params: {version: '1.8.52'},
+      #                        headers: headers,
+      #                        user_agent: ua
+      # Lita.logger.debug token
+      # return
+      # resp = RestClient.get "https://www.purpleair.com/json",
+      #                       params: {show: sensor_id},
+      #                       headers: headers,
+      #                       user_agent: ua
+
+      uri_base = "https://api.purpleair.com/v1/sensors"
+      uri = "#{uri_base}/#{sensor_id}?api_key=0DA903FC-0C48-11ED-8561-42010A800005"
+      Lita.logger.debug "URI: #{uri}"
+      resp = RestClient.get uri
+                            # params: {show: sensor_id},
+                            # headers: headers,
+                            # user_agent: ua
       aqi = JSON.parse resp
+      Lita.logger.debug aqi
       if aqi['results'].to_a.length.zero? and users.has_key? response.user.name.to_sym
         # Possible zip instead of sensor
-        Lita.logger.debug "calling https://www.purpleair.com/json?show=#{users[response.user.name.to_sym]}"
+        uri = "#{uri_base}/#{users[response.user.name.to_sym]}?api_key=#{api_key}"
+        Lita.logger.debug "calling #{uri}"
         begin
-          resp = RestClient.get "https://www.purpleair.com/json?show=#{users[response.user.name]}"
+          resp = RestClient.get uri
           aqi = JSON.parse resp
+          Lita.logger.debug aqi
         rescue RuntimeError => e
           Lita.logger.debug "Exception found #{e}"
           return
@@ -958,37 +982,58 @@ module ForecastIo
     end
 
     def process_aqi_data(aqi, response)
-      if aqi.nil? or aqi['results'].to_a.empty?
-        # response.reply "Sensor ID #{response.matches[0][0]} not found (zip code searches are unsupported)"
+      if aqi.nil? or aqi['sensor'].to_a.empty?
+        response.reply "Sensor ID #{response.matches[0][0]} not found (zip code searches are unsupported)"
         return
       end
 
-      stats = {v: [], v1: [], v2: [], v3: [], v4: [], v5: [], v6: []}
-
-      Lita.logger.debug "Found #{aqi['results'].length} results, averaging"
-      aqi['results'].each do |r|
-        # Lita.logger.debug r
-        s = JSON.parse r['Stats']
-        # Lita.logger.debug "Result: #{s}"
-        if (s['v']).zero? or r['Flag'] == 1
-          next
-        end
-        stats[:v].push s['v']
-        stats[:v1].push s['v1']
-        stats[:v2].push s['v2']
-        stats[:v3].push s['v3']
-        stats[:v4].push s['v4']
-        stats[:v5].push s['v5']
-        stats[:v6].push s['v6']
+      stats = {v: 0, v1: 0, v2: 0, v3: 0, v4: 0, v5: 0, v6: 0}
+      sensor = aqi['sensor']
+      stats_key = ''
+      Lita.logger.debug "aqi stats: #{aqi}"
+      if sensor['stats']['pm2.5'].to_f > 0
+        stats_key = 'stats'
+      end
+      if sensor['stats_a']['pm2.5'].to_f > 0
+        stats_key = 'stats_a'
+      end
+      if sensor['stats_b']['pm2.5'].to_f > 0
+        stats_key = 'stats_b'
       end
 
+      stats[:v] = sensor[stats_key]["pm2.5"]
+      stats[:v1] = sensor[stats_key]["pm2.5_10minute"]
+      stats[:v2] = sensor[stats_key]["pm2.5_30minute"]
+      stats[:v3] = sensor[stats_key]["pm2.5_60minute"]
+      stats[:v4] = sensor[stats_key]["pm2.5_6hour"]
+      stats[:v5] = sensor[stats_key]["pm2.5_24hour"]
+      stats[:v6] = sensor[stats_key]["pm2.5_1week"]
+
+        #
+      # Lita.logger.debug "Found #{aqi['results'].length} results, averaging"
+      # aqi['results'].each do |r|
+      #   # Lita.logger.debug r
+      #   s = JSON.parse r['Stats']
+      #   # Lita.logger.debug "Result: #{s}"
+      #   if (s['v']).zero? or r['Flag'] == 1
+      #     next
+      #   end
+      #   stats[:v].push s['v']
+      #   stats[:v1].push s['v1']
+      #   stats[:v2].push s['v2']
+      #   stats[:v3].push s['v3']
+      #   stats[:v4].push s['v4']
+      #   stats[:v5].push s['v5']
+      #   stats[:v6].push s['v6']
+      # end
+      #
       stats.keys.each do |statskey|
-        avg = 0
-        stats[statskey].each do |measurement|
-          avg += measurement
-        end
-        avg = avg / stats[statskey].length
-        stats[statskey] = calc_aqi avg.to_i
+      #   avg = 0
+      #   stats[statskey].each do |measurement|
+      #     avg += measurement
+      #   end
+      #   avg = avg / stats[statskey].length
+        stats[statskey] = calc_aqi stats[statskey].to_i  # Convert this to a map
       end
 
       Lita.logger.debug "Stats: #{stats}"

@@ -16,6 +16,7 @@ module Lita
       config :snowflake, default: '❄'
       config :default_location, default: 'Portland, OR'
       config :geocoder_key
+      config :purpleair_api_key
 
       include ::ForecastIo::Constants
       include ::ForecastIo::IrcHandlers

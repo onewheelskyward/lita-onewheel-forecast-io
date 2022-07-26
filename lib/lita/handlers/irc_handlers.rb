@@ -412,9 +412,18 @@ module ForecastIo
     end
 
     def handle_ansi_aqi(response)
-      aqi = get_aqi_data(response)
+      aqi = get_aqi_data(response, config.purpleair_api_key)
       stats = process_aqi_data(aqi, response)
-
+      # "stats_b": {
+      #   "pm2.5": 4.7,
+      #   "pm2.5_10minute": 3.1,
+      #   "pm2.5_30minute": 2.6,
+      #   "pm2.5_60minute": 3.0,
+      #   "pm2.5_6hour": 4.4,
+      #   "pm2.5_24hour": 4.5,
+      #   "pm2.5_1week": 9.7,
+      #   "time_stamp": 1639529191
+      # }
       aqis = [stats[:v6],
               stats[:v5],
               stats[:v4],
@@ -424,13 +433,13 @@ module ForecastIo
               stats[:v]]
 
       reply = do_the_aqi_thing(aqis)
-      response.reply "AQI report for #{aqi['results'][0]['Label']}: PM2.5 #{reply} \x03#{colors[:grey]}(7 day average to 10 min average)\x03"
+      response.reply "AQI report for #{aqi['sensor']['name']}: PM2.5 #{reply} \x03#{colors[:grey]}(7 day average to 10 min average)\x03"
       # response.reply "\x03#{colors[color]}█\x03"
 
     end
 
     def handle_emoji_aqi(response)
-      aqi = get_aqi_data(response)
+      aqi = get_aqi_data(response, config.api_key)
       stats = process_aqi_data(aqi, response)
 
       aqis = [stats[:v6],
@@ -444,9 +453,9 @@ module ForecastIo
       reply = do_the_aqi_thing(aqis, aqi_emoji_chars)
       desc = 'averages from 7 days to the last 10 minutes'
       if config.colors
-        response.reply "AQI report for #{aqi['results'][0]['Label']}: PM2.5 #{reply} \x03#{colors[:grey]}(#{desc})\x03"
+        response.reply "AQI report for #{aqi['sensor']['name']}: PM2.5 #{reply} \x03#{colors[:grey]}(#{desc})\x03"
       else
-        response.reply "AQI report for #{aqi['results'][0]['Label']}: PM2.5 #{reply} (#{desc})\x03"
+        response.reply "AQI report for #{aqi['sensor']['name']}: PM2.5 #{reply} (#{desc})\x03"
       end
       # response.reply "\x03#{colors[color]}█\x03"
 
