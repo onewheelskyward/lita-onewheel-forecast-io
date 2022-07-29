@@ -173,6 +173,7 @@ module ForecastIo
       rain_time = nil
       mindata = forecast['minutely']['data']
       data = forecast['hourly']['data']
+      dailydata = forecast['daily']['data']
 
       min_start = nil
       min_end = nil
@@ -696,12 +697,17 @@ module ForecastIo
       last_temp = 0
       output = ''
 
+      # Insert windows setting code for detection
+      #
+      selected_windows = get_windows(response.user)
+      Lita.logger.debug "User selected windows: #{selected_windows}"
+
       forecast['hourly']['data'].each_with_index do |hour, index|
         if hour['temperature'] > high_temp
           high_temp = hour['temperature'].to_i
         end
 
-        if !time_to_close_the_windows and hour['temperature'].to_i >= 21.5
+        if !time_to_close_the_windows and hour['temperature'].to_f >= 21.5
           if index.zero?
             time_to_close_the_windows = 'now'
           else
@@ -710,7 +716,7 @@ module ForecastIo
           window_close_temp = hour['temperature']
         end
 
-        if !time_to_open_the_windows and time_to_close_the_windows and hour['temperature'] < last_temp and hour['temperature'].to_i <= 25
+        if !time_to_open_the_windows and time_to_close_the_windows and hour['temperature'].to_f < last_temp.to_f and hour['temperature'].to_f <= selected_windows.to_f
           time_to_open_the_windows = hour['time']
         end
 

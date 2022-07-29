@@ -183,6 +183,15 @@ module ForecastIo
       scale
     end
 
+    def get_windows(user)
+      key = user.name + '-windows'
+      windows = redis.hget(REDIS_KEY, key)
+      if windows.nil?
+        windows = 25
+      end
+      windows
+    end
+
     def check_and_set_scale(key, user_requested_scale)
       persisted_scale = redis.hget(REDIS_KEY, key)
 
@@ -198,6 +207,35 @@ module ForecastIo
       else
         redis.hset(REDIS_KEY, key, scale_to_set)
         reply = "Scale set to #{scale_to_set}"
+      end
+
+      reply
+    end
+
+    def check_and_set_windows(user, user_requested_windows)
+      key = user.name + '-windows'
+      Lita.logger.debug "Key set to #{key}"
+
+      Lita.logger.debug "Checking redis for #{REDIS_KEY}, #{key}"
+      persisted_windows = redis.hget(REDIS_KEY, key)
+
+      if user_requested_windows.to_f > -40 and user_requested_windows.to_f < 100
+        windows_to_set = user_requested_windows
+      else
+        # Toggle mode
+        return "Nope."
+      end
+      scale = get_scale user
+
+      if scale.downcase == 'f'
+        windows_to_set = f_to_c windows_to_set
+      end
+
+      if persisted_windows == windows_to_set
+        reply = "Windows are already set to #{get_temperature windows_to_set, scale}!"
+      else
+        redis.hset(REDIS_KEY, key, windows_to_set)
+        reply = "Windows open temp set to #{get_temperature windows_to_set, scale}"
       end
 
       reply
@@ -359,11 +397,11 @@ module ForecastIo
       end
     end
 
-    def get_temperature(temp_c)
-      if @scale == 'c'
+    def get_temperature(temp_c, scale = 'f')
+      if scale == 'c'
         #celcius(temp_c).to_s + '°C'
         temp_c.to_s + '°C'
-      elsif @scale == 'k'
+      elsif scale == 'k'
         kelvin(temp_c).to_s + 'K'
       else
         fahrenheit(temp_c).to_s + '°F'
@@ -418,6 +456,14 @@ module ForecastIo
 
     def fahrenheit(degrees_c)
       ((degrees_c.to_f * 9/5) + 32).round(2)
+    end
+
+    def f_to_c(degrees_f)
+      (degrees_f.to_f - 32) * 5/9.round(2)
+    end
+
+    def c_to_f(degrees_c)
+      (degrees_c.to_f * 9 / 5) + 32.round(2)
     end
 
     def inches_from_mm(dist_mm)

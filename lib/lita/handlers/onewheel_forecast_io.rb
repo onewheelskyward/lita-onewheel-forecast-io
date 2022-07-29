@@ -122,6 +122,8 @@ module Lita
             help: { '!set scale [c|f|k]' => 'Set the scale to your chosen degrees.'})
       route(/^set scale$/i, :handle_irc_set_scale, command: true,
             help: { '!set scale' => 'Toggle between C and F scales.'})
+      route(/^set windows (\d+)/i, :handle_irc_set_windows, command: true,
+            help: { '!set windows <temp>' => 'Set the windows open temp to your chosen degrees.'})
 
       # Humidity
       route(/^ansihumidity\s*$/i, :handle_irc_ansi_humidity, command: true)

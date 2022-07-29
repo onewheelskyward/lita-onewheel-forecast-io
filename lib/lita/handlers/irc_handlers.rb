@@ -232,6 +232,12 @@ module ForecastIo
       response.reply reply
     end
 
+    def handle_irc_set_windows(response)
+      user_requested_windows = response.match_data[1].to_s.downcase
+      reply = check_and_set_windows(response.user, user_requested_windows)
+      response.reply reply
+    end
+
     def handle_irc_sunrise(response)
       location = geo_lookup(response.user, response.match_data[1])
       forecast = get_forecast_io_results(response.user, location)
