@@ -716,7 +716,11 @@ module ForecastIo
           window_close_temp = hour['temperature']
         end
 
-        if !time_to_open_the_windows and time_to_close_the_windows and hour['temperature'].to_f < last_temp.to_f and hour['temperature'].to_f <= selected_windows.to_f
+        if !time_to_open_the_windows and
+           time_to_close_the_windows and
+           hour['temperature'].to_f < last_temp.to_f and
+           hour['temperature'].to_f <= selected_windows.to_f
+
           time_to_open_the_windows = hour['time']
         end
 

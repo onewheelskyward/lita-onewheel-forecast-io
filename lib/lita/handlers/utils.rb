@@ -167,19 +167,25 @@ module ForecastIo
       JSON.parse(response.to_str)
     end
 
-    def set_scale(user)
-      key = user.name + '-scale'
-      if scale = redis.hget(REDIS_KEY, key)
-        @scale = scale
-      end
-    end
+    # def set_scale(user)
+    #   key = user.name + '-scale'
+    #   Lita.logger.debug "set_scale key: #{key}"
+    #   if scale = redis.hget(REDIS_KEY, key)
+    #     Lita.logger.debug "set_scale retrieved scale: #{scale}"
+    #     @scale = scale
+    #   end
+    # end
 
     def get_scale(user)
       key = user.name + '-scale'
+      Lita.logger.debug "get_scale key: #{key}"
       scale = redis.hget(REDIS_KEY, key)
+      Lita.logger.debug "get_scale retrieved scale: #{scale}"
       if scale.nil?
         scale = 'f'
       end
+      Lita.logger.debug "set_scale setting @scale to: #{scale}"
+      @scale = scale
       scale
     end
 
@@ -257,7 +263,7 @@ module ForecastIo
       uri += "?units=si"
 
       Lita.logger.debug "Requesting forcast data from: #{uri}"
-      set_scale(user)
+      get_scale(user)
       gimme_some_weather uri
     end
 
@@ -398,10 +404,10 @@ module ForecastIo
     end
 
     def get_temperature(temp_c, scale = 'f')
-      if scale == 'c'
+      if @scale == 'c'
         #celcius(temp_c).to_s + '°C'
         temp_c.to_s + '°C'
-      elsif scale == 'k'
+      elsif @scale == 'k'
         kelvin(temp_c).to_s + 'K'
       else
         fahrenheit(temp_c).to_s + '°F'
