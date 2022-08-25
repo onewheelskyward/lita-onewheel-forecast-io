@@ -504,7 +504,8 @@ module ForecastIo
 
       "7day high/low temps #{get_temperature maxtemps.first.to_f.round(1)} |#{max_str}| #{get_temperature maxtemps.last.to_f.round(1)} "\
         "/ #{get_temperature mintemps.first.to_f.round(1)} |#{min_str}| #{get_temperature mintemps.last.to_f.round(1)} "\
-        "Range: #{get_temperature mintemps.min} - #{get_temperature maxtemps.max}"
+        "High range: #{get_temperature maxtemps.min} - #{get_temperature maxtemps.max}, "\
+        "Low range: #{get_temperature mintemps.min} - #{get_temperature mintemps.max}"\
     end
 
     def do_the_seven_day_rain_thing(forecast)
