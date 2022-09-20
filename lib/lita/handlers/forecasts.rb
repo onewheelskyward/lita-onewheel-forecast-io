@@ -937,10 +937,10 @@ module ForecastIo
                zenlinux: 43023,
                djwong: 61137,
                philtor: 35221,
-               bkero: 83445,
+               bkero: 43023,
                agb: 34409,
-               donpdonp: 39215,
-               onewheelskyward: 83445}
+               donpdonp: 43023,
+               onewheelskyward: 23805}
       # philomath 41507
       # corvalis 57995
 
