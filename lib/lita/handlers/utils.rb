@@ -76,7 +76,7 @@ module ForecastIo
       if query.nil? or query.empty?
         Lita.logger.debug "No query specified, pulling from redis '#{REDIS_KEY}', '#{user.name}'"
         serialized_geocoded = redis.hget(REDIS_KEY, user.name)
-        unless serialized_geocoded == 'null' or serialized_geocoded.nil?
+        unless serialized_geocoded == 'null' or serialized_geocoded.nil? or serialized_geocoded['full_name'].nil?
           if serialized_geocoded[/^http/]
             query = serialized_geocoded
           else
