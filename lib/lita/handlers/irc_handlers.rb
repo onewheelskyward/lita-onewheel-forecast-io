@@ -524,5 +524,9 @@ module ForecastIo
       response.reply bnw_colors.join
       response.reply col_colors.join
     end
+
+    def handle_8ball(response)
+      response.reply MagicEightball.shake
+    end
   end
 end

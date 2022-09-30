@@ -254,6 +254,9 @@ module Lita
 
       route(/^ansitest$/i, :handle_irc_ansitest, command: true)
 
+      route(/^8ball/i, :handle_8ball, command: true)
+      route(/^eightball/i, :handle_8ball, command: true)
+
       http.get '/windows', :handle_http_windows
       http.post '/aqi', :handle_http_aqi
     end
