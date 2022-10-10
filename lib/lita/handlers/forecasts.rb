@@ -933,14 +933,16 @@ module ForecastIo
       # ua = 'curl/7.79.1' # 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.5005.63 Safari/537.36'
 
       # hardcoded map of sensors
-      users = {aaronpk: 43023,
-               zenlinux: 43023,
-               djwong: 61137,
-               philtor: 35221,
-               bkero: 43023,
-               agb: 34409,
-               donpdonp: 43023,
-               onewheelskyward: 23805}
+      users = {
+        # aaronpk: 43023,
+        #        zenlinux: 43023,
+        #        djwong: 61137,
+        #        philtor: 35221,
+        #        bkero: 43023,
+        #        agb: 34409,
+        #        donpdonp: 43023,
+        #        onewheelskyward: 23805
+      }
       # philomath 41507
       # corvalis 57995
 

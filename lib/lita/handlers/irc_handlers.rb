@@ -489,14 +489,14 @@ module ForecastIo
       Lita.logger.debug "pm2.5 #{pm25} aqi #{aqi}"
       aqi
     end
-
+    # 45, 150, 101, 55.4, 35.5
     def weird_aqi_calc(cp, ih, il, bph, bpl)
       a = ih - il
       b = bph - bpl
       c = cp - bpl
       ((a/b) * c + il).round
     end
-
+    # ((150-101)/(55.4-35.5))*(45-35.5))+101
     def handle_irc_ansiloc(response)
     end
 
