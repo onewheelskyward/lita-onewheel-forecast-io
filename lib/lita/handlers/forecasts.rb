@@ -927,7 +927,7 @@ module ForecastIo
 
     def get_aqi_data(response, api_key)
       Lita.logger.debug "get_aqi_data called with #{response.matches[0][0]}"
-      sensor_id = '23805'
+      sensor_id = '75007'
       # headers = {'X-API-Key':
       #            }  # Hack for the 2022 lockdown
       # ua = 'curl/7.79.1' # 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.5005.63 Safari/537.36'
