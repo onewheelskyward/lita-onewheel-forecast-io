@@ -166,8 +166,13 @@ module ForecastIo
 
     # Wrapped for testing.
     def gimme_some_weather(url)
-      # HTTParty.get url
       response = RestClient.get(url)
+      if response.code == '502'
+        Lita.logger.error "502 received from #{url}"
+        # retry
+        response = RestClient.get(url)
+        Lita.logger.debug "New resp code: #{response.code}"
+      end
       JSON.parse(response.to_str)
     end
 
