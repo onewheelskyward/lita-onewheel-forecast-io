@@ -30,6 +30,8 @@ EOS
   spec.add_development_dependency 'coveralls', '~> 0'
   spec.add_development_dependency 'webmock', '~> 3.14.0'
   spec.add_development_dependency 'timecop', '~> 0.9'
+  spec.add_development_dependency 'jwt', '~> 2.7'
+  spec.add_development_dependency 'tenkit', '~> 0.0.5'
 
   spec.add_runtime_dependency 'rest-client', '~> 2'
   spec.add_runtime_dependency 'geocoder', '~> 1.6'

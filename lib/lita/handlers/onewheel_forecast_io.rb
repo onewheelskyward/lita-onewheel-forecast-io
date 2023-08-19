@@ -17,6 +17,11 @@ module Lita
       config :default_location, default: 'Portland, OR'
       config :geocoder_key
       config :purpleair_api_key
+      config :wk_key_id
+      config :wk_team_id
+      config :wk_app_id
+      config :wk_service_id
+      config :wk_key
 
       include ::ForecastIo::Constants
       include ::ForecastIo::IrcHandlers

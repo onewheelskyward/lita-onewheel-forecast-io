@@ -4,6 +4,8 @@ require_relative '../../spec_helper'
 require 'geocoder'
 require 'webmock/rspec'
 require 'timecop'
+require 'rest_client'
+
 # include WebMock::API
 
 def mock_up(filename)
@@ -483,4 +485,18 @@ describe Lita::Handlers::OnewheelForecastIo, lita_handler: true do
     expect(replies.last).to eq 'In Portland, Oregon, USA the next rain is forecast for now, ending in a long while.  Max intensity is hide ya pets hide ya kids.'
   end
 
+  it 'tests weatherkit object' do
+    require './lib/lita/handlers/weatherkit.rb'
+    wk = Weatherkit.new('')
+    token = wk.jwt_it_down('')
+    puts "Token: #{token}"
+
+    resp = RestClient.get "https://weatherkit.apple.com/api/v1/availability/37.323/122.032?country=US",
+                          headers: {'Authorization': "Bearer: #{token}"}
+    puts resp
+    # params: {show: sensor_id},
+    # headers: headers,
+    # user_agent: ua
+
+  end
 end
