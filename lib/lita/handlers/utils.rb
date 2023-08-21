@@ -1,4 +1,6 @@
 require 'geocoder'
+require 'tenkit'
+
 module ForecastIo
   module Utils
     REDIS_KEY = 'forecast_io'
@@ -269,6 +271,38 @@ module ForecastIo
       Lita.logger.debug "Requesting forcast data from: #{uri}"
       get_scale(user)
       gimme_some_weather uri
+    end
+
+    def get_weatherkit_results(user, location, time = nil)
+      # if ! config.wk_key_id     or
+      #    ! config.wk_team_id    or
+      #    ! config.wk_app_id     or
+      #    ! config.wk_service_id or
+      #    ! config.wk_key        or
+      #
+      #   Lita.logger.error "Configuration missing!  #{config.wk_key_id} #{config.wk_team_id} #{config.wk_app_id} #{config.wk_service_id} #{config.wk_key}"
+      #   raise StandardError.new('Configuration missing!')
+      # end
+
+      Lita.logger.debug "Requesting forcast data from: weatherkit"
+      get_scale(user)
+      # gimme_some_weather uri
+
+      Tenkit.configure do |c|
+        c.team_id = config.wk_team_id
+        c.service_id = config.wk_service_id
+        c.key_id = config.wk_key_id
+        c.key = config.wk_key
+      end
+
+      client = Tenkit::Client.new
+
+      report = client.weather(
+        location.latitude,
+        location.longitude,
+        data_sets: [:forecast_hourly]
+      )
+      return report
     end
 
     def handle_geo_lookup(response)

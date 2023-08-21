@@ -282,7 +282,7 @@ module ForecastIo
 
     def do_the_temp_thing(forecast, key, chars, hours)
       temps = []
-      data = forecast['hourly']['data'].slice(0,hours - 1)
+      data = forecast.weather.forecast_hourly.hours.slice(0, hours - 1)
 
       data.each_with_index do |datum, index|
         temps.push datum[key]
@@ -922,7 +922,7 @@ module ForecastIo
     private
 
     def get_current_apparent_temp(forecast)
-      forecast['hourly']['data'][0]['apparentTemperature']
+      forecast.weather.forecast_hourly.hours[0]['temperatureApparent']
     end
 
     def get_aqi_data(response, api_key)
