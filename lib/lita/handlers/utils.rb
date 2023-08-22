@@ -273,7 +273,7 @@ module ForecastIo
       gimme_some_weather uri
     end
 
-    def get_weatherkit_results(user, location, time = nil)
+    def get_weatherkit_results(user, location, datasets, time = nil)
       # if ! config.wk_key_id     or
       #    ! config.wk_team_id    or
       #    ! config.wk_app_id     or
@@ -283,6 +283,15 @@ module ForecastIo
       #   Lita.logger.error "Configuration missing!  #{config.wk_key_id} #{config.wk_team_id} #{config.wk_app_id} #{config.wk_service_id} #{config.wk_key}"
       #   raise StandardError.new('Configuration missing!')
       # end
+
+      # DATA_SETS = {
+      #   current_weather: 'currentWeather',
+      #   forecast_daily: 'forecastDaily',
+      #   forecast_hourly: 'forecastHourly',
+      #   trend_comparison: 'trendComparison',
+      #   weather_alerts: 'weatherAlerts',
+      #   forecast_next_hour: 'forecastNextHour'
+      # }.freeze
 
       Lita.logger.debug "Requesting forcast data from: weatherkit"
       get_scale(user)
@@ -300,7 +309,7 @@ module ForecastIo
       report = client.weather(
         location.latitude,
         location.longitude,
-        data_sets: [:forecast_hourly]
+        data_sets: datasets
       )
       return report
     end

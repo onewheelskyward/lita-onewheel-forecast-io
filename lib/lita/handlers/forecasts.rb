@@ -263,7 +263,7 @@ module ForecastIo
     end
 
     def ansi_temp_apparent_forecast(forecast, hours = 24)
-      str, temperature_data = do_the_temp_thing(forecast, 'apparentTemperature', ansi_chars, hours)
+      str, temperature_data = do_the_temp_thing(forecast, 'temperatureApparent', ansi_chars, hours)
       "#{hours} hr apparent temps: #{get_temperature temperature_data.first.round(1)} |#{str}| #{get_temperature temperature_data.last.round(1)}  Range: #{get_temperature temperature_data.min.round(1)} - #{get_temperature temperature_data.max.round(1)}"
     end
 
@@ -703,7 +703,7 @@ module ForecastIo
       selected_windows = get_windows(response.user)
       Lita.logger.debug "User selected windows: #{selected_windows}"
 
-      forecast['hourly']['data'].each_with_index do |hour, index|
+      forecast.weather.forecast_hourly.hours.each_with_index do |hour, index|
         if hour['temperature'] > high_temp
           high_temp = hour['temperature'].to_i
         end

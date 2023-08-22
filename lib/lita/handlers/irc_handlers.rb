@@ -43,7 +43,7 @@ module ForecastIo
 
     def handle_irc_all_rain(response)
       location = geo_lookup(response.user, response.match_data[1])
-      forecast = get_forecast_io_results(response.user, location)
+      forecast = get_weatherkit_results(response.user, location, [:forecast_next_hour, :forecast_hourly, :forecast_daily])
       response.reply location.location_name + ' ' + ansi_rain_forecast(forecast)
       response.reply location.location_name + ' ' + ansi_rain_intensity_forecast(forecast)
       response.reply location.location_name + ' ' + do_the_daily_rain_thing(forecast)
@@ -52,20 +52,21 @@ module ForecastIo
 
     def handle_irc_ansirain_intensity(response)
       location = geo_lookup(response.user, response.match_data[1])
-      forecast = get_forecast_io_results(response.user, location)
+      forecast = get_weatherkit_results(response.user, location, [:forecast_next_hour])
       response.reply location.location_name + ' ' + ansi_rain_intensity_forecast(forecast)
     end
 
     def handle_irc_ansitemp(response)
       location = geo_lookup(response.user, response.match_data[1])
-      forecast = get_weatherkit_results(response.user, location)
+      forecast = get_weatherkit_results(response.user, location, [:forecast_hourly])
 
       response.reply location.location_name + ' ' + ansi_temp_forecast(forecast)
     end
 
     def handle_irc_ansitempapparent(response)
       location = geo_lookup(response.user, response.match_data[1])
-      forecast = get_forecast_io_results(response.user, location)
+      forecast = get_weatherkit_results(response.user, location, [:forecast_hourly])
+
       response.reply location.location_name + ' ' + ansi_temp_apparent_forecast(forecast)
     end
 
@@ -283,7 +284,7 @@ module ForecastIo
 
     def handle_irc_windows(response)
       location = geo_lookup(response.user, response.match_data[1])
-      forecast = get_forecast_io_results(response.user, location)
+      forecast = get_weatherkit_results(response.user, location, [:forecast_hourly])
       windows_time = do_the_windows_thing(forecast, response)
       response.reply "#{windows_time}"
     end
