@@ -712,7 +712,7 @@ module ForecastIo
           if index.zero?
             time_to_close_the_windows = 'now'
           else
-            time_to_close_the_windows = hour['time']
+            time_to_close_the_windows = hour['forecastStart']
           end
           window_close_temp = hour['temperature']
         end
@@ -722,7 +722,7 @@ module ForecastIo
            hour['temperature'].to_f < last_temp.to_f and
            hour['temperature'].to_f <= selected_windows.to_f
 
-          time_to_open_the_windows = hour['time']
+          time_to_open_the_windows = hour['forecastStart']
         end
 
         last_temp = hour['temperature']
@@ -748,7 +748,7 @@ module ForecastIo
           output = "Close the windows at #{local_time.strftime('%k:%M')}, it will be #{get_temperature window_close_temp}."
         end
         if time_to_open_the_windows
-          open_time = timezone.utc_to_local(Time.at(time_to_open_the_windows).to_datetime)
+          open_time = timezone.utc_to_local(Time.iso8601(time_to_open_the_windows).to_datetime)
           output += "  Open them back up at #{open_time.strftime('%H:%M')}."
         end
         output += "  The high today will be #{get_temperature high_temp}."
@@ -807,13 +807,13 @@ module ForecastIo
           if index.zero?
             time_to_close_the_windows = 'now'
           else
-            time_to_close_the_windows = hour['time']
+            time_to_close_the_windows = hour['forecastStart']
           end
           window_close_temp = hour['temperature']
         end
 
         if !time_to_open_the_windows and time_to_close_the_windows and hour['temperature'] < last_temp and hour['temperature'].to_i <= 75
-          time_to_open_the_windows = hour['time']
+          time_to_open_the_windows = hour['forecastStart']
         end
 
         last_temp = hour['temperature']
@@ -829,12 +829,12 @@ module ForecastIo
         if time_to_close_the_windows == 'now'
           output = "Close the windows now! It is #{get_temperature window_close_temp}.  "
         else
-          time_at = Time.at(time_to_close_the_windows).to_datetime
+          time_at = Time.iso8601(time_to_close_the_windows).to_datetime
           local_time = timezone.utc_to_local(time_at)
           output = "Close the windows at #{local_time.strftime('%k:%M')}, it will be #{get_temperature window_close_temp}.  "
         end
         if time_to_open_the_windows
-          open_time = timezone.utc_to_local(Time.at(time_to_open_the_windows).to_datetime)
+          open_time = timezone.utc_to_local(Time.iso8601(time_to_open_the_windows).to_datetime)
           output += "Open them back up at #{open_time.strftime('%k:%M')}.  "
         end
         output += "The high today will be #{get_temperature high_temp}."
@@ -876,7 +876,7 @@ module ForecastIo
         end
 
         if forecast_temp > target.to_i
-          target_time = hour['time']
+          target_time = hour['forecastStart']
           temp = forecast_temp.to_s
           break
         end
@@ -884,7 +884,7 @@ module ForecastIo
 
       Lita.logger.debug "Found time #{target_time} and temp #{temp} and max #{max}"
       unless target_time.nil?
-        target_time = Time.at(target_time).to_datetime.strftime("%H:%M")
+        target_time = Time.iso8601(target_time).to_datetime.strftime("%H:%M")
       end
 
       # target_time = DateTime.strptime(target_time.to_s, '%s')
