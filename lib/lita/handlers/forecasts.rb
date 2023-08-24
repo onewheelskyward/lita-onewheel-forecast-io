@@ -705,10 +705,12 @@ module ForecastIo
 
       forecast.weather.forecast_hourly.hours.each_with_index do |hour, index|
         if hour['temperature'] > high_temp
+          Lita.logger.debug "High temp found #{hour['temperature']} > #{high_temp}"
           high_temp = hour['temperature'].to_i
         end
 
         if !time_to_close_the_windows and hour['temperature'].to_f >= 21.5
+          Lita.logger.debug "time to close found #{hour['temperature'].to_f} > 21.5"
           if index.zero?
             time_to_close_the_windows = 'now'
           else
@@ -722,6 +724,7 @@ module ForecastIo
            hour['temperature'].to_f < last_temp.to_f and
            hour['temperature'].to_f <= selected_windows.to_f
 
+          Lita.logger.debug "time to open found #{hour['forecastStart']}"
           time_to_open_the_windows = hour['forecastStart']
         end
 

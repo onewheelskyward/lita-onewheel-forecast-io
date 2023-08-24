@@ -197,8 +197,10 @@ module ForecastIo
 
     def get_windows(user)
       key = user.name + '-windows'
+      Lita.logger.debug "Getting windows key #{key}"
       windows = redis.hget(REDIS_KEY, key)
       if windows.nil?
+        Lita.logger.debug "Nil found, setting to 25"
         windows = 25
       end
       windows
