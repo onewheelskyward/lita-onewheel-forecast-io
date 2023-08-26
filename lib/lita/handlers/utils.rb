@@ -9,9 +9,9 @@ module ForecastIo
     # If it's snowing, it's a hard no.
     def is_it_raining(response)
       geocoded = geo_lookup response.user, response.match_data[1]
-      forecast = get_forecast_io_results response.user, geocoded
+      forecast = get_weatherkit_results(response.user, geocoded, [:current_weather])
 
-      response.reply get_eightball_response get_chance_of('rain', forecast['currently'])
+      response.reply get_eightball_response get_chance_of('rain', forecast.weather.current_weather)
     end
 
     # Return an eightball response based on the current chance of snow.
@@ -276,6 +276,15 @@ module ForecastIo
     end
 
     def get_weatherkit_results(user, location, datasets, time = nil)
+      # DATA_SETS = {
+      #   current_weather: 'currentWeather',
+      #   forecast_daily: 'forecastDaily',
+      #   forecast_hourly: 'forecastHourly',
+      #   trend_comparison: 'trendComparison',
+      #   weather_alerts: 'weatherAlerts',
+      #   forecast_next_hour: 'forecastNextHour'
+      # }.freeze
+
       # if ! config.wk_key_id     or
       #    ! config.wk_team_id    or
       #    ! config.wk_app_id     or
@@ -285,15 +294,6 @@ module ForecastIo
       #   Lita.logger.error "Configuration missing!  #{config.wk_key_id} #{config.wk_team_id} #{config.wk_app_id} #{config.wk_service_id} #{config.wk_key}"
       #   raise StandardError.new('Configuration missing!')
       # end
-
-      # DATA_SETS = {
-      #   current_weather: 'currentWeather',
-      #   forecast_daily: 'forecastDaily',
-      #   forecast_hourly: 'forecastHourly',
-      #   trend_comparison: 'trendComparison',
-      #   weather_alerts: 'weatherAlerts',
-      #   forecast_next_hour: 'forecastNextHour'
-      # }.freeze
 
       Lita.logger.debug "Requesting forcast data from: weatherkit"
       get_scale(user)
@@ -308,12 +308,12 @@ module ForecastIo
 
       client = Tenkit::Client.new
 
-      report = client.weather(
+      forecast = client.weather(
         location.latitude,
         location.longitude,
         data_sets: datasets
       )
-      return report
+      return forecast
     end
 
     def handle_geo_lookup(response)
@@ -322,15 +322,18 @@ module ForecastIo
     end
 
     def forecast_text(forecast)
-      forecast_str = "weather is currently #{get_temperature forecast['currently']['temperature']} " +
-          "and #{forecast['currently']['summary'].downcase}.  Winds out of the #{get_cardinal_direction_from_bearing forecast['currently']['windBearing']} at #{get_speed(forecast['currently']['windSpeed'])}. "
+      # Look at comparison payload
+      forecast_str = "weather is currently #{get_temperature forecast.weather.current_weather.temperature} " +
+          "and [nope].  Winds out of the #{get_cardinal_direction_from_bearing forecast.weather.current_weather.wind_direction} at #{get_speed(forecast.weather.current_weather.wind_speed)}. "
+      # #{forecast['currently']['summary'].downcase}
+      # if forecast.weather.forecast_next_hour
+        # Nope again
+        # minute_forecast = forecast.weather.forecast_next_hour['summary'].to_s.downcase.chop
+        # forecast_str += "It will be #{minute_forecast}, and #{forecast['hourly']['summary'].to_s.downcase.chop}.  "
+      # end
 
-      if forecast['minutely']
-        minute_forecast = forecast['minutely']['summary'].to_s.downcase.chop
-        forecast_str += "It will be #{minute_forecast}, and #{forecast['hourly']['summary'].to_s.downcase.chop}.  "
-      end
-
-      forecast_str += "There are also #{forecast['currently']['ozone'].to_s} ozones."
+      # Nozone
+      # forecast_str += "There are also #{forecast['currently']['ozone'].to_s} ozones."
     end
 
     def fix_time(unixtime, data_offset)
