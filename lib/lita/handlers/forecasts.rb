@@ -486,8 +486,9 @@ module ForecastIo
 
       #No temp data in payload?!
       data = forecast.weather.forecast_daily.days
+      Lita.logger.debug "Temp min: #{data[0]['temperature_min']}"
       data.each do |day|
-        mintemps.push day['temperatureMin']
+        mintemps.push day['temperature_min']
         maxtemps.push day['temperature_max']
       end
 
