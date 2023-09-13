@@ -168,7 +168,7 @@ module ForecastIo
 
     def handle_irc_seven_day(response)
       location = geo_lookup(response.user, response.match_data[1])
-      forecast = get_weatherkit_results(response.user, location, [:forecast_daily])
+      forecast = get_forecast_io_results(response.user, location)
       response.reply location.location_name + ' ' + do_the_seven_day_thing(forecast)
     end
 
