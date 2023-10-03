@@ -539,7 +539,7 @@ module ForecastIo
       precip_type = 'rain'
       rains = []
 
-      data = forecast.weather.forecast_hourly.hours
+      data = forecast['hourly']['data']
       data.each_with_index do |day, i|
         if day['precipType'] == 'snow'
           precip_type = 'snow'
