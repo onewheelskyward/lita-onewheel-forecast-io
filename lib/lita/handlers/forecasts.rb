@@ -515,7 +515,7 @@ module ForecastIo
       precip_type = 'rain'
       rains = []
 
-      data = forecast.weather.forecast_daily.days
+      data = forecast['daily']['data']
       data.each do |day|
         if day['precipType'] == 'snow'
           precip_type = 'snow'
