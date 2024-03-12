@@ -485,11 +485,15 @@ module ForecastIo
       maxtemps = []
 
       #No temp data in payload?!
-      data = forecast.weather.forecast_daily.days
-      Lita.logger.debug "Temp min: #{data[0]['temperature_min']}"
+      # data = forecast.weather.forecast_daily.days
+      data = forecast['daily']['data']
+      # Lita.logger.debug data.inspect #"Temp min: #{data[0]['temperatureMin']}"
       data.each do |day|
-        mintemps.push day['temperature_min']
-        maxtemps.push day['temperature_max']
+        Lita.logger.debug day.inspect
+        Lita.logger.debug "tempMin = #{day['temperatureMin']}"
+        mintemps.push day['temperatureMin']
+        Lita.logger.debug "tempMax = #{day['temperatureMax']}"
+        maxtemps.push day['temperatureMax']
       end
 
       differential = maxtemps.max - maxtemps.min
