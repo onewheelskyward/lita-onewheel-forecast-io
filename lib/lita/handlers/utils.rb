@@ -389,7 +389,11 @@ module ForecastIo
 
       # And get the last one.
       Lita.logger.debug "color: #{color} collect_str: #{collect_str}"
-      colored_str += "\x03" + colors[color] + collect_str.to_s + "\x03"
+      if color.nil?
+        colored_str += collect_str.to_s
+      else
+        colored_str += "\x03" + colors[color] + collect_str.to_s + "\x03"
+      end
     end
 
     # this method lets us condense rain forcasts into smaller sets
