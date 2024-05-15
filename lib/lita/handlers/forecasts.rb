@@ -1,3 +1,4 @@
+require 'date'
 require 'tzinfo'
 
 module ForecastIo
@@ -757,7 +758,8 @@ module ForecastIo
         if time_to_close_the_windows == 'now'
           output = "Close the windows now! It is #{get_temperature window_close_temp}."
         else
-          time_at = Time.at(time_to_close_the_windows).to_datetime
+          Lita.logger.debug "time_to_close_the_windows: '#{time_to_close_the_windows}'"
+          time_at = DateTime.parse(time_to_close_the_windows)
           local_time = timezone.utc_to_local(time_at)
           output = "Close the windows at #{local_time.strftime('%k:%M')}, it will be #{get_temperature window_close_temp}."
         end
