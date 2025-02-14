@@ -533,5 +533,28 @@ module ForecastIo
     def handle_8ball(response)
       response.reply MagicEightball.shake
     end
+
+    def handle_nws_alerts(response)
+      str = ''
+      uri = "https://api.weather.gov/alerts/active?area=OR"
+      Lita.logger.debug "URI: #{uri}"
+      resp = RestClient.get uri,
+              headers: {'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:135.0) Gecko/20100101 Firefox/135.0'}
+      nws = JSON.parse resp
+      nws['features'].each do |f|
+        f['properties']['geocode']['UGC'].each do |ugc|
+          if ugc == 'ORZ111'
+            Lita.logger.debug f['properties']['areaDesc']
+            Lita.logger.debug f['properties']['headline']
+            Lita.logger.debug f['properties']['description']
+            str = f['properties']['areaDesc']
+            str += f['properties']['headline']
+            str += f['properties']['description']
+          end
+        end
+      end
+      # Lita.logger.debug nws['features']
+      response.reply str
+    end
   end
 end
