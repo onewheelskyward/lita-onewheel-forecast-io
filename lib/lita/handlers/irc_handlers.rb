@@ -547,7 +547,7 @@ module ForecastIo
             Lita.logger.debug f['properties']['areaDesc']
             Lita.logger.debug f['properties']['headline']
             Lita.logger.debug f['properties']['description']
-            str = f['properties']['areaDesc']
+            str += f['properties']['areaDesc']
             str += f['properties']['headline']
             str += f['properties']['description']
           end
