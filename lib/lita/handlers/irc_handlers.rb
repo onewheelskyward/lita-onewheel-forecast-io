@@ -536,6 +536,7 @@ module ForecastIo
 
     def handle_nws_alerts(response)
       str = ''
+      yep = false
       uri = "https://api.weather.gov/alerts/active?area=OR"
       Lita.logger.debug "URI: #{uri}"
       resp = RestClient.get uri,
@@ -544,6 +545,7 @@ module ForecastIo
       nws['features'].each do |f|
         f['properties']['geocode']['UGC'].each do |ugc|
           if ugc == 'ORZ111'
+            yep = true
             Lita.logger.debug f['properties']['areaDesc']
             Lita.logger.debug f['properties']['headline']
             Lita.logger.debug f['properties']['description']
@@ -554,6 +556,7 @@ module ForecastIo
         end
       end
       # Lita.logger.debug nws['features']
+      str = "No NWS alerts for ORZ111 at this time." unless yep
       response.reply str
     end
   end
