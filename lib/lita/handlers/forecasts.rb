@@ -347,13 +347,16 @@ module ForecastIo
     end
 
     def do_the_wind_direction_thing(forecast, wind_arrows, hours = 48)
-      key = 'windDirection'
-      data = forecast.weather.forecast_hourly.hours.slice(0,hours - 1)
+      key = 'windBearing'
+      # Lita.logger.debug forecast
+      data = forecast['hourly']['data']  #.forecast_hourly.hours.slice(0,hours - 1)
+      # Lita.logger.debug data
       str = ''
       data_points = []
       gust_data = []
 
       data.each_with_index do |datum, index|
+        # Lita.logger.debug "datum[#{key}] = #{datum[key]}"
         wind_arrow_index = get_cardinal_direction_from_bearing(datum[key])
         str << wind_arrows[wind_arrow_index].to_s
         data_points.push datum['windSpeed']
