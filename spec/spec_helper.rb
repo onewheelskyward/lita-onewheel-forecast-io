@@ -8,7 +8,6 @@ SimpleCov.formatters = [
   Coveralls::SimpleCov::Formatter
 ]
 SimpleCov.start { add_filter '/spec/' }
-Coveralls.wear!
 
 require 'lita-onewheel-forecast-io'
 require 'lita/rspec'

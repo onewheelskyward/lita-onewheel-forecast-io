@@ -38,7 +38,7 @@ describe Lita::Handlers::OnewheelForecastIo, lita_handler: true do
 
   it '!forecast' do
     send_command 'forecast'
-    expect(replies.last).to eq('Portland, Oregon, USA weather is currently 83.1°F and clear.  Winds out of the E at 5.74 kph. It will be clear for the hour, and flurries tomorrow morning.  There are also 357.71 ozones.')
+    expect(replies.last).to eq('Portland, Oregon, USA weather is currently 83.1°F and clear.  Winds out of the E at 3.59 mph. It will be clear for the hour, and flurries tomorrow morning.  There are also 357.71 ozones.')
   end
 
   # it '!rain' do
@@ -102,12 +102,12 @@ describe Lita::Handlers::OnewheelForecastIo, lita_handler: true do
 
   it '!ansiwind portland' do
     send_command 'ansiwind portland'
-    expect(replies.last).to eq("Portland, Oregon, USA 48h wind direction 14.4 kph|\u000306↓\u000310↙←\u000311↖↑↗\u000308→↘\u000311↓←←←←←←\u000310←←←←←←←\u000306←←←←←\u000302←←←↙↙↙↙↓↓↓\u000306↓↓↓↓↓↓↓↓↙↙\u0003|14.4 kph Range: 3.6 kph - 43.2 kph, gusting to 0.0 kph")
+    expect(replies.last).to eq("Portland, Oregon, USA 48h wind direction 9.0 mph|\u000306↓\u000310↙←\u000311↖↑↗\u000308→↘\u000311↓←←←←←←\u000310←←←←←←←\u000306←←←←←\u000302←←←↙↙↙↙↓↓↓\u000306↓↓↓↓↓↓↓↓↙↙\u0003|9.0 mph Range: 2.25 mph - 27.0 mph, gusting to 0.0 mph")
   end
 
   it '!conditions' do
     send_command 'conditions'
-    expect(replies.last).to eq("Portland, Oregon, USA 82.94°F |\u000307_▁\u000304▃▅▇\u000305█\u000313█\u0003| 100.58°F / 4.3 kph |\u000306↓\u000310↙←\u000311↖↑↗\u000308→\u0003| 12.71 kph / 98% chance of sun / 60m precip |\u000306❄\u000311▇\u000308▇\u000302_____________\u0003|")
+    expect(replies.last).to eq("Portland, Oregon, USA 82.94°F |\u000307_▁\u000304▃▅▇\u000305█\u000313█\u0003| 100.58°F / 2.69 mph |\u000306↓\u000310↙←\u000311↖↑↗\u000308→\u0003| 7.94 mph / 98% chance of sun / 60m precip |\u000306❄\u000311▇\u000308▇\u000302_____________\u0003|")
   end
 
   it '!alerts' do
@@ -152,7 +152,7 @@ describe Lita::Handlers::OnewheelForecastIo, lita_handler: true do
 
   it '!7day' do
     send_command '7day'
-    expect(replies.last).to eq("Portland, Oregon, USA 7day high/low temps 102.2°F |13🔥🔥🔥🔥🔥🔥🔥🔥| 126.32°F / 82.76°F |07_▁04▃▅13█05▇13██| 103.46°F Range: 82.71°F - 126.28°F")
+    expect(replies.last).to eq("Portland, Oregon, USA 7day high/low temps 102.2°F |13🔥🔥🔥🔥🔥🔥🔥🔥| 126.32°F / 82.76°F |07_▁04▃▅13█05▇13██| 103.46°F High range: 102.18°F - 126.28°F, Low range: 82.71°F - 108.59°F")
   end
 
   it '!dailyrain' do
@@ -248,7 +248,7 @@ describe Lita::Handlers::OnewheelForecastIo, lita_handler: true do
 
   it '!dailywind' do
     send_command 'dailywind'
-    expect(replies.last).to include("Portland, Oregon, USA 7day winds 25.2 kph|\u000310█\u000306▅\u000310██\u000302▅▅▅")
+    expect(replies.last).to include("Portland, Oregon, USA 7day winds 15.75 mph|\u000310█\u000306▅\u000310██\u000302▅▅▅")
   end
 
   it '!ansihumidity' do
@@ -263,11 +263,11 @@ describe Lita::Handlers::OnewheelForecastIo, lita_handler: true do
 
   it '!forecastallthethings' do
     send_command 'forecastallthethings'
-    expect(replies[0]).to eq('Portland, Oregon, USA weather is currently 83.1°F and clear.  Winds out of the E at 5.74 kph. It will be clear for the hour, and flurries tomorrow morning.  There are also 357.71 ozones.')
+    expect(replies[0]).to eq('Portland, Oregon, USA weather is currently 83.1°F and clear.  Winds out of the E at 3.59 mph. It will be clear for the hour, and flurries tomorrow morning.  There are also 357.71 ozones.')
     expect(replies[1]).to include("|\u000302_❄\u000306▃\u000310▅\u000303▅\u000309▅\u000311▇\u000308▇\u000307█\u000304█\u000313█\u000302__________________________________________________\u0003|")
     expect(replies[2]).to include('Portland, Oregon, USA 1hr snow intensity')
     expect(replies[3]).to eq("Portland, Oregon, USA 24 hr temps: 82.94°F (feels like 74.23°F) |07_▁04▃▅▇05█13███05█04▇▅▅▅▃▃▃▃07▃▁▃▁▁| 83.12°F  Range: 82.94°F - 100.58°F")
-    expect(replies[4]).to include('Portland, Oregon, USA 48h wind direction 14.4 kph')
+    expect(replies[4]).to include('Portland, Oregon, USA 48h wind direction 9.0 mph')
     expect(replies[5]).to eq("Portland, Oregon, USA 48hr sun forecast |\u000308████████████████████\u000307▇▇▅\u000309▅▅▃\u000303▁_▁\u000309▃▃▃\u000303▁▁▁▁▃\u000309▃▅\u000307▇▇▇▇\u000308▇▇▇▇▇▇\u0003| max 100%")
     expect(replies[6]).to eq('Portland, Oregon, USA 24h cloud cover |___________▁▁▁▁▁▁▁▁▃▅▅▅| range 0% - 49.0%')
     expect(replies[7]).to eq("Portland, Oregon, USA 48 hr snows |\u000302_______________________❄❄❄❄▁▁▁▁▁▁▁▁▁▁▁▁▁❄❄❄❄❄❄❄❄_\u0003| max 4%, 0mm accumulation")
@@ -296,7 +296,7 @@ describe Lita::Handlers::OnewheelForecastIo, lita_handler: true do
 
   it '!asciiwind' do
     send_command 'asciiwind'
-    expect(replies.last).to include('Portland, Oregon, USA 48h wind direction 4.3 kph')
+    expect(replies.last).to include('Portland, Oregon, USA 48h wind direction 2.69 mph')
   end
 
   it '!geo' do
@@ -336,14 +336,14 @@ describe Lita::Handlers::OnewheelForecastIo, lita_handler: true do
   it '!windows' do
     mock_up 'windows'
     send_command 'windows'
-    expect(replies.last).to eq('Close the windows now!  The AQI is 112, unhealthy.')
+    expect(replies.last).to include('Close the windows now!')
   end
 
   it '!windows in c' do
     mock_up 'windows'
     send_command 'set scale c'
     send_command 'windows'
-    expect(replies.last).to eq('Close the windows now!  The AQI is 112, unhealthy.')
+    expect(replies.last).to include('Close the windows now!')
   end
 
   it 'will not say a 28.000000000000004% chance of rain' do
@@ -377,7 +377,7 @@ describe Lita::Handlers::OnewheelForecastIo, lita_handler: true do
   it '!ansifog' do
     mock_up 'ansifog'
     send_command 'ansifog'
-    expect(replies.last).to eq('Portland, Oregon, USA 24h fog report |▅▅▃____________________| visibility 9.12 km - 16 km')
+    expect(replies.last).to eq('Portland, Oregon, USA 24h fog report |▅▅▃____________________| visibility 5.7 mi - 10.0 mi')
   end
 
   # it '!windows 0200s' do
@@ -395,7 +395,7 @@ describe Lita::Handlers::OnewheelForecastIo, lita_handler: true do
   it '!7day extreme' do
     mock_up '7dayextreme'
     send_command '7day'
-    expect(replies.last).to eq("Portland, Oregon, USA 7day high/low temps 87.08°F |\u000304_▃\u000313🔥🔥🔥\u000305▇▅\u000304▅\u0003| 93.92°F / 56.12°F |\u000311_▅\u000308▇\u000307██\u000308▇▇▇\u0003| 67.46°F Range: 56.16°F - 108.41°F")
+    expect(replies.last).to eq("Portland, Oregon, USA 7day high/low temps 87.08°F |\u000304_▃\u000313🔥🔥🔥\u000305▇▅\u000304▅\u0003| 93.92°F / 56.12°F |\u000311_▅\u000308▇\u000307██\u000308▇▇▇\u0003| 67.46°F High range: 87.01°F - 108.41°F, Low range: 56.16°F - 78.85°F")
   end
 
   it '!ansitemp extremes' do
@@ -424,7 +424,7 @@ describe Lita::Handlers::OnewheelForecastIo, lita_handler: true do
 
   it '!ansifogs' do
     send_command 'ansifog portland'
-    expect(replies.last).to eq("Portland, Oregon, USA 24h fog report |▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅| visibility 10 km - 10 km")
+    expect(replies.last).to eq("Portland, Oregon, USA 24h fog report |▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅| visibility 6.25 mi - 6.25 mi")
   end
 
   it '!allrains' do

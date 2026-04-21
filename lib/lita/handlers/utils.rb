@@ -353,7 +353,7 @@ module ForecastIo
         chunk_results = {}
         condensed_chunk = collect_values(chunk)
         condensed_chunk.each do |k, v|
-          if v[0].class == Fixnum || v[0].class == Float
+          if v[0].is_a?(Numeric)
             new_val = v.inject{ |sum,val| sum + val} / v.size
           elsif v[0].class == String
             new_val = v[0]
