@@ -15,6 +15,15 @@ def mock_up(filename)
   # allow(RestClient).to receive(:get) { mock_weather_json }
 end
 
+def mock_weatherkit_tomorrow(today_max, tomorrow_max)
+  day0 = Tenkit::DayWeatherConditions.new('temperature_max' => today_max)
+  day1 = Tenkit::DayWeatherConditions.new('temperature_max' => tomorrow_max)
+  daily = double('DailyForecast', days: [day0, day1])
+  weather = double('Weather', forecast_daily: daily)
+  wk_response = double('WeatherResponse', weather: weather)
+  allow_any_instance_of(Tenkit::Client).to receive(:weather).and_return(wk_response)
+end
+
 describe Lita::Handlers::OnewheelForecastIo, lita_handler: true do
   before(:each) do
     Geocoder.configure(lookup: :test)
@@ -325,14 +334,15 @@ describe Lita::Handlers::OnewheelForecastIo, lita_handler: true do
   end
 
   it '!tomorrows' do
+    mock_weatherkit_tomorrow(20.0, 23.0)
     send_command 'tomorrow'
-    expect(replies.last).to eq('Tomorrow will be warmer than today.')
+    expect(replies.last).to eq('Tomorrow will be warmer than today in Portland, Oregon, USA.')
   end
 
-  it '!tomorrows' do
-    mock_up 'much_warmer'
+  it '!tomorrows much hotter' do
+    mock_weatherkit_tomorrow(25.0, 35.0)
     send_command 'tomorrow'
-    expect(replies.last).to eq('Tomorrow will be much warmer than today.')
+    expect(replies.last).to eq('Tomorrow will be much hotter than today in Portland, Oregon, USA.')
   end
 
   it '!windows' do
@@ -368,7 +378,7 @@ describe Lita::Handlers::OnewheelForecastIo, lita_handler: true do
   #
   it 'will summarize !today in relation to yesterday' do
     send_command 'today'
-    expect(replies.last).to eq('Today will be about the same as yesterday.')
+    expect(replies.last).to eq('Today will be about the same as yesterday in Portland, Oregon, USA.')
   end
 
   # it 'colors strings' do

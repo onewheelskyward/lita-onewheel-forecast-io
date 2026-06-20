@@ -674,15 +674,17 @@ module ForecastIo
     end
 
     def do_the_today_thing(forecast, yesterday)
-      Lita.logger.info "Basing today on today - yesterday: #{yesterday['daily']['data'][0]['temperature_max']} - #{forecast.weather.forecast_daily.days[0]['temperature_max']}"
-      temp_diff = yesterday['daily']['data'][0]['temperature_max'] - forecast.weather.forecast_daily.days[0]['temperature_max']
-      get_daily_comparison_text(temp_diff, forecast.weather.forecast_daily.days[0]['temperature_max'])
+      Lita.logger.info "Basing today on today - yesterday: #{yesterday['daily']['data'][0]['temperatureMax']} - #{forecast['daily']['data'][0]['temperatureMax']}"
+      temp_diff = yesterday['daily']['data'][0]['temperatureMax'] - forecast['daily']['data'][0]['temperatureMax']
+      get_daily_comparison_text(temp_diff, forecast['daily']['data'][0]['temperatureMax'])
     end
 
     def do_the_tomorrow_thing(forecast)
-      Lita.logger.info "Basing tomorrow on today - tomorrow: #{forecast.weather.forecast_daily.days[0]['temperature_max']} - #{forecast.weather.forecast_daily.days[1]['temperature_max']}"
-      temp_diff = forecast.weather.forecast_daily.days[0]['temperature_max'] - forecast.weather.forecast_daily.days[1]['temperature_max']
-      get_daily_comparison_text(temp_diff, forecast.weather.forecast_daily.days[0]['temperature_max'])
+      today_max = forecast.weather.forecast_daily.days[0].temperature_max
+      tomorrow_max = forecast.weather.forecast_daily.days[1].temperature_max
+      Lita.logger.info "Basing tomorrow on today - tomorrow: #{today_max} - #{tomorrow_max}"
+      temp_diff = today_max - tomorrow_max
+      get_daily_comparison_text(temp_diff, today_max)
     end
 
     # If the temperature difference is positive,
@@ -692,11 +694,11 @@ module ForecastIo
       elsif temp_diff > 1 and temp_diff <= 5
         'cooler than'
       elsif temp_diff > 5
-        (high > 70)? 'much cooler than' : 'much colder than'
+        (high > 21)? 'much cooler than' : 'much colder than'
       elsif temp_diff < -1 and temp_diff >= -5
         'warmer than'
       elsif temp_diff < -5
-        (high < 70)? 'much warmer than' : 'much hotter than'
+        (high < 21)? 'much warmer than' : 'much hotter than'
       end
     end
 

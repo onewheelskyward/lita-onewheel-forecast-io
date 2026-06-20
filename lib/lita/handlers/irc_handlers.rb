@@ -273,7 +273,7 @@ module ForecastIo
       forecast = get_weatherkit_results(response.user, location, [:forecast_daily])
       tomorrow_will_be = do_the_tomorrow_thing(forecast)
       Lita.logger.info "Response: Tomorrow will be #{tomorrow_will_be} today."
-      response.reply "Tomorrow will be #{tomorrow_will_be} today."
+      response.reply "Tomorrow will be #{tomorrow_will_be} today in #{location.location_name}."
     end
 
     def handle_irc_today(response)
@@ -282,7 +282,7 @@ module ForecastIo
       yesterday_weather = get_forecast_io_results(response.user, location, Date.today.prev_day.to_s + 'T00:00:00-0700')
       today_will_be = do_the_today_thing(forecast, yesterday_weather)
       Lita.logger.info "Response: Today will be #{today_will_be} yesterday."
-      response.reply "Today will be #{today_will_be} yesterday."
+      response.reply "Today will be #{today_will_be} yesterday in #{location.location_name}."
     end
 
     def handle_irc_windows(response)
