@@ -17,6 +17,11 @@ module Lita
       config :default_location, default: 'Portland, OR'
       config :geocoder_key
       config :purpleair_api_key
+      config :wk_key_id
+      config :wk_team_id
+      config :wk_app_id
+      config :wk_service_id
+      config :wk_key
 
       include ::ForecastIo::Constants
       include ::ForecastIo::IrcHandlers
@@ -256,6 +261,8 @@ module Lita
 
       route(/^8ball/i, :handle_8ball, command: true)
       route(/^eightball/i, :handle_8ball, command: true)
+
+      route(/^nws/i, :handle_nws_alerts, command: true)
 
       http.get '/windows', :handle_http_windows
       http.post '/aqi', :handle_http_aqi

@@ -1,8 +1,10 @@
+require 'date'
 require 'tzinfo'
 
 module ForecastIo
   module Forecasts
     def ascii_rain_forecast(forecast)
+      #Bummer
       (str, precip_type) = do_the_rain_chance_thing(forecast, ascii_chars, 'precipProbability')
       max = get_max_by_data_key(forecast, 'minutely', 'precipProbability')
       agg = get_max_by_data_key(forecast, 'minutely', 'precipIntensity')
@@ -86,13 +88,13 @@ module ForecastIo
     # end
 
     def do_the_rain_chance_thing(forecast, chars, key, use_color = config.colors, minute_limit = nil)
-      if forecast['minutely'].nil?
+      if forecast.weather.forecast_next_hour.nil?
         return 'No minute-by-minute data available.'
       end
 
       i_can_has_snow = false
       data_points = []
-      data = forecast['minutely']['data']
+      data = forecast.weather.forecast_next_hour
 
       data.each do |datum|
         data_points.push datum[key]
@@ -125,13 +127,13 @@ module ForecastIo
     end
 
     def do_the_rain_intensity_thing(forecast, chars, key) #, type, range_colors = nil)
-      if forecast['minutely'].nil?
+      if forecast.weather.forecast_next_hour.nil?
         return 'No minute-by-minute data available.'  # The "Middle of Nowhere" case.
       end
 
       i_can_has_snow = false
       data_points = []
-      data = forecast['minutely']['data']
+      data = forecast.weather.forecast_next_hour
 
       data.each do |datum|
         data_points.push datum[key]
@@ -173,7 +175,7 @@ module ForecastIo
       rain_time = nil
       mindata = forecast['minutely']['data']
       data = forecast['hourly']['data']
-      dailydata = forecast['daily']['data']
+      dailydata = forecast.weather.forecast_daily.days
 
       min_start = nil
       min_end = nil
@@ -263,7 +265,7 @@ module ForecastIo
     end
 
     def ansi_temp_apparent_forecast(forecast, hours = 24)
-      str, temperature_data = do_the_temp_thing(forecast, 'apparentTemperature', ansi_chars, hours)
+      str, temperature_data = do_the_temp_thing(forecast, 'temperatureApparent', ansi_chars, hours)
       "#{hours} hr apparent temps: #{get_temperature temperature_data.first.round(1)} |#{str}| #{get_temperature temperature_data.last.round(1)}  Range: #{get_temperature temperature_data.min.round(1)} - #{get_temperature temperature_data.max.round(1)}"
     end
 
@@ -282,7 +284,7 @@ module ForecastIo
 
     def do_the_temp_thing(forecast, key, chars, hours)
       temps = []
-      data = forecast['hourly']['data'].slice(0,hours - 1)
+      data = forecast.weather.forecast_hourly.hours.slice(0, hours - 1)
 
       data.each_with_index do |datum, index|
         temps.push datum[key]
@@ -346,12 +348,15 @@ module ForecastIo
 
     def do_the_wind_direction_thing(forecast, wind_arrows, hours = 48)
       key = 'windBearing'
-      data = forecast['hourly']['data'].slice(0,hours - 1)
+      # Lita.logger.debug forecast
+      data = forecast['hourly']['data']  #.forecast_hourly.hours.slice(0,hours - 1)
+      # Lita.logger.debug data
       str = ''
       data_points = []
       gust_data = []
 
       data.each_with_index do |datum, index|
+        # Lita.logger.debug "datum[#{key}] = #{datum[key]}"
         wind_arrow_index = get_cardinal_direction_from_bearing(datum[key])
         str << wind_arrows[wind_arrow_index].to_s
         data_points.push datum['windSpeed']
@@ -393,7 +398,7 @@ module ForecastIo
     def do_the_daily_sun_thing(forecast, chars)
       key = 'cloudCover'
       data_points = []
-      data = forecast['daily']['data']
+      data = forecast.weather.forecast_daily.days
 
       data.each do |datum|
         data_points.push (1 - datum[key]).to_f  # It's a cloud cover percentage, so let's inverse it to give us sun cover.
@@ -459,12 +464,12 @@ module ForecastIo
     end
 
     def do_the_sunrise_thing(forecast)
-      t = Time.at(fix_time(forecast['daily']['data'][0]['sunriseTime'], forecast['offset']))
+      t = Time.at(fix_time(forecast.weather.forecast_daily.days[0]['sunriseTime'], forecast['offset']))
       t.strftime("%H:%M:%S")
     end
 
     def do_the_sunset_thing(forecast)
-      t = Time.at(fix_time(forecast['daily']['data'][0]['sunsetTime'], forecast['offset']))
+      t = Time.at(fix_time(forecast.weather.forecast_daily.days[0]['sunsetTime'], forecast['offset']))
       t.strftime("%H:%M:%S")
     end
 
@@ -473,7 +478,7 @@ module ForecastIo
       wind_str, winds = do_the_wind_direction_thing(forecast, ansi_wind_arrows, 8)
       rain_str, rains = do_the_rain_chance_thing(forecast, ansi_chars, 'precipProbability', config.colors, 15)
 
-      sun_chance = ((1 - forecast['daily']['data'][0]['cloudCover']) * 100).round
+      sun_chance = ((1 - forecast.weather.current_weather.cloud_cover) * 100).round
       "#{get_temperature temps.first.round(2)} |#{temp_str}| #{get_temperature temps.last.round(2)} "\
         "/ #{get_speed(winds.first)} |#{wind_str}| #{get_speed(winds.last)} "\
         "/ #{sun_chance}% chance of sun / 60m precip |#{rain_str}|"
@@ -483,14 +488,20 @@ module ForecastIo
       mintemps = []
       maxtemps = []
 
+      #No temp data in payload?!
+      # data = forecast.weather.forecast_daily.days
       data = forecast['daily']['data']
+      # Lita.logger.debug data.inspect #"Temp min: #{data[0]['temperatureMin']}"
       data.each do |day|
+        Lita.logger.debug day.inspect
+        Lita.logger.debug "tempMin = #{day['temperatureMin']}"
         mintemps.push day['temperatureMin']
+        Lita.logger.debug "tempMax = #{day['temperatureMax']}"
         maxtemps.push day['temperatureMax']
       end
 
       differential = maxtemps.max - maxtemps.min
-      max_str = get_dot_str(ansi_chars, data, maxtemps.min, differential, 'temperatureMax')
+      max_str = get_dot_str(ansi_chars, data, maxtemps.min, differential, 'temperature_max')
 
       make_fire(max_str, maxtemps)
 
@@ -498,7 +509,7 @@ module ForecastIo
       min_str = get_dot_str(ansi_chars, data, mintemps.min, differential, 'temperatureMin')
 
       if config.colors
-        max_str = get_colored_string(data, 'temperatureMax', max_str, get_temp_range_colors)
+        max_str = get_colored_string(data, 'temperature_max', max_str, get_temp_range_colors)
         min_str = get_colored_string(data, 'temperatureMin', min_str, get_temp_range_colors)
       end
 
@@ -577,7 +588,7 @@ module ForecastIo
     def do_the_daily_wind_thing(forecast)
       winds = []
 
-      data = forecast['daily']['data']
+      data = forecast.weather.forecast_daily.days
       data.each do |day|
         winds.push day['windSpeed']
       end
@@ -594,7 +605,7 @@ module ForecastIo
     def do_the_daily_humidity_thing(forecast)
       humidities = []
 
-      data = forecast['daily']['data']
+      data = forecast.weather.forecast_daily.days
       data.each do |day|
         humidities.push day['humidity']
       end
@@ -634,7 +645,7 @@ module ForecastIo
 
     def do_the_daily_pressure_thing(forecast)
       # O ◎ ]
-      data = forecast['daily']['data']
+      data = forecast.weather.forecast_daily.days
       key = 'pressure'
       boiled_data = []
 
@@ -649,7 +660,7 @@ module ForecastIo
 
     def get_alerts(forecast)
       str = []
-      forecast['alerts'].each do |alert|
+      forecast.weather.weather_alerts.each do |alert|
         alert['description'].match /\.\.\.(\w+)\.\.\./
         desc = alert['description'][0..alert['description'].rindex('...')]
         str.push desc
@@ -663,15 +674,15 @@ module ForecastIo
     end
 
     def do_the_today_thing(forecast, yesterday)
-      Lita.logger.info "Basing today on today - yesterday: #{yesterday['daily']['data'][0]['temperatureMax']} - #{forecast['daily']['data'][0]['temperatureMax']}"
-      temp_diff = yesterday['daily']['data'][0]['temperatureMax'] - forecast['daily']['data'][0]['temperatureMax']
-      get_daily_comparison_text(temp_diff, forecast['daily']['data'][0]['temperatureMax'])
+      Lita.logger.info "Basing today on today - yesterday: #{yesterday['daily']['data'][0]['temperature_max']} - #{forecast.weather.forecast_daily.days[0]['temperature_max']}"
+      temp_diff = yesterday['daily']['data'][0]['temperature_max'] - forecast.weather.forecast_daily.days[0]['temperature_max']
+      get_daily_comparison_text(temp_diff, forecast.weather.forecast_daily.days[0]['temperature_max'])
     end
 
     def do_the_tomorrow_thing(forecast)
-      Lita.logger.info "Basing tomorrow on today - tomorrow: #{forecast['daily']['data'][0]['temperatureMax']} - #{forecast['daily']['data'][1]['temperatureMax']}"
-      temp_diff = forecast['daily']['data'][0]['temperatureMax'] - forecast['daily']['data'][1]['temperatureMax']
-      get_daily_comparison_text(temp_diff, forecast['daily']['data'][0]['temperatureMax'])
+      Lita.logger.info "Basing tomorrow on today - tomorrow: #{forecast.weather.forecast_daily.days[0]['temperature_max']} - #{forecast.weather.forecast_daily.days[1]['temperature_max']}"
+      temp_diff = forecast.weather.forecast_daily.days[0]['temperature_max'] - forecast.weather.forecast_daily.days[1]['temperature_max']
+      get_daily_comparison_text(temp_diff, forecast.weather.forecast_daily.days[0]['temperature_max'])
     end
 
     # If the temperature difference is positive,
@@ -703,17 +714,22 @@ module ForecastIo
       selected_windows = get_windows(response.user)
       Lita.logger.debug "User selected windows: #{selected_windows}"
 
-      forecast['hourly']['data'].each_with_index do |hour, index|
+      forecast.weather.forecast_hourly.hours.each_with_index do |hour, index|
         if hour['temperature'] > high_temp
+          Lita.logger.debug "High temp found #{hour['temperature']} > #{high_temp}"
           high_temp = hour['temperature'].to_i
         end
 
         if !time_to_close_the_windows and hour['temperature'].to_f >= 21.5
+          Lita.logger.debug "time to close found #{hour['temperature'].to_f} > 21.5"
           if index.zero?
+            Lita.logger.debug "index.zero? true"
             time_to_close_the_windows = 'now'
           else
-            time_to_close_the_windows = hour['time']
+            Lita.logger.debug "Close time found #{hour['forecastStart']}"
+            time_to_close_the_windows = hour['forecastStart']
           end
+          Lita.logger.debug "close temp: #{hour['temperature']}"
           window_close_temp = hour['temperature']
         end
 
@@ -722,9 +738,11 @@ module ForecastIo
            hour['temperature'].to_f < last_temp.to_f and
            hour['temperature'].to_f <= selected_windows.to_f
 
-          time_to_open_the_windows = hour['time']
+          Lita.logger.debug "time to open found #{hour['forecastStart']}"
+          time_to_open_the_windows = hour['forecastStart']
         end
 
+        Lita.logger.debug "last_temp = #{hour['temperature']} index: #{index}"
         last_temp = hour['temperature']
         break if index > 18
       end
@@ -743,12 +761,13 @@ module ForecastIo
         if time_to_close_the_windows == 'now'
           output = "Close the windows now! It is #{get_temperature window_close_temp}."
         else
-          time_at = Time.at(time_to_close_the_windows).to_datetime
+          Lita.logger.debug "time_to_close_the_windows: '#{time_to_close_the_windows}'"
+          time_at = DateTime.parse(time_to_close_the_windows)
           local_time = timezone.utc_to_local(time_at)
           output = "Close the windows at #{local_time.strftime('%k:%M')}, it will be #{get_temperature window_close_temp}."
         end
         if time_to_open_the_windows
-          open_time = timezone.utc_to_local(Time.at(time_to_open_the_windows).to_datetime)
+          open_time = timezone.utc_to_local(Time.iso8601(time_to_open_the_windows).to_datetime)
           output += "  Open them back up at #{open_time.strftime('%H:%M')}."
         end
         output += "  The high today will be #{get_temperature high_temp}."
@@ -807,13 +826,13 @@ module ForecastIo
           if index.zero?
             time_to_close_the_windows = 'now'
           else
-            time_to_close_the_windows = hour['time']
+            time_to_close_the_windows = hour['forecastStart']
           end
           window_close_temp = hour['temperature']
         end
 
         if !time_to_open_the_windows and time_to_close_the_windows and hour['temperature'] < last_temp and hour['temperature'].to_i <= 75
-          time_to_open_the_windows = hour['time']
+          time_to_open_the_windows = hour['forecastStart']
         end
 
         last_temp = hour['temperature']
@@ -829,12 +848,12 @@ module ForecastIo
         if time_to_close_the_windows == 'now'
           output = "Close the windows now! It is #{get_temperature window_close_temp}.  "
         else
-          time_at = Time.at(time_to_close_the_windows).to_datetime
+          time_at = Time.iso8601(time_to_close_the_windows).to_datetime
           local_time = timezone.utc_to_local(time_at)
           output = "Close the windows at #{local_time.strftime('%k:%M')}, it will be #{get_temperature window_close_temp}.  "
         end
         if time_to_open_the_windows
-          open_time = timezone.utc_to_local(Time.at(time_to_open_the_windows).to_datetime)
+          open_time = timezone.utc_to_local(Time.iso8601(time_to_open_the_windows).to_datetime)
           output += "Open them back up at #{open_time.strftime('%k:%M')}.  "
         end
         output += "The high today will be #{get_temperature high_temp}."
@@ -876,7 +895,7 @@ module ForecastIo
         end
 
         if forecast_temp > target.to_i
-          target_time = hour['time']
+          target_time = hour['forecastStart']
           temp = forecast_temp.to_s
           break
         end
@@ -884,7 +903,7 @@ module ForecastIo
 
       Lita.logger.debug "Found time #{target_time} and temp #{temp} and max #{max}"
       unless target_time.nil?
-        target_time = Time.at(target_time).to_datetime.strftime("%H:%M")
+        target_time = Time.iso8601(target_time).to_datetime.strftime("%H:%M")
       end
 
       # target_time = DateTime.strptime(target_time.to_s, '%s')
@@ -922,7 +941,7 @@ module ForecastIo
     private
 
     def get_current_apparent_temp(forecast)
-      forecast['hourly']['data'][0]['apparentTemperature']
+      forecast.weather.forecast_hourly.hours[0]['temperatureApparent']
     end
 
     def get_aqi_data(response, api_key)

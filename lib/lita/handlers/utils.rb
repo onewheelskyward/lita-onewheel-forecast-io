@@ -1,4 +1,6 @@
 require 'geocoder'
+require 'tenkit'
+
 module ForecastIo
   module Utils
     REDIS_KEY = 'forecast_io'
@@ -7,9 +9,9 @@ module ForecastIo
     # If it's snowing, it's a hard no.
     def is_it_raining(response)
       geocoded = geo_lookup response.user, response.match_data[1]
-      forecast = get_forecast_io_results response.user, geocoded
+      forecast = get_weatherkit_results(response.user, geocoded, [:current_weather])
 
-      response.reply get_eightball_response get_chance_of('rain', forecast['currently'])
+      response.reply get_eightball_response get_chance_of('rain', forecast.weather.current_weather)
     end
 
     # Return an eightball response based on the current chance of snow.
@@ -200,8 +202,10 @@ module ForecastIo
 
     def get_windows(user)
       key = user.name + '-windows'
+      Lita.logger.debug "Getting windows key #{key}"
       windows = redis.hget(REDIS_KEY, key)
       if windows.nil?
+        Lita.logger.debug "Nil found, setting to 25"
         windows = 25
       end
       windows
@@ -276,21 +280,65 @@ module ForecastIo
       gimme_some_weather uri
     end
 
+    def get_weatherkit_results(user, location, datasets, time = nil)
+      # DATA_SETS = {
+      #   current_weather: 'currentWeather',
+      #   forecast_daily: 'forecastDaily',
+      #   forecast_hourly: 'forecastHourly',
+      #   trend_comparison: 'trendComparison',
+      #   weather_alerts: 'weatherAlerts',
+      #   forecast_next_hour: 'forecastNextHour'
+      # }.freeze
+
+      # if ! config.wk_key_id     or
+      #    ! config.wk_team_id    or
+      #    ! config.wk_app_id     or
+      #    ! config.wk_service_id or
+      #    ! config.wk_key        or
+      #
+      #   Lita.logger.error "Configuration missing!  #{config.wk_key_id} #{config.wk_team_id} #{config.wk_app_id} #{config.wk_service_id} #{config.wk_key}"
+      #   raise StandardError.new('Configuration missing!')
+      # end
+
+      Lita.logger.debug "Requesting forcast data from: weatherkit"
+      get_scale(user)
+      # gimme_some_weather uri
+
+      Tenkit.configure do |c|
+        c.team_id = config.wk_team_id
+        c.service_id = config.wk_service_id
+        c.key_id = config.wk_key_id
+        c.key = config.wk_key
+      end
+
+      client = Tenkit::Client.new
+
+      forecast = client.weather(
+        location.latitude,
+        location.longitude,
+        data_sets: datasets
+      )
+      return forecast
+    end
+
     def handle_geo_lookup(response)
       location = geo_lookup(response.user, response.match_data[1], persist = false)
       response.reply "#{location.latitude}, #{location.longitude}"
     end
 
     def forecast_text(forecast)
-      forecast_str = "weather is currently #{get_temperature forecast['currently']['temperature']} " +
-          "and #{forecast['currently']['summary'].downcase}.  Winds out of the #{get_cardinal_direction_from_bearing forecast['currently']['windBearing']} at #{get_speed(forecast['currently']['windSpeed'])}. "
+      # Look at comparison payload
+      forecast_str = "weather is currently #{get_temperature forecast.weather.current_weather.temperature} " +
+          "and [nope].  Winds out of the #{get_cardinal_direction_from_bearing forecast.weather.current_weather.wind_direction} at #{get_speed(forecast.weather.current_weather.wind_speed)}. "
+      # #{forecast['currently']['summary'].downcase}
+      # if forecast.weather.forecast_next_hour
+        # Nope again
+        # minute_forecast = forecast.weather.forecast_next_hour['summary'].to_s.downcase.chop
+        # forecast_str += "It will be #{minute_forecast}, and #{forecast['hourly']['summary'].to_s.downcase.chop}.  "
+      # end
 
-      if forecast['minutely']
-        minute_forecast = forecast['minutely']['summary'].to_s.downcase.chop
-        forecast_str += "It will be #{minute_forecast}, and #{forecast['hourly']['summary'].to_s.downcase.chop}.  "
-      end
-
-      forecast_str += "There are also #{forecast['currently']['ozone'].to_s} ozones."
+      # Nozone
+      # forecast_str += "There are also #{forecast['currently']['ozone'].to_s} ozones."
     end
 
     def fix_time(unixtime, data_offset)
@@ -317,6 +365,7 @@ module ForecastIo
       collect_str = ''
       colored_str = ''
 
+      Lita.logger.debug "data_limited: #{data_limited}"
       data_limited.each_with_index do |data, index|
         range_hash.keys.each do |range_hash_key|
           key.nil? ? d = data : d = data[key]
@@ -339,7 +388,12 @@ module ForecastIo
       end
 
       # And get the last one.
-      colored_str += "\x03" + colors[color] + collect_str + "\x03"
+      Lita.logger.debug "color: #{color} collect_str: #{collect_str}"
+      if color.nil?
+        colored_str += collect_str.to_s
+      else
+        colored_str += "\x03" + colors[color] + collect_str.to_s + "\x03"
+      end
     end
 
     # this method lets us condense rain forcasts into smaller sets
