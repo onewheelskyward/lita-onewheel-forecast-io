@@ -278,8 +278,8 @@ module ForecastIo
 
     def handle_irc_today(response)
       location = geo_lookup(response.user, response.match_data[1])
-      forecast = get_forecast_io_results(response.user, location, Date.today.to_s + 'T00:00:00-0700')
-      yesterday_weather = get_forecast_io_results(response.user, location, Date.today.prev_day.to_s + 'T00:00:00-0700')
+      forecast = get_forecast_io_results(response.user, location, Date.today.to_time.to_i)
+      yesterday_weather = get_forecast_io_results(response.user, location, Date.today.prev_day.to_time.to_i)
       today_will_be = do_the_today_thing(forecast, yesterday_weather)
       Lita.logger.info "Response: Today will be #{today_will_be} yesterday."
       response.reply "Today will be #{today_will_be} yesterday in #{location.location_name}."
