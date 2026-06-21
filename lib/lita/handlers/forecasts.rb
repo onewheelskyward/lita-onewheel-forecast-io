@@ -693,13 +693,13 @@ module ForecastIo
     def get_daily_comparison_text(temp_diff, high)
       if temp_diff <= 1 and temp_diff >= -1
         'about the same as'
-      elsif temp_diff > 1 and temp_diff <= 5
+      elsif temp_diff > 1 and temp_diff <= 3
         'cooler than'
-      elsif temp_diff > 5
+      elsif temp_diff > 3
         (high > 21)? 'much cooler than' : 'much colder than'
-      elsif temp_diff < -1 and temp_diff >= -5
+      elsif temp_diff < -1 and temp_diff >= -3
         'warmer than'
-      elsif temp_diff < -5
+      elsif temp_diff < -3
         (high < 21)? 'much warmer than' : 'much hotter than'
       end
     end
