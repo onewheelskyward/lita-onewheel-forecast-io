@@ -347,7 +347,7 @@ describe Lita::Handlers::OnewheelForecastIo, lita_handler: true do
   it '!tomorrows much hotter' do
     mock_weatherkit_tomorrow(25.0, 35.0)
     send_command 'tomorrow'
-    expect(replies.last).to eq('Tomorrow will be much hotter than today in Portland, Oregon, USA.')
+    expect(replies.last).to eq('Tomorrow will be much hotter than today AND HOT in Portland, Oregon, USA.')
   end
 
   it '!windows' do
@@ -385,7 +385,7 @@ describe Lita::Handlers::OnewheelForecastIo, lita_handler: true do
     stub_request(:get, /archive-api.open-meteo.com\/v1\/archive/)
       .to_return(status: 200, body: '{"daily":{"temperature_2m_max":[38.99]}}', headers: {})
     send_command 'today'
-    expect(replies.last).to eq('Today will be about the same as yesterday in Portland, Oregon, USA.')
+    expect(replies.last).to eq('Today will be about the same as yesterday AND HOT in Portland, Oregon, USA.')
   end
 
   # it 'colors strings' do
