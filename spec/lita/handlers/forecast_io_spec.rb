@@ -16,11 +16,16 @@ def mock_up(filename)
 end
 
 def mock_weatherkit_tomorrow(today_max, tomorrow_max)
-  day0 = Tenkit::DayWeatherConditions.new('temperature_max' => today_max)
-  day1 = Tenkit::DayWeatherConditions.new('temperature_max' => tomorrow_max)
-  daily = double('DailyForecast', days: [day0, day1])
-  weather = double('Weather', forecast_daily: daily)
-  wk_response = double('WeatherResponse', weather: weather)
+  body = {
+    'forecastDaily' => {
+      'days' => [
+        {'temperatureMax' => today_max},
+        {'temperatureMax' => tomorrow_max}
+      ]
+    }
+  }.to_json
+  raw = double('raw', body: body)
+  wk_response = double('WeatherResponse', raw: raw)
   allow_any_instance_of(Tenkit::Client).to receive(:weather).and_return(wk_response)
 end
 

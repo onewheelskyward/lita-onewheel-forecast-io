@@ -681,8 +681,9 @@ module ForecastIo
     end
 
     def do_the_tomorrow_thing(forecast)
-      today_max = forecast.weather.forecast_daily.days[0].temperature_max
-      tomorrow_max = forecast.weather.forecast_daily.days[1].temperature_max
+      raw = JSON.parse(forecast.raw.body)
+      today_max = raw['forecastDaily']['days'][0]['temperatureMax']
+      tomorrow_max = raw['forecastDaily']['days'][1]['temperatureMax']
       Lita.logger.info "Basing tomorrow on today - tomorrow: #{today_max} - #{tomorrow_max}"
       temp_diff = today_max - tomorrow_max
       get_daily_comparison_text(temp_diff, today_max)
