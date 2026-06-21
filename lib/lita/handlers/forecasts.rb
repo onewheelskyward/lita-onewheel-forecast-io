@@ -696,11 +696,11 @@ module ForecastIo
       elsif temp_diff > 1 and temp_diff <= 3
         'cooler than'
       elsif temp_diff > 3
-        (high > 21)? 'much cooler than' : 'much colder than'
+        (high > 18)? 'much cooler than' : 'much colder than'
       elsif temp_diff < -1 and temp_diff >= -3
         'warmer than'
       elsif temp_diff < -3
-        (high < 21)? 'much warmer than' : 'much hotter than'
+        (high < 28)? 'much warmer than' : 'much hotter than'
       end
     end
 
