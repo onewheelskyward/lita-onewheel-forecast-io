@@ -689,6 +689,16 @@ module ForecastIo
       get_daily_comparison_text(temp_diff, today_max)
     end
 
+    def temp_suffix(temp)
+      if temp >= 33
+        ' AND HOT'
+      elsif temp >= 30
+        ' and quite warm'
+      else
+        ''
+      end
+    end
+
     # If the temperature difference is positive,
     def get_daily_comparison_text(temp_diff, high)
       if temp_diff <= 1 and temp_diff >= -1

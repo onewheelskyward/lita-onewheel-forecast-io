@@ -344,8 +344,14 @@ describe Lita::Handlers::OnewheelForecastIo, lita_handler: true do
     expect(replies.last).to eq('Tomorrow will be warmer than today in Portland, Oregon, USA.')
   end
 
+  it '!tomorrows quite warm' do
+    mock_weatherkit_tomorrow(28.0, 32.0)
+    send_command 'tomorrow'
+    expect(replies.last).to eq('Tomorrow will be much hotter than today and quite warm in Portland, Oregon, USA.')
+  end
+
   it '!tomorrows much hotter' do
-    mock_weatherkit_tomorrow(25.0, 35.0)
+    mock_weatherkit_tomorrow(28.0, 35.0)
     send_command 'tomorrow'
     expect(replies.last).to eq('Tomorrow will be much hotter than today AND HOT in Portland, Oregon, USA.')
   end

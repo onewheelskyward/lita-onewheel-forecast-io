@@ -273,7 +273,7 @@ module ForecastIo
       forecast = get_weatherkit_results(response.user, location, [:forecast_daily])
       tomorrow_will_be = do_the_tomorrow_thing(forecast)
       tomorrow_max = JSON.parse(forecast.raw.body)['forecastDaily']['days'][1]['temperatureMax']
-      hot = tomorrow_max > 33 ? ' AND HOT' : ''
+      hot = temp_suffix(tomorrow_max)
       Lita.logger.info "Response: Tomorrow will be #{tomorrow_will_be} today."
       response.reply "Tomorrow will be #{tomorrow_will_be} today#{hot} in #{location.location_name}."
     end
@@ -284,7 +284,7 @@ module ForecastIo
       yesterday_max = get_historical_daily_max(location, Date.today.prev_day)
       today_will_be = do_the_today_thing(forecast, yesterday_max)
       today_max = forecast['daily']['data'][0]['temperatureMax']
-      hot = today_max > 33 ? ' AND HOT' : ''
+      hot = temp_suffix(today_max)
       Lita.logger.info "Response: Today will be #{today_will_be} yesterday."
       response.reply "Today will be #{today_will_be} yesterday#{hot} in #{location.location_name}."
     end
