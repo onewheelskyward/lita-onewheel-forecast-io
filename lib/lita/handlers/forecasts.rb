@@ -673,10 +673,11 @@ module ForecastIo
       return forecast['currently']['nearestStormDistance'], forecast['currently']['nearestStormBearing']
     end
 
-    def do_the_today_thing(forecast, yesterday)
-      Lita.logger.info "Basing today on today - yesterday: #{yesterday['daily']['data'][0]['temperatureMax']} - #{forecast['daily']['data'][0]['temperatureMax']}"
-      temp_diff = yesterday['daily']['data'][0]['temperatureMax'] - forecast['daily']['data'][0]['temperatureMax']
-      get_daily_comparison_text(temp_diff, forecast['daily']['data'][0]['temperatureMax'])
+    def do_the_today_thing(forecast, yesterday_max)
+      today_max = forecast['daily']['data'][0]['temperatureMax']
+      Lita.logger.info "Basing today on today - yesterday: #{yesterday_max} - #{today_max}"
+      temp_diff = yesterday_max - today_max
+      get_daily_comparison_text(temp_diff, today_max)
     end
 
     def do_the_tomorrow_thing(forecast)

@@ -377,6 +377,8 @@ describe Lita::Handlers::OnewheelForecastIo, lita_handler: true do
   # end
   #
   it 'will summarize !today in relation to yesterday' do
+    stub_request(:get, /archive-api.open-meteo.com\/v1\/archive/)
+      .to_return(status: 200, body: '{"daily":{"temperature_2m_max":[38.99]}}', headers: {})
     send_command 'today'
     expect(replies.last).to eq('Today will be about the same as yesterday in Portland, Oregon, USA.')
   end

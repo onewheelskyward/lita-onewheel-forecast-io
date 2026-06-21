@@ -261,6 +261,17 @@ module ForecastIo
     end
 
 
+    def get_historical_daily_max(location, date)
+      date_str = date.strftime('%Y-%m-%d')
+      uri = "https://archive-api.open-meteo.com/v1/archive" \
+            "?latitude=#{location.latitude}&longitude=#{location.longitude}" \
+            "&start_date=#{date_str}&end_date=#{date_str}" \
+            "&daily=temperature_2m_max&timezone=auto"
+      Lita.logger.debug "Requesting historical data from: #{uri}"
+      response = JSON.parse(RestClient.get(uri))
+      response['daily']['temperature_2m_max'][0]
+    end
+
     # Time should be in the format specified here (subset of 8601)
     # https://developer.forecast.io/docs/v2#time_call
     def get_forecast_io_results(user, location, time = nil)
