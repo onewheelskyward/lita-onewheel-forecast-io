@@ -501,7 +501,7 @@ module ForecastIo
       end
 
       differential = maxtemps.max - maxtemps.min
-      max_str = get_dot_str(ansi_chars, data, maxtemps.min, differential, 'temperature_max')
+      max_str = get_dot_str(ansi_chars, data, maxtemps.min, differential, 'temperatureMax')
 
       make_fire(max_str, maxtemps)
 
@@ -509,7 +509,7 @@ module ForecastIo
       min_str = get_dot_str(ansi_chars, data, mintemps.min, differential, 'temperatureMin')
 
       if config.colors
-        max_str = get_colored_string(data, 'temperature_max', max_str, get_temp_range_colors)
+        max_str = get_colored_string(data, 'temperatureMax', max_str, get_temp_range_colors)
         min_str = get_colored_string(data, 'temperatureMin', min_str, get_temp_range_colors)
       end
 
