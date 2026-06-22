@@ -408,6 +408,38 @@ describe Lita::Handlers::OnewheelForecastIo, lita_handler: true do
     expect(replies.last).to eq('Today will be about the same as yesterday AND HOT in Portland, Oregon, USA.')
   end
 
+  it '!chronicles with a relative date' do
+    new_time = Time.utc(2024, 6, 15, 12, 0, 0)
+    Timecop.freeze(new_time)
+    stub_request(:get, /archive-api.open-meteo.com\/v1\/archive/)
+      .to_return(status: 200, body: '{"daily":{"temperature_2m_max":[21.0],"temperature_2m_min":[10.0],"precipitation_sum":[5.2]}}', headers: {})
+    send_command 'chronicles yesterday'
+    expect(replies.last).to eq('On 2024-06-14, Portland, Oregon, USA saw a high of 69.8°F, a low of 50.0°F, and 5mm of rain.')
+    Timecop.return
+  end
+
+  it '!chronicles with an explicit date and location' do
+    stub_request(:get, /archive-api.open-meteo.com\/v1\/archive/)
+      .to_return(status: 200, body: '{"daily":{"temperature_2m_max":[21.0],"temperature_2m_min":[10.0],"precipitation_sum":[5.2]}}', headers: {})
+    send_command 'chronicles 2024-06-01 in Paris'
+    expect(replies.last).to eq('On 2024-06-01, Paris, France saw a high of 69.8°F, a low of 50.0°F, and 5mm of rain.')
+  end
+
+  it '!chronicles with no date given' do
+    send_command 'chronicles'
+    expect(replies.last).to eq('Give me a date! e.g. "!chronicles yesterday" or "!chronicles june 1st in Salem, OR".')
+  end
+
+  it '!chronicles with an unparseable date' do
+    send_command 'chronicles blorptuesday'
+    expect(replies.last).to eq("I couldn't figure out what date 'blorptuesday' refers to.")
+  end
+
+  it '!chronicles with a future date' do
+    send_command 'chronicles 2099-01-01'
+    expect(replies.last).to eq('I can only look into the past, not the future.')
+  end
+
   # it 'colors strings' do
   # cstr = Lita::Handlers::ForecastIo.get_colored_string([{:key => 1}], :key, 'x', {1 => :blue})
   # expect(cstr).to equal('x')

@@ -1,3 +1,5 @@
+require 'chronic'
+
 module ForecastIo
   module IrcHandlers
     #-# Handlers
@@ -287,6 +289,41 @@ module ForecastIo
       hot = temp_suffix(today_max)
       Lita.logger.info "Response: Today will be #{today_will_be} yesterday."
       response.reply "Today will be #{today_will_be} yesterday#{hot} in #{location.location_name}."
+    end
+
+    def handle_irc_chronicles(response)
+      input = response.match_data[1].to_s.strip
+
+      if input.empty?
+        response.reply 'Give me a date! e.g. "!chronicles yesterday" or "!chronicles june 1st in Salem, OR".'
+        return
+      end
+
+      if (m = input.match(/\A(.+)\s+in\s+(.+)\z/i))
+        date_str, location_str = m[1], m[2]
+      else
+        date_str, location_str = input, nil
+      end
+
+      parsed = Chronic.parse(date_str, guess: :begin, context: :past)
+      if parsed.nil?
+        response.reply "I couldn't figure out what date '#{date_str}' refers to."
+        return
+      end
+
+      date = parsed.to_date
+      if date > Date.today
+        response.reply "I can only look into the past, not the future."
+        return
+      end
+
+      location = geo_lookup(response.user, location_str)
+      get_scale(response.user)
+      summary = get_historical_daily_summary(location, date)
+
+      response.reply "On #{date.strftime('%Y-%m-%d')}, #{location.location_name} saw a high of " \
+        "#{get_temperature(summary[:max])}, a low of #{get_temperature(summary[:min])}, " \
+        "and #{get_accumulation(summary[:precipitation])} of rain."
     end
 
     def handle_irc_windows(response)

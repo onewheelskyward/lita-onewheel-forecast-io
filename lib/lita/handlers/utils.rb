@@ -272,6 +272,22 @@ module ForecastIo
       response['daily']['temperature_2m_max'][0]
     end
 
+    # High, low, and rainfall total for a single date, used by !chronicles.
+    def get_historical_daily_summary(location, date)
+      date_str = date.strftime('%Y-%m-%d')
+      uri = "https://archive-api.open-meteo.com/v1/archive" \
+            "?latitude=#{location.latitude}&longitude=#{location.longitude}" \
+            "&start_date=#{date_str}&end_date=#{date_str}" \
+            "&daily=temperature_2m_max,temperature_2m_min,precipitation_sum&timezone=auto"
+      Lita.logger.debug "Requesting historical data from: #{uri}"
+      daily = JSON.parse(RestClient.get(uri))['daily']
+      {
+        max: daily['temperature_2m_max'][0],
+        min: daily['temperature_2m_min'][0],
+        precipitation: daily['precipitation_sum'][0]
+      }
+    end
+
     # Time should be in the format specified here (subset of 8601)
     # https://developer.forecast.io/docs/v2#time_call
     def get_forecast_io_results(user, location, time = nil)

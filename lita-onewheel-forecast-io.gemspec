@@ -38,5 +38,6 @@ EOS
   spec.add_runtime_dependency 'magic-eightball', '~> 0.0'
   spec.add_runtime_dependency 'tzinfo', '~> 1.2'
   spec.add_runtime_dependency 'tenkit', '~> 0.0.5'
+  spec.add_runtime_dependency 'chronic', '~> 0.10'
 
 end

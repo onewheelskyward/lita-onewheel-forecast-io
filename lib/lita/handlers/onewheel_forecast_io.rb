@@ -88,6 +88,9 @@ module Lita
             help: { '!tomorrow' => 'Give me tomorrow\'s forecast as it relates to today.'})
       route(/^today/i, :handle_irc_today, command: true,
             help: { '!today' => 'Give me today\'s forecast as it relates to yesterday.'})
+      route(/^chronicles\s*$/i, :handle_irc_chronicles, command: true)
+      route(/^chronicles\s+(.+)$/i, :handle_irc_chronicles, command: true,
+            help: { '!chronicles <date> [in <location>]' => 'High, low, and rainfall total for a given date, e.g. "!chronicles june 1st in Salem, OR".'})
       # route(/^Good morning./, :handle_irc_windows)  # Easter egg alert.  Thank you, zrobo and donpdonp.
       # Disabled for winter.
       route(/^linux$/i, :handle_irc_windows, command: true)
