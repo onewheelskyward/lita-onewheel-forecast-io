@@ -15,6 +15,17 @@ def mock_up(filename)
   # allow(RestClient).to receive(:get) { mock_weather_json }
 end
 
+def mock_weatherkit_next_hour(minutes, has_snow: false)
+  next_hour = minutes.nil? ? nil : {
+    'minutes' => minutes,
+    'summary' => [{'condition' => has_snow ? 'snow' : 'rain'}]
+  }
+  body = {'forecastNextHour' => next_hour}.to_json
+  raw = double('raw', body: body)
+  wk_response = double('WeatherResponse', raw: raw)
+  allow_any_instance_of(Tenkit::Client).to receive(:weather).and_return(wk_response)
+end
+
 def mock_weatherkit_tomorrow(today_max, tomorrow_max)
   body = {
     'forecastDaily' => {
@@ -69,32 +80,35 @@ describe Lita::Handlers::OnewheelForecastIo, lita_handler: true do
   #   expect(replies.last).to eq('Nope')
   # end
 
-  it '!ansirain Paris' do
+  it '!ansirain with snow' do
+    rain_minutes = [{"precipitationChance" => 0.0, "precipitationIntensity" => 0.0}] +
+                   10.times.map { {"precipitationChance" => 1.0, "precipitationIntensity" => 0.1} } +
+                   50.times.map { {"precipitationChance" => 0.0, "precipitationIntensity" => 0.0} }
+    mock_weatherkit_next_hour(rain_minutes, has_snow: true)
     send_command 'ansirain Paris'
-    expect(replies.last).to include("|\u000302_❄\u000306▃\u000310▅\u000303▅\u000309▅\u000311▇\u000308▇\u000307█\u000304█\u000313█\u000302__________________________________________________\u0003|")
+    expect(replies.last).to include("❄")
+    expect(replies.last).to include('1hr snow probability')
   end
 
   it '!ansirain return max chance' do
+    rain_minutes = 60.times.map { {"precipitationChance" => 1.0, "precipitationIntensity" => 0.1} }
+    mock_weatherkit_next_hour(rain_minutes)
     send_command 'ansirain Paris'
     expect(replies.last).to include('max 100.0%')
   end
 
   it '!ansirain no minutes' do
-    mock_up 'mock_weather_no_minute'
+    mock_weatherkit_next_hour(nil)
     send_command 'ansirain'
     expect(replies.last).to include('|No minute-by-minute data available.|')
   end
 
   it '!ansiintensity no minutes' do
-    mock_up 'mock_weather_no_minute'
+    mock_weatherkit_next_hour(nil)
     send_command 'ansiintensity'
     expect(replies.last).to include('|No minute-by-minute data available.|')
   end
 
-  it '!ansisnow Paris' do
-    send_command 'ansisnow Paris'
-    expect(replies.last).to include("|\u000302_❄\u000306▃\u000310▅\u000303▅\u000309▅\u000311▇\u000308▇\u000307█\u000304█\u000313█\u000302__________________________________________________\u0003|")
-  end
 
   it '!ansiintensity' do
     send_command 'ansiintensity'

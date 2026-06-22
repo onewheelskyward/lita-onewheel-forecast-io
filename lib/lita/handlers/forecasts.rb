@@ -3,12 +3,26 @@ require 'tzinfo'
 
 module ForecastIo
   module Forecasts
+    def get_next_hour_minutes(forecast)
+      raw = JSON.parse(forecast.raw.body)
+      next_hour = raw['forecastNextHour']
+      return nil if next_hour.nil?
+      next_hour['minutes']
+    end
+
+    def next_hour_has_snow(forecast)
+      raw = JSON.parse(forecast.raw.body)
+      next_hour = raw['forecastNextHour']
+      return false if next_hour.nil? || next_hour['summary'].nil?
+      next_hour['summary'].any? { |s| s['condition'].to_s.downcase.include?('snow') }
+    end
+
     def ascii_rain_forecast(forecast)
-      #Bummer
-      (str, precip_type) = do_the_rain_chance_thing(forecast, ascii_chars, 'precipProbability')
-      max = get_max_by_data_key(forecast, 'minutely', 'precipProbability')
-      agg = get_max_by_data_key(forecast, 'minutely', 'precipIntensity')
-      "1hr #{precip_type} probability #{(Time.now).strftime('%H:%M').to_s}|#{str}|#{(Time.now + 3600).strftime('%H:%M').to_s} max #{(max.to_f * 100).round(2)}%, #{get_accumulation agg} accumulation"
+      minutes = get_next_hour_minutes(forecast) || []
+      (str, precip_type) = do_the_rain_chance_thing(forecast, ascii_chars)
+      max = minutes.map { |m| m['precipitationChance'].to_f }.max || 0
+      agg = minutes.map { |m| m['precipitationIntensity'].to_f }.max || 0
+      "1hr #{precip_type} probability #{Time.now.strftime('%H:%M')}|#{str}|#{(Time.now + 3600).strftime('%H:%M')} max #{(max * 100).round(2)}%, #{get_accumulation agg} accumulation"
     end
 
     def next_rain_forecast(forecast)
@@ -17,16 +31,18 @@ module ForecastIo
     end
 
     def ansi_rain_forecast(forecast)
-      (str, precip_type) = do_the_rain_chance_thing(forecast, ansi_chars, 'precipProbability') #, 'probability', get_rain_range_colors)
-      max = get_max_by_data_key(forecast, 'minutely', 'precipProbability')
-      agg = get_avg_by_data_key(forecast, 'minutely', 'precipIntensity')
-      "1hr #{precip_type} probability #{(Time.now).strftime('%H:%M').to_s}|#{str}|#{(Time.now + 3600).strftime('%H:%M').to_s} max #{(max.to_f * 100).round(2)}%, #{get_accumulation agg} accumulation"
+      minutes = get_next_hour_minutes(forecast) || []
+      (str, precip_type) = do_the_rain_chance_thing(forecast, ansi_chars)
+      max = minutes.map { |m| m['precipitationChance'].to_f }.max || 0
+      agg = minutes.empty? ? 0 : minutes.map { |m| m['precipitationIntensity'].to_f }.sum / minutes.length
+      "1hr #{precip_type} probability #{Time.now.strftime('%H:%M')}|#{str}|#{(Time.now + 3600).strftime('%H:%M')} max #{(max * 100).round(2)}%, #{get_accumulation agg} accumulation"
     end
 
     def ansi_rain_intensity_forecast(forecast)
-      (str, precip_type) = do_the_rain_intensity_thing(forecast, ansi_chars, 'precipIntensity') #, 'probability', get_rain_range_colors)
-      agg = get_max_by_data_key(forecast, 'minutely', 'precipIntensity')
-      "1hr #{precip_type} intensity #{(Time.now).strftime('%H:%M').to_s}|#{str}|#{(Time.now + 3600).strftime('%H:%M').to_s}, #{get_accumulation agg} accumulation"
+      minutes = get_next_hour_minutes(forecast) || []
+      (str, precip_type) = do_the_rain_intensity_thing(forecast, ansi_chars)
+      agg = minutes.map { |m| m['precipitationIntensity'].to_f }.max || 0
+      "1hr #{precip_type} intensity #{Time.now.strftime('%H:%M')}|#{str}|#{(Time.now + 3600).strftime('%H:%M')}, #{get_accumulation agg} accumulation"
     end
 
     def ansi_humidity_forecast(forecast)
@@ -87,71 +103,44 @@ module ForecastIo
     #   end
     # end
 
-    def do_the_rain_chance_thing(forecast, chars, key, use_color = config.colors, minute_limit = nil)
-      if forecast.weather.forecast_next_hour.nil?
+    def do_the_rain_chance_thing(forecast, chars, use_color = config.colors, minute_limit = nil)
+      minutes = get_next_hour_minutes(forecast)
+      if minutes.nil? || minutes.empty?
         return 'No minute-by-minute data available.'
       end
 
-      i_can_has_snow = false
-      data_points = []
-      data = forecast.weather.forecast_next_hour
+      i_can_has_snow = next_hour_has_snow(forecast)
+      data = minute_limit ? condense_data(minutes, minute_limit) : minutes
 
-      data.each do |datum|
-        data_points.push datum[key]
-        if datum['precipType'] == 'snow'
-          i_can_has_snow = true
-        end
-      end
-
-      if minute_limit
-        data = condense_data(data, minute_limit)
-      end
-
-      str = get_dot_str(chars, data, 0, 1, key)
+      str = get_dot_str(chars, data, 0, 1, 'precipitationChance')
 
       if i_can_has_snow
-        data.each_with_index do |datum, index|
-          if datum['precipType'] == 'snow'
-            str[index] = get_snowman config
-          end
-        end
+        data.each_index { |i| str[i] = get_snowman(config) }
       end
 
       if use_color
-        str = get_colored_string(data, key, str, get_rain_range_colors)
+        str = get_colored_string(data, 'precipitationChance', str, get_rain_range_colors)
       end
 
-      precip_type = i_can_has_snow ? 'snow' : 'rain'
-
-      return str, precip_type
+      return str, (i_can_has_snow ? 'snow' : 'rain')
     end
 
-    def do_the_rain_intensity_thing(forecast, chars, key) #, type, range_colors = nil)
-      if forecast.weather.forecast_next_hour.nil?
-        return 'No minute-by-minute data available.'  # The "Middle of Nowhere" case.
+    def do_the_rain_intensity_thing(forecast, chars)
+      minutes = get_next_hour_minutes(forecast)
+      if minutes.nil? || minutes.empty?
+        return 'No minute-by-minute data available.'
       end
 
-      i_can_has_snow = false
-      data_points = []
-      data = forecast.weather.forecast_next_hour
+      i_can_has_snow = next_hour_has_snow(forecast)
 
-      data.each do |datum|
-        data_points.push datum[key]
-        if datum['precipType'] == 'snow'
-          i_can_has_snow = true
-        end
-      end
-
-      # Fixed range graph- 0-0.11.
-      str = get_dot_str(chars, data, 0, 10, key)
+      # Fixed range graph- 0-10mm/hr.
+      str = get_dot_str(chars, minutes, 0, 10, 'precipitationIntensity')
 
       if config.colors
-        str = get_colored_string(data, key, str, get_rain_intensity_range_colors)
+        str = get_colored_string(minutes, 'precipitationIntensity', str, get_rain_intensity_range_colors)
       end
 
-      precip_type = i_can_has_snow ? 'snow' : 'rain'
-
-      return str, precip_type
+      return str, (i_can_has_snow ? 'snow' : 'rain')
     end
 
     def do_the_humidity_thing(forecast, chars, key) #, type, range_colors = nil)
