@@ -376,7 +376,7 @@ module ForecastIo
       collect_str = ''
       colored_str = ''
 
-      Lita.logger.debug "data_limited: #{data_limited}"
+      # Lita.logger.debug "data_limited: #{data_limited}"
       data_limited.each_with_index do |data, index|
         range_hash.keys.each do |range_hash_key|
           key.nil? ? d = data : d = data[key]
