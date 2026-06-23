@@ -80,7 +80,7 @@ module ForecastIo
 
     def handle_irc_ieeetemp(response)
       location = geo_lookup(response.user, response.match_data[1])
-      forecast = get_weatherkit_results(response.user, location)
+      forecast = get_weatherkit_results(response.user, location, [:forecast_hourly])
       @scale = 'k'
       response.reply location.location_name + ' ' + ansi_temp_forecast(forecast)
     end
@@ -119,7 +119,7 @@ module ForecastIo
 
     def handle_irc_alerts(response)
       location = geo_lookup(response.user, response.match_data[1])
-      forecast = get_weatherkit_results(response.user, location, [:weather_alerts])
+      forecast = get_forecast_io_results(response.user, location)
       alerts = get_alerts(forecast)
       alerts.each do |alert|
         response.reply alert
@@ -257,9 +257,9 @@ module ForecastIo
     end
 
     def handle_irc_neareststorm(response)
-      # Nope
+      # Not present in WeatherKit; nearest-storm distance/bearing is a Dark Sky-only field.
       location = geo_lookup(response.user, response.match_data[1])
-      forecast = get_weatherkit_results(response.user, location, [:current_weather])
+      forecast = get_forecast_io_results(response.user, location)
       nearest_storm_distance, nearest_storm_bearing = do_the_nearest_storm_thing(forecast)
 
       if nearest_storm_distance == 0

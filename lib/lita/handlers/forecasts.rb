@@ -114,8 +114,13 @@ module ForecastIo
 
       str = get_dot_str(chars, data, 0, 1, 'precipitationChance')
 
-      if i_can_has_snow
-        data.each_index { |i| str[i] = get_snowman(config) }
+      has_type_info = data.any? { |datum| datum.key?('precipitationType') }
+      data.each_with_index do |datum, i|
+        if has_type_info
+          str[i] = get_snowman(config) if datum['precipitationType'] == 'snow'
+        elsif i_can_has_snow
+          str[i] = get_snowman(config)
+        end
       end
 
       if use_color
@@ -145,7 +150,7 @@ module ForecastIo
 
     def do_the_humidity_thing(forecast, chars, key) #, type, range_colors = nil)
       data_points = []
-      data = forecast['hourly']['data']
+      data = forecast.respond_to?(:weather) ? forecast.weather.forecast_hourly.hours : forecast['hourly']['data']
 
       data.each do |datum|
         data_points.push datum[key]
@@ -335,10 +340,13 @@ module ForecastIo
     end
 
     def do_the_wind_direction_thing(forecast, wind_arrows, hours = 48)
-      key = 'windBearing'
-      # Lita.logger.debug forecast
-      data = forecast['hourly']['data']  #.forecast_hourly.hours.slice(0,hours - 1)
-      # Lita.logger.debug data
+      if forecast.respond_to?(:weather)
+        key = 'windDirection'
+        data = forecast.weather.forecast_hourly.hours.slice(0, hours - 1)
+      else
+        key = 'windBearing'
+        data = forecast['hourly']['data'].slice(0, hours - 1)
+      end
       str = ''
       data_points = []
       gust_data = []
@@ -362,7 +370,7 @@ module ForecastIo
     def do_the_sun_thing(forecast, chars)
       key = 'cloudCover'
       data_points = []
-      data = forecast['hourly']['data']
+      data = forecast.respond_to?(:weather) ? forecast.weather.forecast_hourly.hours : forecast['hourly']['data']
       sun_mod_data = []
 
       data.each do |datum|
@@ -378,7 +386,7 @@ module ForecastIo
         str = get_colored_string(sun_mod_data, key, str, get_sun_range_colors)
       end
 
-      max = 1 - get_min_by_data_key(forecast, 'hourly', key)
+      max = data_points.max
 
       "48hr sun forecast |#{str}| max #{(max * 100).to_i}%"
     end
@@ -386,7 +394,7 @@ module ForecastIo
     def do_the_daily_sun_thing(forecast, chars)
       key = 'cloudCover'
       data_points = []
-      data = forecast.weather.forecast_daily.days
+      data = forecast['daily']['data']
 
       data.each do |datum|
         data_points.push (1 - datum[key]).to_f  # It's a cloud cover percentage, so let's inverse it to give us sun cover.
@@ -408,7 +416,7 @@ module ForecastIo
 
     def do_the_cloud_thing(forecast, chars)
       # O ◎ ]
-      data = forecast['hourly']['data'].slice(0,23)
+      data = (forecast.respond_to?(:weather) ? forecast.weather.forecast_hourly.hours : forecast['hourly']['data']).slice(0,23)
 
       max = 0
       min = 1
@@ -452,19 +460,19 @@ module ForecastIo
     end
 
     def do_the_sunrise_thing(forecast)
-      t = Time.at(fix_time(forecast.weather.forecast_daily.days[0]['sunriseTime'], forecast['offset']))
+      t = Time.at(fix_time(forecast['daily']['data'][0]['sunriseTime'], forecast['offset']))
       t.strftime("%H:%M:%S")
     end
 
     def do_the_sunset_thing(forecast)
-      t = Time.at(fix_time(forecast.weather.forecast_daily.days[0]['sunsetTime'], forecast['offset']))
+      t = Time.at(fix_time(forecast['daily']['data'][0]['sunsetTime'], forecast['offset']))
       t.strftime("%H:%M:%S")
     end
 
     def conditions(forecast)
       temp_str, temps = do_the_temp_thing(forecast, 'temperature', ansi_chars, 8)
       wind_str, winds = do_the_wind_direction_thing(forecast, ansi_wind_arrows, 8)
-      rain_str, rains = do_the_rain_chance_thing(forecast, ansi_chars, 'precipProbability', config.colors, 15)
+      rain_str, rains = do_the_rain_chance_thing(forecast, ansi_chars, config.colors, 15)
 
       sun_chance = ((1 - forecast.weather.current_weather.cloud_cover) * 100).round
       "#{get_temperature temps.first.round(2)} |#{temp_str}| #{get_temperature temps.last.round(2)} "\
@@ -535,7 +543,17 @@ module ForecastIo
       precip_type = 'rain'
       rains = []
 
-      data = forecast['hourly']['data']
+      if forecast.respond_to?(:weather)
+        data = forecast.weather.forecast_hourly.hours.map do |h|
+          h.merge(
+            'precipType' => h['precipitationType'],
+            'precipProbability' => h['precipitationChance'],
+            'precipIntensity' => h['precipitationIntensity']
+          )
+        end
+      else
+        data = forecast['hourly']['data']
+      end
       data.each_with_index do |day, i|
         if day['precipType'] == 'snow'
           precip_type = 'snow'
@@ -567,8 +585,8 @@ module ForecastIo
         str = get_colored_string(data, 'precipProbability', str, get_rain_range_colors)
       end
 
-      max = get_max_by_data_key(forecast, 'hourly', 'precipProbability')
-      agg = get_sum_by_data_key(forecast, 'hourly', 'precipIntensity')
+      max = data.map { |d| d['precipProbability'].to_f }.max
+      agg = data.map { |d| d['precipIntensity'].to_f }.sum
 
       "#{hours} hr #{precip_type}s |#{str}| max #{(max.to_f * 100).round}%, #{get_accumulation agg} accumulation"
     end
@@ -576,7 +594,7 @@ module ForecastIo
     def do_the_daily_wind_thing(forecast)
       winds = []
 
-      data = forecast.weather.forecast_daily.days
+      data = forecast['daily']['data']
       data.each do |day|
         winds.push day['windSpeed']
       end
@@ -593,7 +611,7 @@ module ForecastIo
     def do_the_daily_humidity_thing(forecast)
       humidities = []
 
-      data = forecast.weather.forecast_daily.days
+      data = forecast['daily']['data']
       data.each do |day|
         humidities.push day['humidity']
       end
@@ -633,7 +651,7 @@ module ForecastIo
 
     def do_the_daily_pressure_thing(forecast)
       # O ◎ ]
-      data = forecast.weather.forecast_daily.days
+      data = forecast['daily']['data']
       key = 'pressure'
       boiled_data = []
 
@@ -648,7 +666,7 @@ module ForecastIo
 
     def get_alerts(forecast)
       str = []
-      forecast.weather.weather_alerts.each do |alert|
+      forecast['alerts'].each do |alert|
         alert['description'].match /\.\.\.(\w+)\.\.\./
         desc = alert['description'][0..alert['description'].rindex('...')]
         str.push desc
@@ -897,7 +915,7 @@ module ForecastIo
         end
 
         if forecast_temp > target.to_i
-          target_time = hour['forecastStart']
+          target_time = hour['time']
           temp = forecast_temp.to_s
           break
         end
@@ -905,7 +923,7 @@ module ForecastIo
 
       Lita.logger.debug "Found time #{target_time} and temp #{temp} and max #{max}"
       unless target_time.nil?
-        target_time = Time.iso8601(target_time).to_datetime.strftime("%H:%M")
+        target_time = Time.at(target_time).to_datetime.strftime("%H:%M")
       end
 
       # target_time = DateTime.strptime(target_time.to_s, '%s')

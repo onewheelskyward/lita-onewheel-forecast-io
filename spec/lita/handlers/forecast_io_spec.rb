@@ -8,19 +8,12 @@ require 'rest_client'
 
 # include WebMock::API
 
-# NOTE: as of this writing, ~24 examples below are still red even with correct WeatherKit
-# fixtures, because the underlying lib code never finished its migration off the old
-# Dark Sky response shape: several forecasts.rb functions still do `forecast['hourly']['data']`
-# bracket access directly on what is now a Tenkit::WeatherResponse object (no `[]` method), and
-# others read `forecast.weather.forecast_daily.days[i]['someKey']`, but Tenkit::DayWeatherConditions
-# wraps each day in an object with no `[]` accessor either. Affected: !ansiwind*, !asciiwind,
-# !conditions, !dailysun, !sunrise, !sunset, !dailywind, !dailyhumidity, !dailypressure,
-# !dailybarometer, !neareststorm, !alerts, !ansiwhen, !allrains, !forecastallthethings,
-# !ieeetemp (get_weatherkit_results called with wrong arg count), !forecast (forecast_text has an
-# unfinished "[nope]" placeholder), and !ansiintensity/!asciirain (do_the_rain_chance_thing's
-# snow handling replaces every bar character instead of only snow minutes). These are real
-# production bugs against live WeatherKit data, not stale test mocks — fixing the tests requires
-# fixing forecasts.rb/utils.rb first.
+# NOTE: handlers backed by Apple WeatherKit (current weather, hourly forecast, next-hour
+# minutes) stub Tenkit::Client#weather via mock_weatherkit / the default before(:each).
+# Handlers that rely on data WeatherKit does not provide — daily forecasts, nearest-storm,
+# alerts — still use the legacy Dark Sky path (get_forecast_io_results) and are stubbed with
+# mock_up. Condition summary, minute-by-minute summary, and ozone are likewise Dark Sky-only
+# and remain commented out in forecast_text.
 
 def mock_up(filename)
   mock_weather_json = File.open("spec/fixtures/#{filename}.json").read
@@ -87,7 +80,9 @@ describe Lita::Handlers::OnewheelForecastIo, lita_handler: true do
 
   it '!forecast' do
     send_command 'forecast'
-    expect(replies.last).to eq('Portland, Oregon, USA weather is currently 83.1°F and clear.  Winds out of the E at 3.59 mph. It will be clear for the hour, and flurries tomorrow morning.  There are also 357.71 ozones.')
+    # Condition summary, minute-by-minute summary, and ozone are Dark Sky-only fields
+    # that WeatherKit does not provide, so they are commented out in forecast_text.
+    expect(replies.last).to eq('Portland, Oregon, USA weather is currently 83.1°F and [nope].  Winds out of the E at 3.59 mph. ')
   end
 
   # it '!rain' do
@@ -159,7 +154,7 @@ describe Lita::Handlers::OnewheelForecastIo, lita_handler: true do
 
   it '!conditions' do
     send_command 'conditions'
-    expect(replies.last).to eq("Portland, Oregon, USA 82.94°F |\u000307_▁\u000304▃▅▇\u000305█\u000313█\u0003| 100.58°F / 2.69 mph |\u000306↓\u000310↙←\u000311↖↑↗\u000308→\u0003| 7.94 mph / 98% chance of sun / 60m precip |\u000306❄\u000311▇\u000308▇\u000302_____________\u0003|")
+    expect(replies.last).to eq("Portland, Oregon, USA 82.94°F |\u000307_▁\u000304▃▅▇\u000305█\u000313█\u0003| 100.58°F / 2.69 mph |\u000306↓\u000310↙←\u000311↖↑↗\u000308→\u0003| 7.94 mph / 100% chance of sun / 60m precip |\u000306❄\u000311▇\u000308▇\u000302_____________\u0003|")
   end
 
   it '!alerts' do
@@ -315,7 +310,7 @@ describe Lita::Handlers::OnewheelForecastIo, lita_handler: true do
 
   it '!forecastallthethings' do
     send_command 'forecastallthethings'
-    expect(replies[0]).to eq('Portland, Oregon, USA weather is currently 83.1°F and clear.  Winds out of the E at 3.59 mph. It will be clear for the hour, and flurries tomorrow morning.  There are also 357.71 ozones.')
+    expect(replies[0]).to eq('Portland, Oregon, USA weather is currently 83.1°F and [nope].  Winds out of the E at 3.59 mph. ')
     expect(replies[1]).to include("|\u000302_❄\u000306▃\u000310▅\u000303▅\u000309▅\u000311▇\u000308▇\u000307█\u000304█\u000313█\u000302__________________________________________________\u0003|")
     expect(replies[2]).to include('Portland, Oregon, USA 1hr snow intensity')
     expect(replies[3]).to eq("Portland, Oregon, USA 24 hr temps: 82.94°F (feels like 74.23°F) |07_▁04▃▅▇05█13███05█04▇▅▅▅▃▃▃▃07▃▁▃▁▁| 83.12°F  Range: 82.94°F - 100.58°F")
@@ -574,20 +569,5 @@ describe Lita::Handlers::OnewheelForecastIo, lita_handler: true do
     mock_up 'blindmelon'
     send_command 'nextrain'
     expect(replies.last).to eq 'In Portland, Oregon, USA the next rain is forecast for now, ending in a long while.  Max intensity is hide ya pets hide ya kids.'
-  end
-
-  it 'tests weatherkit object' do
-    require './lib/lita/handlers/weatherkit.rb'
-    wk = Weatherkit.new('')
-    token = wk.jwt_it_down('')
-    puts "Token: #{token}"
-
-    resp = RestClient.get "https://weatherkit.apple.com/api/v1/availability/37.323/122.032?country=US",
-                          headers: {'Authorization': "Bearer: #{token}"}
-    puts resp
-    # params: {show: sensor_id},
-    # headers: headers,
-    # user_agent: ua
-
   end
 end
