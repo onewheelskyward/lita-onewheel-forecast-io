@@ -8,6 +8,20 @@ require 'rest_client'
 
 # include WebMock::API
 
+# NOTE: as of this writing, ~24 examples below are still red even with correct WeatherKit
+# fixtures, because the underlying lib code never finished its migration off the old
+# Dark Sky response shape: several forecasts.rb functions still do `forecast['hourly']['data']`
+# bracket access directly on what is now a Tenkit::WeatherResponse object (no `[]` method), and
+# others read `forecast.weather.forecast_daily.days[i]['someKey']`, but Tenkit::DayWeatherConditions
+# wraps each day in an object with no `[]` accessor either. Affected: !ansiwind*, !asciiwind,
+# !conditions, !dailysun, !sunrise, !sunset, !dailywind, !dailyhumidity, !dailypressure,
+# !dailybarometer, !neareststorm, !alerts, !ansiwhen, !allrains, !forecastallthethings,
+# !ieeetemp (get_weatherkit_results called with wrong arg count), !forecast (forecast_text has an
+# unfinished "[nope]" placeholder), and !ansiintensity/!asciirain (do_the_rain_chance_thing's
+# snow handling replaces every bar character instead of only snow minutes). These are real
+# production bugs against live WeatherKit data, not stale test mocks — fixing the tests requires
+# fixing forecasts.rb/utils.rb first.
+
 def mock_up(filename)
   mock_weather_json = File.open("spec/fixtures/#{filename}.json").read
   stub_request(:get, /api.forecast.io\/forecast\//)
@@ -23,6 +37,13 @@ def mock_weatherkit_next_hour(minutes, has_snow: false)
   body = {'forecastNextHour' => next_hour}.to_json
   raw = double('raw', body: body)
   wk_response = double('WeatherResponse', raw: raw)
+  allow_any_instance_of(Tenkit::Client).to receive(:weather).and_return(wk_response)
+end
+
+def mock_weatherkit(filename)
+  body = File.open("spec/fixtures/#{filename}.json").read
+  raw = double('raw', body: body)
+  wk_response = double('WeatherResponse', raw: raw, weather: Tenkit::Weather.new(raw))
   allow_any_instance_of(Tenkit::Client).to receive(:weather).and_return(wk_response)
 end
 
@@ -55,6 +76,7 @@ describe Lita::Handlers::OnewheelForecastIo, lita_handler: true do
     # Mock up the ForecastAPI call.
     # Todo: add some other mocks to allow more edgy testing (rain percentages, !rain eightball replies, etc
     mock_up('mock_weather')
+    mock_weatherkit('wk_mock_weather')
 
     registry.configure do |config|
       config.handlers.onewheel_forecast_io.api_uri = 'https://api.forecast.io/forecast'
@@ -470,7 +492,7 @@ describe Lita::Handlers::OnewheelForecastIo, lita_handler: true do
   end
 
   it '!ansitemp extremes' do
-    mock_up '7dayextreme'
+    mock_weatherkit 'wk_7dayextreme'
     send_command 'ansitemp'
     expect(replies.last).to eq("Portland, Oregon, USA 24 hr temps: 86.36°F (feels like 86.27°F) |\u000304▇\u000313🔥🔥\u000307▅▅▅\u000308▅▃▃▃▁▁\u000311_\u000308▁▁▃▃\u000307▅▅▅▅\u000304▇▇\u0003| 88.52°F  Range: 64.76°F - 102.2°F")
   end

@@ -164,7 +164,6 @@ module ForecastIo
       rain_time = nil
       mindata = forecast['minutely']['data']
       data = forecast['hourly']['data']
-      dailydata = forecast.weather.forecast_daily.days
 
       min_start = nil
       min_end = nil
