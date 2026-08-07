@@ -964,78 +964,155 @@ module ForecastIo
       forecast.weather.forecast_hourly.hours[0]['temperatureApparent']
     end
 
+    # Resolve whatever the user typed into a single sensor's readings.  A bare
+    # query is a location ("97206", "corvallis, or", or nothing at all for your
+    # saved location); "sensor 75007" or "#75007" addresses a sensor directly.
     def get_aqi_data(response, api_key)
-      Lita.logger.debug "get_aqi_data called with #{response.matches[0][0]}"
-      sensor_id = '75007'
-      # headers = {'X-API-Key':
-      #            }  # Hack for the 2022 lockdown
-      # ua = 'curl/7.79.1' # 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.5005.63 Safari/537.36'
+      query = response.matches[0][0].to_s.strip
+      Lita.logger.debug "get_aqi_data called with '#{query}'"
 
-      # hardcoded map of sensors
-      users = {
-        # aaronpk: 43023,
-        #        zenlinux: 43023,
-        #        djwong: 61137,
-        #        philtor: 35221,
-        #        bkero: 43023,
-        #        agb: 34409,
-        #        donpdonp: 43023,
-        #        onewheelskyward: 23805
+      if (explicit = query.match(SENSOR_QUERY_MATCHER))
+        return fetch_sensor(explicit[1], api_key, response)
+      end
+
+      location = geo_lookup(response.user, query)
+      nearest = find_nearest_sensor(location, api_key)
+
+      if nearest.nil?
+        response.reply "No PurpleAir sensors are reporting near #{location.location_name}."
+        return
+      end
+
+      aqi = fetch_sensor(nearest['sensor_index'], api_key, response)
+      return if aqi.nil?
+
+      aqi['lita'] = {
+        'location_name' => location.location_name,
+        'distance_mi' => nearest['distance_mi']
       }
-      # philomath 41507
-      # corvalis 57995
-
-      if response.matches[0][0].length > 1
-        Lita.logger.debug response.matches[0][0]
-        sensor_id = response.matches[0][0]
-        Lita.logger.debug "Performing sensor sweep for #{sensor_id}"
-        unless sensor_id
-          Lita.logger.debug 'Defaulting to pdx'
-          sensor_id = '9814'
-        end
-      end
-
-      RestClient.log = 'stdout'
-      # Lita.logger.debug("Grabbing token")
-      # token = RestClient.get "https://map.purpleair.com/token",
-      #                        params: {version: '1.8.52'},
-      #                        headers: headers,
-      #                        user_agent: ua
-      # Lita.logger.debug token
-      # return
-      # resp = RestClient.get "https://www.purpleair.com/json",
-      #                       params: {show: sensor_id},
-      #                       headers: headers,
-      #                       user_agent: ua
-
-      uri_base = "https://api.purpleair.com/v1/sensors"
-      uri = "#{uri_base}/#{sensor_id}?api_key=0DA903FC-0C48-11ED-8561-42010A800005"
-      Lita.logger.debug "URI: #{uri}"
-      resp = RestClient.get uri
-                            # params: {show: sensor_id},
-                            # headers: headers,
-                            # user_agent: ua
-      aqi = JSON.parse resp
-      Lita.logger.debug aqi
-      if aqi['results'].to_a.length.zero? and users.has_key? response.user.name.to_sym
-        # Possible zip instead of sensor
-        uri = "#{uri_base}/#{users[response.user.name.to_sym]}?api_key=#{api_key}"
-        Lita.logger.debug "calling #{uri}"
-        begin
-          resp = RestClient.get uri
-          aqi = JSON.parse resp
-          Lita.logger.debug aqi
-        rescue RuntimeError => e
-          Lita.logger.debug "Exception found #{e}"
-          return
-        end
-      end
       aqi
+    end
+
+    def fetch_sensor(sensor_index, api_key, response)
+      uri = "#{PURPLEAIR_URI_BASE}/#{sensor_index}"
+      Lita.logger.debug "Fetching sensor #{sensor_index}"
+
+      begin
+        aqi = JSON.parse RestClient.get(uri, purpleair_headers(api_key))
+      rescue RestClient::ExceptionWithResponse => e
+        Lita.logger.debug "PurpleAir sensor fetch failed: #{e}"
+        response.reply "PurpleAir had no data for sensor #{sensor_index} (#{e.http_code})."
+        return
+      end
+
+      Lita.logger.debug aqi
+      aqi
+    end
+
+    # PurpleAir has no "nearest sensor" endpoint, so sweep an expanding bounding
+    # box around the point and keep the closest one that is still reporting.
+    def find_nearest_sensor(location, api_key)
+      lat = location.latitude.to_f
+      lon = location.longitude.to_f
+
+      cache_key = aqi_sensor_cache_key(lat, lon)
+      if (cached = cached_nearest_sensor(cache_key))
+        Lita.logger.debug "Using cached sensor #{cached['sensor_index']} for #{cache_key}"
+        return cached
+      end
+
+      nearest = nil
+      SENSOR_SEARCH_RADII_MI.each do |radius_mi|
+        sensors = sensors_in_box(lat, lon, radius_mi, api_key)
+        Lita.logger.debug "Found #{sensors.length} sensors within #{radius_mi}mi of #{lat},#{lon}"
+        next if sensors.empty?
+
+        nearest = sensors.min_by { |s| s['distance_mi'] }
+        break
+      end
+      return if nearest.nil?
+
+      redis.hset(ForecastIo::Utils::REDIS_KEY, cache_key, nearest.merge('cached_at' => Time.now.to_i).to_json)
+      nearest
+    end
+
+    def sensors_in_box(lat, lon, radius_mi, api_key)
+      lat_delta = radius_mi / MILES_PER_DEGREE_LAT
+      # Longitude degrees narrow as you approach the poles.
+      lon_delta = radius_mi / [MILES_PER_DEGREE_LAT * Math.cos(lat * Math::PI / 180), 0.1].max.abs
+
+      params = {
+        fields: 'sensor_index,name,latitude,longitude',
+        location_type: 0,  # outdoor sensors only
+        max_age: SENSOR_MAX_AGE,
+        nwlat: lat + lat_delta,
+        nwlng: lon - lon_delta,
+        selat: lat - lat_delta,
+        selng: lon + lon_delta
+      }
+
+      begin
+        resp = RestClient.get PURPLEAIR_URI_BASE, purpleair_headers(api_key).merge(params: params)
+      rescue RestClient::ExceptionWithResponse => e
+        Lita.logger.error "PurpleAir sensor search failed: #{e}"
+        return []
+      end
+
+      body = JSON.parse resp
+      fields = body['fields'].to_a
+
+      body['data'].to_a.map do |row|
+        sensor = fields.zip(row).to_h
+        next if sensor['latitude'].nil? or sensor['longitude'].nil?
+
+        sensor.merge('distance_mi' => haversine_distance(lat, lon, sensor['latitude'], sensor['longitude']))
+      end.compact
+    end
+
+    def haversine_distance(lat1, lon1, lat2, lon2)
+      rad = Math::PI / 180
+      dlat = (lat2 - lat1) * rad
+      dlon = (lon2 - lon1) * rad
+
+      a = (Math.sin(dlat / 2)**2) +
+          (Math.cos(lat1 * rad) * Math.cos(lat2 * rad) * (Math.sin(dlon / 2)**2))
+
+      2 * EARTH_RADIUS_MI * Math.asin([Math.sqrt(a), 1.0].min)
+    end
+
+    def purpleair_headers(api_key)
+      { 'X-API-Key' => api_key.to_s }
+    end
+
+    # Round hard enough that everyone in a neighborhood shares a cache entry.
+    def aqi_sensor_cache_key(lat, lon)
+      "aqi-sensor-#{lat.round(2)},#{lon.round(2)}"
+    end
+
+    def cached_nearest_sensor(cache_key)
+      raw = redis.hget(ForecastIo::Utils::REDIS_KEY, cache_key)
+      return if raw.nil?
+
+      cached = JSON.parse raw
+      return if Time.now.to_i - cached['cached_at'].to_i > AQI_SENSOR_CACHE_TTL
+
+      cached
+    rescue JSON::ParserError
+      nil
+    end
+
+    # "Portland, OR — South Tabor (0.8mi)", or just the sensor when asked for by index.
+    def aqi_source_label(aqi)
+      sensor = aqi['sensor']
+      meta = aqi['lita']
+      return "#{sensor['sensor_index']} #{sensor['name']}" if meta.nil?
+
+      "#{meta['location_name']} — #{sensor['name']} (#{meta['distance_mi'].round(1)}mi)"
     end
 
     def process_aqi_data(aqi, response)
       if aqi.nil? or aqi['sensor'].to_a.empty?
-        response.reply "Sensor ID #{response.matches[0][0]} not found (zip code searches are unsupported)"
+        response.reply "No air quality data found for '#{response.matches[0][0]}'."
         return
       end
 

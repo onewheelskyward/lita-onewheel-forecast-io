@@ -1,0 +1,15 @@
+{
+  "api_version": "V1.0.11-0.0.41",
+  "time_stamp": 1658797472,
+  "data_time_stamp": 1658797469,
+  "location_type": 0,
+  "max_age": 3600,
+  "firmware_default_version": "7.02",
+  "fields": ["sensor_index", "name", "latitude", "longitude"],
+  "data": [
+    [61137, "Sellwood", 45.455, -122.656],
+    [23805, "South Tabor ", 45.504623, -122.59502],
+    [35221, "Lents", 45.465, -122.56],
+    [99999, "Sensor With No Position", null, null]
+  ]
+}

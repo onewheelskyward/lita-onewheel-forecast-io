@@ -1,4 +1,20 @@
 module ForecastIo
+  PURPLEAIR_URI_BASE = 'https://api.purpleair.com/v1/sensors'.freeze
+
+  # "!aqi sensor 75007" / "!aqi #75007" addresses a sensor index directly;
+  # anything else is treated as a location to search near.
+  SENSOR_QUERY_MATCHER = /\A(?:sensor\s*|#)(\d+)\z/i
+
+  # Widening sweeps, so a dense city resolves on the first (cheapest) call and
+  # the middle of nowhere still finds something.
+  SENSOR_SEARCH_RADII_MI = [5, 25, 100].freeze
+  SENSOR_MAX_AGE = 3600  # ignore sensors that haven't reported in an hour
+
+  EARTH_RADIUS_MI = 3958.8
+  MILES_PER_DEGREE_LAT = 69.0
+
+  AQI_SENSOR_CACHE_TTL = 86_400
+
   module Constants
     def scale
       'f'

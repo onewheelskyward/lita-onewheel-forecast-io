@@ -1,0 +1,10 @@
+{
+  "api_version": "V1.0.11-0.0.41",
+  "time_stamp": 1658797472,
+  "data_time_stamp": 1658797469,
+  "location_type": 0,
+  "max_age": 3600,
+  "firmware_default_version": "7.02",
+  "fields": ["sensor_index", "name", "latitude", "longitude"],
+  "data": []
+}

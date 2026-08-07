@@ -40,6 +40,13 @@ def mock_weatherkit(filename)
   allow_any_instance_of(Tenkit::Client).to receive(:weather).and_return(wk_response)
 end
 
+def mock_purpleair(search: 'aqi_sensors', sensor: 'aqi')
+  stub_request(:get, %r{api\.purpleair\.com/v1/sensors\?})
+    .to_return(status: 200, body: File.read("spec/fixtures/#{search}.json"), headers: {})
+  stub_request(:get, %r{api\.purpleair\.com/v1/sensors/\d+})
+    .to_return(status: 200, body: File.read("spec/fixtures/#{sensor}.json"), headers: {})
+end
+
 def mock_weatherkit_tomorrow(today_max, tomorrow_max)
   body = {
     'forecastDaily' => {
@@ -75,6 +82,7 @@ describe Lita::Handlers::OnewheelForecastIo, lita_handler: true do
       config.handlers.onewheel_forecast_io.api_uri = 'https://api.forecast.io/forecast'
       config.handlers.onewheel_forecast_io.api_key = ''
       config.handlers.onewheel_forecast_io.colors = true
+      config.handlers.onewheel_forecast_io.purpleair_api_key = 'test-purpleair-key'
     end
   end
 
@@ -473,6 +481,89 @@ describe Lita::Handlers::OnewheelForecastIo, lita_handler: true do
   #   send_command 'windows'
   #   expect(replies.last).to eq('Close the windows now! It is 90.59°F.  Open them back up at 02:00.  The high today will be 96.8°F.')
   # end
+
+  it '!aqi with no location uses the saved/default location' do
+    mock_purpleair
+    send_command 'aqi'
+    expect(replies.last).to include('AQI report for Portland, Oregon, USA — South Tabor  (1.9mi)')
+  end
+
+  it '!aqi picks the nearest sensor, not the first one returned' do
+    mock_purpleair
+    send_command 'aqi Portland'
+    expect(replies.last).to include('South Tabor')
+    expect(replies.last).not_to include('Sellwood')
+    expect(replies.last).not_to include('Lents')
+  end
+
+  it '!aqi takes a zip code' do
+    stub_request(:get, /atlas.p3k.io\/api\/geocode\?input\=97206/)
+      .to_return(status: 200, body: '{"latitude":45.480620000000044,"longitude":-122.61289,"locality":"Portland","region":"Oregon","country":"USA","best_name":"Portland","full_name":"Portland, Oregon, USA","postal-code":"97206"}', headers: {})
+    mock_purpleair
+    send_command 'aqi 97206'
+    expect(replies.last).to include('AQI report for Portland, Oregon, USA — South Tabor')
+  end
+
+  it '!aqi searches within a bounding box around the location' do
+    mock_purpleair
+    send_command 'aqi Portland'
+    expect(WebMock).to have_requested(:get, %r{api\.purpleair\.com/v1/sensors\?})
+      .with(query: hash_including('location_type' => '0', 'max_age' => '3600'))
+      .with(headers: {'X-API-Key' => 'test-purpleair-key'})
+  end
+
+  it '!aqi sensor 23805 skips the location search' do
+    mock_purpleair
+    send_command 'aqi sensor 23805'
+    expect(replies.last).to include('AQI report for 23805 South Tabor')
+    expect(WebMock).not_to have_requested(:get, %r{api\.purpleair\.com/v1/sensors\?})
+  end
+
+  it '!aqi #23805 skips the location search' do
+    mock_purpleair
+    send_command 'aqi #23805'
+    expect(replies.last).to include('AQI report for 23805 South Tabor')
+    expect(WebMock).not_to have_requested(:get, %r{api\.purpleair\.com/v1/sensors\?})
+  end
+
+  it '!aqi caches the nearest sensor so repeat lookups skip the search' do
+    mock_purpleair
+    send_command 'aqi Portland'
+    send_command 'aqi Portland'
+    expect(WebMock).to have_requested(:get, %r{api\.purpleair\.com/v1/sensors\?}).once
+    expect(WebMock).to have_requested(:get, %r{api\.purpleair\.com/v1/sensors/23805}).twice
+  end
+
+  it '!aqi with no sensors nearby' do
+    mock_purpleair search: 'aqi_sensors_empty'
+    send_command 'aqi Paris'
+    expect(replies.last).to eq('No PurpleAir sensors are reporting near Paris, France.')
+  end
+
+  it '!aqi widens the search when the closest box is empty' do
+    stub_request(:get, %r{api\.purpleair\.com/v1/sensors\?})
+      .to_return({status: 200, body: File.read('spec/fixtures/aqi_sensors_empty.json')},
+                 {status: 200, body: File.read('spec/fixtures/aqi_sensors.json')})
+    stub_request(:get, %r{api\.purpleair\.com/v1/sensors/\d+})
+      .to_return(status: 200, body: File.read('spec/fixtures/aqi.json'))
+    send_command 'aqi Portland'
+    expect(replies.last).to include('South Tabor')
+    expect(WebMock).to have_requested(:get, %r{api\.purpleair\.com/v1/sensors\?}).twice
+  end
+
+  it '!aqi reports a bad sensor index' do
+    stub_request(:get, %r{api\.purpleair\.com/v1/sensors/\d+})
+      .to_return(status: 404, body: '{"error":"NotFoundError"}')
+    send_command 'aqi sensor 1'
+    expect(replies.last).to eq('PurpleAir had no data for sensor 1 (404).')
+  end
+
+  it '!emojiaqi takes a location' do
+    mock_purpleair
+    send_command 'emojiaqi Portland'
+    expect(replies.last).to include('AQI report for Portland, Oregon, USA — South Tabor')
+    expect(replies.last).to include('🌳')
+  end
 
   # it 'aqis' do
   #   mock_up 'aqi'

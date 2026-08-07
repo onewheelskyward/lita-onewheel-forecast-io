@@ -249,10 +249,12 @@ module Lita
       route(/^ansitraffic\s+(.+)/i, :handle_sandytraffic, command: true)
       route(/^http\s+(\d+)/i, :handle_http_cat, command: true)
 
-      route(/^ansiaqi\s*(\d*)$/i, :handle_ansi_aqi, command: true)
-      route(/^ansismoke\s*(\d*)$/i, :handle_ansi_aqi, command: true)
-      route(/^emojiaqi\s*(\d*)$/i, :handle_emoji_aqi, command: true)
-      route(/^aqi\s*(\d*)$/i, :handle_ansi_aqi, command: true)
+      route(/^ansiaqi(?:\s+(.*))?$/i, :handle_ansi_aqi, command: true)
+      route(/^ansismoke(?:\s+(.*))?$/i, :handle_ansi_aqi, command: true)
+      route(/^emojiaqi(?:\s+(.*))?$/i, :handle_emoji_aqi, command: true,
+            help: { '!emojiaqi [location]' => 'Air quality near a zip code, city, or your saved location.  Use "!emojiaqi sensor 75007" for a specific PurpleAir sensor.'})
+      route(/^aqi(?:\s+(.*))?$/i, :handle_ansi_aqi, command: true,
+            help: { '!aqi [location]' => 'Air quality near a zip code, city, or your saved location.  Use "!aqi sensor 75007" for a specific PurpleAir sensor.'})
       route(/^hot$/i, :handle_ansi_hot, command: true)
 
       route(/^ansiwhen\s+(\d{1,3})(\w*)$/, :handle_ansi_when, command: true)
