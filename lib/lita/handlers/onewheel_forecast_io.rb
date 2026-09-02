@@ -71,10 +71,10 @@ module Lita
       # One-offs
       route(/^rain\s*$/i, :is_it_raining)
       route(/^rain\s+(.+)/i, :is_it_raining,
-            help: { '!rain [location]' => 'Magic Eightball response to whether or not it is raining in [location] right now.'})
+            help: { '!rain [location]' => 'Magic Eightball response to whether or not it is raining in [location] right now, plus when the next rain is expected.'})
       route(/^snow\s*$/i, :is_it_snowing)
       route(/^snow\s+(.+)/i, :is_it_snowing,
-            help: { '!snow [location]' => 'Magic Eightball response to whether or not it is snowing in [location] right now.'})
+            help: { '!snow [location]' => 'Magic Eightball response to whether or not it is snowing in [location] right now, plus when the next snow is expected.'})
       route(/^geo\s*$/i, :handle_geo_lookup, command: true)
       route(/^geo\s+(.+)/i, :handle_geo_lookup, command: true,
             help: { '!geo [location]' => 'A simple geo-lookup returning GPS coords.'})

@@ -68,6 +68,25 @@ def mock_weatherkit_tomorrow(today_max, tomorrow_max)
   allow_any_instance_of(Tenkit::Client).to receive(:weather).and_return(wk_response)
 end
 
+# Frozen clock for the !rain / !snow specs; WeatherKit timestamps are built relative to it.
+RAIN_NOW = Time.utc(2024, 6, 1, 12, 0, 0)
+
+def wk_minutes(chances, start: RAIN_NOW, type: nil, intensity: 0.1)
+  chances.each_with_index.map do |chance, i|
+    minute = {'startTime' => (start + i * 60).iso8601, 'precipitationChance' => chance,
+              'precipitationIntensity' => chance > 0 ? intensity : 0}
+    minute['precipitationType'] = type if type
+    minute
+  end
+end
+
+def wk_hours(chances, start: RAIN_NOW, type: 'rain')
+  chances.each_with_index.map do |chance, i|
+    {'forecastStart' => (start + i * 3600).iso8601, 'precipitationChance' => chance,
+     'precipitationType' => chance > 0 ? type : 'clear'}
+  end
+end
+
 describe Lita::Handlers::OnewheelForecastIo, lita_handler: true do
   before(:each) do
     Geocoder.configure(lookup: :test)
@@ -100,73 +119,133 @@ describe Lita::Handlers::OnewheelForecastIo, lita_handler: true do
     expect(replies.last).to eq('Portland, Oregon, USA weather is currently 83.1°F and [nope].  Winds out of the E at 3.59 mph. ')
   end
 
-  it '!rain' do
-    expect(MagicEightball).to receive(:reply).with(:no) { 'Nope' }
-    send_command 'rain Portland'
-    expect(replies.last).to eq('Nope')
-  end
+  context '!rain and !snow' do
+    around { |example| Timecop.freeze(RAIN_NOW) { example.run } }
 
-  it '!snow' do
-    expect(MagicEightball).to receive(:reply).with(:no) { 'Nope' }
-    send_command 'snow Portland'
-    expect(replies.last).to eq('Nope')
-  end
+    it '!rain' do
+      # The default fixture is from 2014; freeze at its asOf so the timings are stable.
+      Timecop.freeze(Time.utc(2014, 11, 30, 15, 35, 45)) do
+        expect(MagicEightball).to receive(:reply).with(:no) { 'Nope' }
+        send_command 'rain Portland'
+        expect(replies.last).to start_with('Nope.  Rain expected in 1 minute, ending in about 10 minutes.  Max intensity is ')
+      end
+    end
 
-  it '!rain when it is raining right now' do
-    mock_weatherkit_raw('currentWeather' => {'conditionCode' => 'HeavyRain'})
-    expect(MagicEightball).to receive(:reply).with(:yes) { 'Yep' }
-    send_command 'rain Portland'
-    expect(replies.last).to eq('Yep')
-  end
+    it '!snow' do
+      Timecop.freeze(Time.utc(2014, 11, 30, 15, 35, 45)) do
+        expect(MagicEightball).to receive(:reply).with(:no) { 'Nope' }
+        send_command 'snow Portland'
+        expect(replies.last).to start_with('Nope.  Snow expected in 2 minutes, ending in about 10 minutes.')
+      end
+    end
 
-  it '!rain is a hard no when it is snowing right now' do
-    mock_weatherkit_raw('currentWeather' => {'conditionCode' => 'SnowShowers'})
-    expect(MagicEightball).to receive(:reply).with(:no) { 'Nope' }
-    send_command 'rain Portland'
-    expect(replies.last).to eq('Nope')
-  end
+    it '!rain when it is raining right now' do
+      mock_weatherkit_raw(
+        'currentWeather' => {'conditionCode' => 'HeavyRain'},
+        'forecastNextHour' => {'minutes' => wk_minutes([1.0] * 15 + [0.0] * 45, start: RAIN_NOW - 300, type: 'rain', intensity: 0.3)}
+      )
+      expect(MagicEightball).to receive(:reply).with(:yes) { 'Yep' }
+      send_command 'rain Portland'
+      expect(replies.last).to eq('Yep.  Rain for now, ending in about 10 minutes.  Max intensity is moderate.')
+    end
 
-  it '!snow when it is snowing right now' do
-    mock_weatherkit_raw('currentWeather' => {'conditionCode' => 'Snow'})
-    expect(MagicEightball).to receive(:reply).with(:yes) { 'Yep' }
-    send_command 'snow Portland'
-    expect(replies.last).to eq('Yep')
-  end
+    it '!rain when it is raining right now with no end in sight' do
+      mock_weatherkit_raw('currentWeather' => {'conditionCode' => 'Drizzle'})
+      expect(MagicEightball).to receive(:reply).with(:yes) { 'Yep' }
+      send_command 'rain Portland'
+      expect(replies.last).to eq('Yep.  Rain for now, ending in a long while.')
+    end
 
-  it '!rain uses the first next-hour minute when conditions are dry' do
-    mock_weatherkit_raw(
-      'currentWeather' => {'conditionCode' => 'Cloudy'},
-      'forecastNextHour' => {
-        'summary' => [{'condition' => 'rain'}],
-        'minutes' => [{'precipitationChance' => 0.5, 'precipitationIntensity' => 0.2}]
-      }
-    )
-    expect(MagicEightball).to receive(:reply).with(:maybe) { 'Perhaps' }
-    send_command 'rain Portland'
-    expect(replies.last).to eq('Perhaps')
-  end
+    it '!rain is a hard no when it is snowing right now' do
+      mock_weatherkit_raw(
+        'currentWeather' => {'conditionCode' => 'SnowShowers'},
+        'forecastHourly' => {'hours' => wk_hours([0.9] * 3 + [0.0] * 5, type: 'snow')}
+      )
+      expect(MagicEightball).to receive(:reply).with(:no) { 'Nope' }
+      send_command 'rain Portland'
+      expect(replies.last).to eq('Nope.  No rain expected in the next 8 hours.')
+    end
 
-  it '!rain ignores a next-hour chance of snow' do
-    mock_weatherkit_raw(
-      'currentWeather' => {'conditionCode' => 'Cloudy'},
-      'forecastNextHour' => {
-        'summary' => [{'condition' => 'snow'}],
-        'minutes' => [{'precipitationChance' => 0.9, 'precipitationIntensity' => 0.2, 'precipitationType' => 'snow'}]
-      }
-    )
-    expect(MagicEightball).to receive(:reply).with(:no) { 'Nope' }
-    send_command 'rain Portland'
-    expect(replies.last).to eq('Nope')
-  end
+    it '!snow when it is snowing right now' do
+      mock_weatherkit_raw(
+        'currentWeather' => {'conditionCode' => 'Snow'},
+        'forecastHourly' => {'hours' => wk_hours([0.9] * 3 + [0.0] * 5, type: 'snow')}
+      )
+      expect(MagicEightball).to receive(:reply).with(:yes) { 'Yep' }
+      send_command 'snow Portland'
+      expect(replies.last).to eq('Yep.  Snow for now, ending in about 3 hours.')
+    end
 
-  it '!rain falls back to the first hourly forecast' do
-    mock_weatherkit_raw(
-      'currentWeather' => {'conditionCode' => 'Cloudy'},
-      'forecastHourly' => {'hours' => [{'precipitationChance' => 0.9, 'precipitationType' => 'rain'}]}
-    )
-    expect(MagicEightball).to receive(:reply).with(:yes) { 'Yep' }
-    send_command 'rain Portland'
-    expect(replies.last).to eq('Yep')
+    it '!rain uses the next-hour minutes when conditions are dry' do
+      mock_weatherkit_raw(
+        'currentWeather' => {'conditionCode' => 'Cloudy'},
+        'forecastNextHour' => {
+          'summary' => [{'condition' => 'rain'}],
+          'minutes' => wk_minutes([0.0] * 6 + [0.5] * 10 + [0.0] * 44)
+        }
+      )
+      expect(MagicEightball).to receive(:reply).with(:no) { 'Nope' }
+      send_command 'rain Portland'
+      expect(replies.last).to eq('Nope.  Rain expected in 6 minutes, ending in about 16 minutes.  Max intensity is low.')
+    end
+
+    it '!rain reports a maybe from the current next-hour minute' do
+      mock_weatherkit_raw(
+        'currentWeather' => {'conditionCode' => 'Cloudy'},
+        'forecastNextHour' => {'summary' => [{'condition' => 'rain'}], 'minutes' => wk_minutes([0.5] * 60)}
+      )
+      expect(MagicEightball).to receive(:reply).with(:maybe) { 'Perhaps' }
+      send_command 'rain Portland'
+      expect(replies.last).to eq('Perhaps.  Rain for now, ending in a long while.  Max intensity is low.')
+    end
+
+    it '!rain ignores a next-hour chance of snow and looks to the hourly forecast' do
+      mock_weatherkit_raw(
+        'currentWeather' => {'conditionCode' => 'Cloudy'},
+        'forecastNextHour' => {'summary' => [{'condition' => 'snow'}], 'minutes' => wk_minutes([0.9] * 60, type: 'snow')},
+        'forecastHourly' => {'hours' => wk_hours([0.0] * 13 + [0.6] * 3 + [0.0] * 2)}
+      )
+      expect(MagicEightball).to receive(:reply).with(:no) { 'Nope' }
+      send_command 'rain Portland'
+      expect(replies.last).to eq('Nope.  Rain expected in about 13 hours, lasting about 3 hours.')
+    end
+
+    it '!rain falls back to the first hourly forecast' do
+      mock_weatherkit_raw(
+        'currentWeather' => {'conditionCode' => 'Cloudy'},
+        'forecastHourly' => {'hours' => wk_hours([0.9] + [0.0] * 5)}
+      )
+      expect(MagicEightball).to receive(:reply).with(:yes) { 'Yep' }
+      send_command 'rain Portland'
+      expect(replies.last).to eq('Yep.  Rain for now, ending in about 1 hour.')
+    end
+
+    it '!rain reports days when the next rain is far off' do
+      mock_weatherkit_raw(
+        'currentWeather' => {'conditionCode' => 'Clear'},
+        'forecastHourly' => {'hours' => wk_hours([0.0] * 72 + [0.8] * 4 + [0.0])}
+      )
+      expect(MagicEightball).to receive(:reply).with(:no) { 'Nope' }
+      send_command 'rain Portland'
+      expect(replies.last).to eq('Nope.  Rain expected in about 3 days, lasting about 4 hours.')
+    end
+
+    it '!snow skips hours of rain' do
+      hours = wk_hours([0.0] * 12)
+      hours[2].merge!('precipitationChance' => 0.7, 'precipitationType' => 'rain')
+      hours[9].merge!('precipitationChance' => 0.8, 'precipitationType' => 'snow')
+      mock_weatherkit_raw('currentWeather' => {'conditionCode' => 'Cloudy'}, 'forecastHourly' => {'hours' => hours})
+      expect(MagicEightball).to receive(:reply).with(:no) { 'Nope' }
+      send_command 'snow Portland'
+      expect(replies.last).to eq('Nope.  Snow expected in about 9 hours, lasting about 1 hour.')
+    end
+
+    it '!rain with no forecast data at all' do
+      mock_weatherkit_raw('currentWeather' => {'conditionCode' => 'Clear'})
+      expect(MagicEightball).to receive(:reply).with(:no) { 'Nope' }
+      send_command 'rain Portland'
+      expect(replies.last).to eq('Nope.  No rain in the forecast.')
+    end
   end
 
   it '!ansirain with snow' do

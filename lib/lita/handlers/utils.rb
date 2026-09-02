@@ -1,5 +1,6 @@
 require 'geocoder'
 require 'tenkit'
+require 'time'
 
 module ForecastIo
   module Utils
@@ -22,7 +23,8 @@ module ForecastIo
       forecast = get_weatherkit_results(response.user, geocoded, [:current_weather, :forecast_next_hour, :forecast_hourly])
       raw = JSON.parse(forecast.raw.body)
 
-      response.reply get_eightball_response get_chance_of(precip_type, raw)
+      eightball = get_eightball_response get_chance_of(precip_type, raw)
+      response.reply "#{eightball}.  #{next_precip_summary(precip_type, raw)}"
     end
 
     def get_eightball_response(chance)
@@ -80,6 +82,77 @@ module ForecastIo
       types << 'snow' if code.match?(/snow|flurries|blizzard|sleet/)
       types |= %w[rain snow] if code == 'mixed'
       types
+    end
+
+    # Probability at or above which precipitation counts as "happening", matching !nextrain.
+    PRECIP_CHANCE_THRESHOLD = 0.2
+
+    # Describe when the given precipitation type next starts, or, if it is
+    # already falling, when it ends. Uses next-hour minutes when WeatherKit
+    # provides them and the hourly forecast otherwise.
+    def next_precip_summary(precip_type, raw)
+      now = Time.now
+      label = precip_type.capitalize
+      minutes = raw.dig('forecastNextHour', 'minutes') || []
+      hours = raw.dig('forecastHourly', 'hours') || []
+      summary_type = raw.dig('forecastNextHour', 'summary')&.first&.dig('condition')
+
+      # Minute-by-minute: find the first wet minute, then the first dry one after it.
+      start_idx = minutes.index { |m| precip_datum_matches?(precip_type, m, summary_type) }
+      if start_idx
+        block = minutes[start_idx..]
+        end_offset = block.index { |m| m['precipitationChance'].to_f < PRECIP_CHANCE_THRESHOLD }
+        block = block[0...end_offset] if end_offset
+
+        start_in = units_until(block.first, now, 60)
+        lead = start_in <= 0 ? "#{label} for now" : "#{label} expected in #{pluralize(start_in, 'minute')}"
+        tail = end_offset ? ending_phrase(units_until(minutes[start_idx + end_offset], now, 60), 'minute') : 'ending in a long while.'
+        intensity = block.map { |m| m['precipitationIntensity'].to_f }.max
+        return "#{lead}, #{tail}  Max intensity is #{get_intensity_str(intensity)}."
+      end
+
+      # Hourly: is it falling now (per current conditions, or a wet hour already underway)?
+      hour_idx = hours.index { |h| precip_datum_matches?(precip_type, h, nil) }
+      falling_now = precip_types_for(raw.dig('currentWeather', 'conditionCode')).include?(precip_type) ||
+                    (hour_idx && units_until(hours[hour_idx], now, 3600) <= 0)
+
+      if falling_now
+        end_idx = hours.index { |h| h['precipitationChance'].to_f < PRECIP_CHANCE_THRESHOLD }
+        tail = end_idx ? ending_phrase(units_until(hours[end_idx], now, 3600), 'hour') : 'ending in a long while.'
+        return "#{label} for now, #{tail}"
+      end
+
+      if hour_idx
+        wait = units_until(hours[hour_idx], now, 3600)
+        duration = hours[hour_idx..].index { |h| h['precipitationChance'].to_f < PRECIP_CHANCE_THRESHOLD }
+        lasting = duration ? ", lasting about #{pluralize(duration, 'hour')}" : ''
+        return "#{label} expected in about #{hours_or_days(wait)}#{lasting}."
+      end
+
+      hours.empty? ? "No #{precip_type} in the forecast." : "No #{precip_type} expected in the next #{pluralize(hours.length, 'hour')}."
+    end
+
+    def precip_datum_matches?(precip_type, datum, fallback_type)
+      chance_for_type(precip_type, datum, datum['precipitationType'] || fallback_type) >= PRECIP_CHANCE_THRESHOLD
+    end
+
+    # Whole units (minutes or hours) from now until a minute's startTime / an hour's forecastStart.
+    def units_until(datum, now, seconds_per_unit)
+      iso = datum['startTime'] || datum['forecastStart']
+      return 0 if iso.nil?
+      ((Time.iso8601(iso) - now) / seconds_per_unit).round
+    end
+
+    def ending_phrase(units, unit)
+      units <= 0 ? 'ending soon.' : "ending in about #{pluralize(units, unit)}."
+    end
+
+    def hours_or_days(hours)
+      hours >= 48 ? pluralize((hours / 24.0).round, 'day') : pluralize(hours, 'hour')
+    end
+
+    def pluralize(count, unit)
+      "#{count} #{count == 1 ? unit : unit + 's'}"
     end
 
     # Geographical stuffs
