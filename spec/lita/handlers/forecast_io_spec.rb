@@ -40,6 +40,13 @@ def mock_weatherkit(filename)
   allow_any_instance_of(Tenkit::Client).to receive(:weather).and_return(wk_response)
 end
 
+def mock_weatherkit_raw(body_hash)
+  body = body_hash.to_json
+  raw = double('raw', body: body)
+  wk_response = double('WeatherResponse', raw: raw, weather: Tenkit::Weather.new(raw))
+  allow_any_instance_of(Tenkit::Client).to receive(:weather).and_return(wk_response)
+end
+
 def mock_purpleair(search: 'aqi_sensors', sensor: 'aqi')
   stub_request(:get, %r{api\.purpleair\.com/v1/sensors\?})
     .to_return(status: 200, body: File.read("spec/fixtures/#{search}.json"), headers: {})
@@ -93,17 +100,74 @@ describe Lita::Handlers::OnewheelForecastIo, lita_handler: true do
     expect(replies.last).to eq('Portland, Oregon, USA weather is currently 83.1°F and [nope].  Winds out of the E at 3.59 mph. ')
   end
 
-  # it '!rain' do
-  #   allow(MagicEightball).to receive(:reply) { 'Nope' }
-  #   send_message 'rain Portland'
-  #   expect(replies.last).to eq('Nope')
-  # end
+  it '!rain' do
+    expect(MagicEightball).to receive(:reply).with(:no) { 'Nope' }
+    send_command 'rain Portland'
+    expect(replies.last).to eq('Nope')
+  end
 
-  # it '!snow' do
-  #   allow(MagicEightball).to receive(:reply) { 'Nope' }
-  #   send_message 'snow Portland'
-  #   expect(replies.last).to eq('Nope')
-  # end
+  it '!snow' do
+    expect(MagicEightball).to receive(:reply).with(:no) { 'Nope' }
+    send_command 'snow Portland'
+    expect(replies.last).to eq('Nope')
+  end
+
+  it '!rain when it is raining right now' do
+    mock_weatherkit_raw('currentWeather' => {'conditionCode' => 'HeavyRain'})
+    expect(MagicEightball).to receive(:reply).with(:yes) { 'Yep' }
+    send_command 'rain Portland'
+    expect(replies.last).to eq('Yep')
+  end
+
+  it '!rain is a hard no when it is snowing right now' do
+    mock_weatherkit_raw('currentWeather' => {'conditionCode' => 'SnowShowers'})
+    expect(MagicEightball).to receive(:reply).with(:no) { 'Nope' }
+    send_command 'rain Portland'
+    expect(replies.last).to eq('Nope')
+  end
+
+  it '!snow when it is snowing right now' do
+    mock_weatherkit_raw('currentWeather' => {'conditionCode' => 'Snow'})
+    expect(MagicEightball).to receive(:reply).with(:yes) { 'Yep' }
+    send_command 'snow Portland'
+    expect(replies.last).to eq('Yep')
+  end
+
+  it '!rain uses the first next-hour minute when conditions are dry' do
+    mock_weatherkit_raw(
+      'currentWeather' => {'conditionCode' => 'Cloudy'},
+      'forecastNextHour' => {
+        'summary' => [{'condition' => 'rain'}],
+        'minutes' => [{'precipitationChance' => 0.5, 'precipitationIntensity' => 0.2}]
+      }
+    )
+    expect(MagicEightball).to receive(:reply).with(:maybe) { 'Perhaps' }
+    send_command 'rain Portland'
+    expect(replies.last).to eq('Perhaps')
+  end
+
+  it '!rain ignores a next-hour chance of snow' do
+    mock_weatherkit_raw(
+      'currentWeather' => {'conditionCode' => 'Cloudy'},
+      'forecastNextHour' => {
+        'summary' => [{'condition' => 'snow'}],
+        'minutes' => [{'precipitationChance' => 0.9, 'precipitationIntensity' => 0.2, 'precipitationType' => 'snow'}]
+      }
+    )
+    expect(MagicEightball).to receive(:reply).with(:no) { 'Nope' }
+    send_command 'rain Portland'
+    expect(replies.last).to eq('Nope')
+  end
+
+  it '!rain falls back to the first hourly forecast' do
+    mock_weatherkit_raw(
+      'currentWeather' => {'conditionCode' => 'Cloudy'},
+      'forecastHourly' => {'hours' => [{'precipitationChance' => 0.9, 'precipitationType' => 'rain'}]}
+    )
+    expect(MagicEightball).to receive(:reply).with(:yes) { 'Yep' }
+    send_command 'rain Portland'
+    expect(replies.last).to eq('Yep')
+  end
 
   it '!ansirain with snow' do
     rain_minutes = [{"precipitationChance" => 0.0, "precipitationIntensity" => 0.0}] +

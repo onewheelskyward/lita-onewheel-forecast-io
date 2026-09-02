@@ -6,43 +6,80 @@ module ForecastIo
     REDIS_KEY = 'forecast_io'
 
     # Return an eightball response based on the current chance of rain.
-    # If it's snowing, it's a hard no.
+    # If it is snowing, it is a hard no.
     def is_it_raining(response)
-      geocoded = geo_lookup response.user, response.match_data[1]
-      forecast = get_weatherkit_results(response.user, geocoded, [:current_weather])
-
-      response.reply get_eightball_response get_chance_of('rain', forecast.weather.current_weather)
+      reply_with_precip_eightball(response, 'rain')
     end
 
     # Return an eightball response based on the current chance of snow.
-    # If it's raining, it's a hard no.
+    # If it is raining, it is a hard no.
     def is_it_snowing(response)
-      geocoded = geo_lookup response.user, response.match_data[1]
-      forecast = get_forecast_io_results response.user, geocoded
+      reply_with_precip_eightball(response, 'snow')
+    end
 
-      response.reply get_eightball_response get_chance_of('snow', forecast['currently'])
+    def reply_with_precip_eightball(response, precip_type)
+      geocoded = geo_lookup response.user, response.match_data[1]
+      forecast = get_weatherkit_results(response.user, geocoded, [:current_weather, :forecast_next_hour, :forecast_hourly])
+      raw = JSON.parse(forecast.raw.body)
+
+      response.reply get_eightball_response get_chance_of(precip_type, raw)
     end
 
     def get_eightball_response(chance)
-      case chance
-        when 0..0.2
-          MagicEightball.reply :no
-        when 0.201..0.7
-          MagicEightball.reply :maybe
-        when 0.701..1
-          MagicEightball.reply :yes
+      if chance <= 0.2
+        MagicEightball.reply :no
+      elsif chance <= 0.7
+        MagicEightball.reply :maybe
+      else
+        MagicEightball.reply :yes
       end
     end
 
-    def get_chance_of(rain_or_snow, currently)
-      # This is a fallthrough so we'll reply no to rain if it's snowing, and vice versa.
-      chance = 0
+    # Work out the current chance of the given precipitation type ('rain' or 'snow')
+    # from a raw WeatherKit payload. WeatherKit's current conditions carry no
+    # probability, only a condition code, so:
+    #   1. If the condition code says precipitation is falling right now, it is a
+    #      certainty for that type and a hard no for the other.
+    #   2. Otherwise use the first minute of the next-hour forecast.
+    #   3. Failing that, use the first hour of the hourly forecast.
+    # Any chance attributed to the other precipitation type counts as zero.
+    def get_chance_of(precip_type, raw)
+      current_types = precip_types_for(raw.dig('currentWeather', 'conditionCode'))
+      return (current_types.include?(precip_type) ? 1.0 : 0.0) unless current_types.empty?
 
-      if currently['precipType'] == rain_or_snow    # If we match the specified string ['rain', 'snow']
-        chance = currently['precipProbability']     # Set the probability for 8-ball reckoning.
+      minute = raw.dig('forecastNextHour', 'minutes')&.first
+      if minute
+        summary_condition = raw.dig('forecastNextHour', 'summary')&.first&.dig('condition')
+        return chance_for_type(precip_type, minute, minute['precipitationType'] || summary_condition)
       end
 
-      chance    # Probably superfluous.
+      hour = raw.dig('forecastHourly', 'hours')&.first
+      return chance_for_type(precip_type, hour, hour['precipitationType']) if hour
+
+      0.0
+    end
+
+    def chance_for_type(precip_type, datum, reported_type)
+      chance = datum['precipitationChance'].to_f
+      return 0.0 if chance <= 0
+
+      types = precip_types_for(reported_type)
+      # An unspecified type with a non-zero chance is treated as rain, the common case.
+      types = ['rain'] if types.empty?
+      types.include?(precip_type) ? chance : 0.0
+    end
+
+    # Map a WeatherKit conditionCode (e.g. "HeavyRain", "SnowShowers", "MixedRainAndSnow")
+    # or precipitationType (e.g. "rain", "snow", "sleet", "mixed", "precipitation")
+    # to the precipitation types it implies. Returns [] for anything dry.
+    def precip_types_for(code)
+      code = code.to_s.downcase
+      types = []
+      types << 'rain' if code.match?(/rain|drizzle|thunderstorm|precipitation/) ||
+                         (code.include?('shower') && !code.include?('snow'))
+      types << 'snow' if code.match?(/snow|flurries|blizzard|sleet/)
+      types |= %w[rain snow] if code == 'mixed'
+      types
     end
 
     # Geographical stuffs
